@@ -1,4 +1,4 @@
-# Game Documentation
+# Property Tycoon backend docs
 
 NOTES:
  - This documentation is for the backend architecture of Property Tycoon.
