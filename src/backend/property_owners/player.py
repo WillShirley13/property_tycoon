@@ -74,117 +74,105 @@ class Player(PropertyHolder):
             raise errors.PropertyAlreadyInPortfolioError
         
         self.owned_properties[property.property_group].append(property)
-        # Check if player owns all properties in a BROWN group
-        if property.property_group == PropertyGroup.BROWN:
-            if len(self.owned_properties[property.property_group]) == TOTAL_BROWN_PROPERTIES:
-                for property in self.owned_properties[property.property_group]:
-                    property.owner_owns_all_properties = True
-        # Check if player owns all properties in a BLUE group
-        elif property.property_group == PropertyGroup.BLUE:
-            if len(self.owned_properties[property.property_group]) == TOTAL_BLUE_PROPERTIES:
-                for property in self.owned_properties[property.property_group]:
-                    property.owner_owns_all_properties = True
-        # Check if player owns all properties in a PURPLE group
-        elif property.property_group == PropertyGroup.PURPLE:
-            if len(self.owned_properties[property.property_group]) == TOTAL_PURPLE_PROPERTIES:
-                for property in self.owned_properties[property.property_group]:
-                    property.owner_owns_all_properties = True
-        # Check if player owns all properties in a ORANGE group
-        elif property.property_group == PropertyGroup.ORANGE:
-            if len(self.owned_properties[property.property_group]) == TOTAL_ORANGE_PROPERTIES:
-                for property in self.owned_properties[property.property_group]:
-                    property.owner_owns_all_properties = True
-        # Check if player owns all properties in a RED group
-        elif property.property_group == PropertyGroup.RED:
-            if len(self.owned_properties[property.property_group]) == TOTAL_RED_PROPERTIES:
-                for property in self.owned_properties[property.property_group]:
-                    property.owner_owns_all_properties = True
-        # Check if player owns all properties in a YELLOW group
-        elif property.property_group == PropertyGroup.YELLOW:
-            if len(self.owned_properties[property.property_group]) == TOTAL_YELLOW_PROPERTIES:
-                for property in self.owned_properties[property.property_group]:
-                    property.owner_owns_all_properties = True
-        # Check if player owns all properties in a GREEN group
-        elif property.property_group == PropertyGroup.GREEN:
-            if len(self.owned_properties[property.property_group]) == TOTAL_GREEN_PROPERTIES:
-                for property in self.owned_properties[property.property_group]:
-                    property.owner_owns_all_properties = True
-        # Check if player owns all properties in a DEEP_BLUE group
-        elif property.property_group == PropertyGroup.DEEP_BLUE:
-            if len(self.owned_properties[property.property_group]) == TOTAL_DEEP_BLUE_PROPERTIES:
-                for property in self.owned_properties[property.property_group]:
-                    property.owner_owns_all_properties = True
-        # Check if player owns all stations 
-        elif property.property_group == PropertyGroup.STATION:
-            property.num_of_stations_owned_by_owner += 1
-            if self.num_of_stations_owned == TOTAL_STATIONS:
-                for property in self.owned_properties[property.property_group]:
-                    property.owner_owns_all_stations = True
-        # Check if player owns all utilities
-        elif property.property_group == PropertyGroup.UTILITY:
-            property.num_of_utilities_owned_by_owner += 1
-            if self.num_of_utilities_owned == TOTAL_UTILITIES:
-                for property in self.owned_properties[property.property_group]:
-                    property.owner_owns_all_utilities = True
-     
+
+        match property.property_group:
+            case PropertyGroup.BROWN:
+                if len(self.owned_properties[PropertyGroup.BROWN]) == TOTAL_BROWN_PROPERTIES:
+                    for prop in self.owned_properties[PropertyGroup.BROWN]:
+                        prop.owner_owns_all_properties = True
+            case PropertyGroup.BLUE:
+                if len(self.owned_properties[PropertyGroup.BLUE]) == TOTAL_BLUE_PROPERTIES:
+                    for prop in self.owned_properties[PropertyGroup.BLUE]:
+                        prop.owner_owns_all_properties = True
+            case PropertyGroup.PURPLE:
+                if len(self.owned_properties[PropertyGroup.PURPLE]) == TOTAL_PURPLE_PROPERTIES:
+                    for prop in self.owned_properties[PropertyGroup.PURPLE]:
+                        prop.owner_owns_all_properties = True
+            case PropertyGroup.ORANGE:
+                if len(self.owned_properties[PropertyGroup.ORANGE]) == TOTAL_ORANGE_PROPERTIES:
+                    for prop in self.owned_properties[PropertyGroup.ORANGE]:
+                        prop.owner_owns_all_properties = True
+            case PropertyGroup.RED:
+                if len(self.owned_properties[PropertyGroup.RED]) == TOTAL_RED_PROPERTIES:
+                    for prop in self.owned_properties[PropertyGroup.RED]:
+                        prop.owner_owns_all_properties = True
+            case PropertyGroup.YELLOW:
+                if len(self.owned_properties[PropertyGroup.YELLOW]) == TOTAL_YELLOW_PROPERTIES:
+                    for prop in self.owned_properties[PropertyGroup.YELLOW]:
+                        prop.owner_owns_all_properties = True
+            case PropertyGroup.GREEN:
+                if len(self.owned_properties[PropertyGroup.GREEN]) == TOTAL_GREEN_PROPERTIES:
+                    for prop in self.owned_properties[PropertyGroup.GREEN]:
+                        prop.owner_owns_all_properties = True
+            case PropertyGroup.DEEP_BLUE:
+                if len(self.owned_properties[PropertyGroup.DEEP_BLUE]) == TOTAL_DEEP_BLUE_PROPERTIES:
+                    for prop in self.owned_properties[PropertyGroup.DEEP_BLUE]:
+                        prop.owner_owns_all_properties = True
+            case PropertyGroup.STATION:
+                property.num_of_stations_owned_by_owner += 1
+                if self.num_of_stations_owned == TOTAL_STATIONS:
+                    for prop in self.owned_properties[PropertyGroup.STATION]:
+                        prop.owner_owns_all_stations = True
+            case PropertyGroup.UTILITY:
+                property.num_of_utilities_owned_by_owner += 1
+                if self.num_of_utilities_owned == TOTAL_UTILITIES:
+                    for prop in self.owned_properties[PropertyGroup.UTILITY]:
+                        prop.owner_owns_all_utilities = True
+            case _:
+                pass
+
     @override
     def remove_property_from_portfolio(self, property: Ownable) -> None:
         if property not in self.owned_properties[property.property_group]:
             raise errors.PropertyNotInPortfolioError
         
         self.owned_properties[property.property_group].remove(property)
-        # Check if player owns all properties in a BROWN group
-        if property.property_group == PropertyGroup.BROWN:
-            if len(self.owned_properties[property.property_group]) != TOTAL_BROWN_PROPERTIES:
-                for property in self.owned_properties[property.property_group]:
-                    property.owner_owns_all_properties = False
-        # Check if player owns all properties in a BLUE group
-        elif property.property_group == PropertyGroup.BLUE:
-            if len(self.owned_properties[property.property_group]) != TOTAL_BLUE_PROPERTIES:
-                for property in self.owned_properties[property.property_group]:
-                    property.owner_owns_all_properties = False
-        # Check if player owns all properties in a PURPLE group
-        elif property.property_group == PropertyGroup.PURPLE:
-            if len(self.owned_properties[property.property_group]) != TOTAL_PURPLE_PROPERTIES:
-                for property in self.owned_properties[property.property_group]:
-                    property.owner_owns_all_properties = False
-        # Check if player owns all properties in a ORANGE group
-        elif property.property_group == PropertyGroup.ORANGE:
-            if len(self.owned_properties[property.property_group]) != TOTAL_ORANGE_PROPERTIES:
-                for property in self.owned_properties[property.property_group]:
-                    property.owner_owns_all_properties = False
-        # Check if player owns all properties in a RED group
-        elif property.property_group == PropertyGroup.RED:
-            if len(self.owned_properties[property.property_group]) != TOTAL_RED_PROPERTIES:
-                for property in self.owned_properties[property.property_group]:
-                    property.owner_owns_all_properties = False
-        # Check if player owns all properties in a YELLOW group
-        elif property.property_group == PropertyGroup.YELLOW:
-            if len(self.owned_properties[property.property_group]) != TOTAL_YELLOW_PROPERTIES:
-                for property in self.owned_properties[property.property_group]:
-                    property.owner_owns_all_properties = False
-        # Check if player owns all properties in a GREEN group
-        elif property.property_group == PropertyGroup.GREEN:
-            if len(self.owned_properties[property.property_group]) != TOTAL_GREEN_PROPERTIES:
-                for property in self.owned_properties[property.property_group]:
-                    property.owner_owns_all_properties = False
-        # Check if player owns all properties in a DEEP_BLUE group
-        elif property.property_group == PropertyGroup.DEEP_BLUE:
-            if len(self.owned_properties[property.property_group]) != TOTAL_DEEP_BLUE_PROPERTIES:
-                for property in self.owned_properties[property.property_group]:
-                    property.owner_owns_all_properties = False
-        # Check if player owns all stations
-        elif property.property_group == PropertyGroup.STATION:
-            property.num_of_stations_owned_by_owner -= 1
-            if self.num_of_stations_owned != TOTAL_STATIONS:
-                for property in self.owned_properties[property.property_group]:
-                    property.owner_owns_all_stations = False
-        # Check if player owns all utilities
-        elif property.property_group == PropertyGroup.UTILITY:
-            property.num_of_utilities_owned_by_owner -= 1
-            if self.num_of_utilities_owned != TOTAL_UTILITIES:
-                for property in self.owned_properties[property.property_group]:
-                    property.owner_owns_all_utilities = False
+
+        match property.property_group:
+            case PropertyGroup.BROWN:
+                if len(self.owned_properties[PropertyGroup.BROWN]) != TOTAL_BROWN_PROPERTIES:
+                    for prop in self.owned_properties[PropertyGroup.BROWN]:
+                        prop.owner_owns_all_properties = False
+            case PropertyGroup.BLUE:
+                if len(self.owned_properties[PropertyGroup.BLUE]) != TOTAL_BLUE_PROPERTIES:
+                    for prop in self.owned_properties[PropertyGroup.BLUE]:
+                        prop.owner_owns_all_properties = False
+            case PropertyGroup.PURPLE:
+                if len(self.owned_properties[PropertyGroup.PURPLE]) != TOTAL_PURPLE_PROPERTIES:
+                    for prop in self.owned_properties[PropertyGroup.PURPLE]:
+                        prop.owner_owns_all_properties = False
+            case PropertyGroup.ORANGE:
+                if len(self.owned_properties[PropertyGroup.ORANGE]) != TOTAL_ORANGE_PROPERTIES:
+                    for prop in self.owned_properties[PropertyGroup.ORANGE]:
+                        prop.owner_owns_all_properties = False
+            case PropertyGroup.RED:
+                if len(self.owned_properties[PropertyGroup.RED]) != TOTAL_RED_PROPERTIES:
+                    for prop in self.owned_properties[PropertyGroup.RED]:
+                        prop.owner_owns_all_properties = False
+            case PropertyGroup.YELLOW:
+                if len(self.owned_properties[PropertyGroup.YELLOW]) != TOTAL_YELLOW_PROPERTIES:
+                    for prop in self.owned_properties[PropertyGroup.YELLOW]:
+                        prop.owner_owns_all_properties = False
+            case PropertyGroup.GREEN:
+                if len(self.owned_properties[PropertyGroup.GREEN]) != TOTAL_GREEN_PROPERTIES:
+                    for prop in self.owned_properties[PropertyGroup.GREEN]:
+                        prop.owner_owns_all_properties = False
+            case PropertyGroup.DEEP_BLUE:
+                if len(self.owned_properties[PropertyGroup.DEEP_BLUE]) != TOTAL_DEEP_BLUE_PROPERTIES:
+                    for prop in self.owned_properties[PropertyGroup.DEEP_BLUE]:
+                        prop.owner_owns_all_properties = False
+            case PropertyGroup.STATION:
+                property.num_of_stations_owned_by_owner -= 1
+                if self.num_of_stations_owned != TOTAL_STATIONS:
+                    for prop in self.owned_properties[PropertyGroup.STATION]:
+                        prop.owner_owns_all_stations = False
+            case PropertyGroup.UTILITY:
+                property.num_of_utilities_owned_by_owner -= 1
+                if self.num_of_utilities_owned != TOTAL_UTILITIES:
+                    for prop in self.owned_properties[PropertyGroup.UTILITY]:
+                        prop.owner_owns_all_utilities = False
+            case _:
+                pass
 
     def mortgage_property(self, property: Ownable, bank: Bank) -> None:
         if property.owned_by != self:
