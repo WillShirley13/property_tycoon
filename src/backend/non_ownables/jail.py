@@ -1,4 +1,4 @@
-from player import Player
+from backend.property_owners.player import Player
 
 class Jail:
     def __init__(self):

@@ -84,8 +84,43 @@ PROPERTY_DATA = {
     "Edison Water": {"cost": 150, "multipliers": [4, 10]},
 }
 
+POT_LUCK_CARDS = {
+    "You inherit £200": 1,
+    "You have won 2nd prize in a beauty contest, collect £50": 2,
+    "You are up the creek with no paddle - go back to the Old Creek": 3,
+    "Student loan refund. Collect £20": 4,
+    "Bank error in your favour. Collect £200": 5,
+    "Pay bill for text books of £100": 6,
+    "Mega late night taxi bill pay £50": 7,
+    "Advance to go": 8,
+    "From sale of Bitcoin you get £50": 9,
+    "Bitcoin assets fall - pay off Bitcoin short fall": 10,
+    "Pay a £10 fine or take opportunity knocks": 11,
+    "Pay insurance fee of £50": 12,
+    "Savings bond matures, collect £100": 13,
+    "Go to jail. Do not pass GO, do not collect £200": 14,
+    "Received interest on shares of £25": 15,
+    "It's your birthday. Collect £10 from each player": 16,
+    "Get out of jail free": 17
+}
 
-
-
+OPPORTUNITY_KNOCKS_CARDS = {
+    "Bank pays you divided of £50": 18,
+    "You have won a lip sync battle. Collect £100": 19,
+    "Advance to Turing Heights": 20,
+    "Advance to Han Xin Gardens. If you pass GO, collect £200": 21,
+    "Fined £15 for speeding": 22,
+    "Pay university fees of £150": 23,
+    "Take a trip to Hove station. If you pass GO collect £200": 24,
+    "Loan matures, collect £150": 25,
+    "You are assessed for repairs, £40/house, £115/hotel": 26,
+    "Advance to GO": 27,
+    "You are assessed for repairs, £25/house, £100/hotel": 28,
+    "Go back 3 spaces": 29,
+    "Advance to Skywalker Drive. If you pass GO collect £200": 30,
+    "Go to jail. Do not pass GO, do not collect £200": 31,
+    "Drunk in charge of a hoverboard. Fine £30": 32,
+    "Get out of jail free": 33
+}
 
 

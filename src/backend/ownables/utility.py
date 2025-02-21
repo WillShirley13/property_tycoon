@@ -1,5 +1,5 @@
 from backend.ownables.ownable import Ownable
-from backend.player import Player
+from backend.property_owners.player import Player
 from constants import *
 from typing import override
 

@@ -1,5 +1,5 @@
-from player import Player
-from bank import Bank
+from backend.property_owners.player import Player
+from backend.property_owners.bank import Bank
 
 class Go:
     def __init__(self):

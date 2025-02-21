@@ -1,5 +1,5 @@
-from player import Player
-from bank import Bank
+from backend.property_owners.player import Player
+from backend.property_owners.bank import Bank
 from backend.enums.property_group import PropertyGroup
 import errors
 
@@ -7,13 +7,14 @@ class Ownable:
     def __init__(self, value: int, rent_cost: int, property_group: PropertyGroup, name: str):
         self.name: str = name
         self.owned_by: Player | Bank = None
+        self.cost_to_buy: int = value
         self.value: int = value
         self.rent_cost: int = rent_cost
         self.is_mortgaged: bool = False
         self.property_group: PropertyGroup = property_group
         
     def get_cost(self) -> int:
-        return self.value
+        return self.cost_to_buy
 
     def get_owner(self) -> Player | Bank:
         return self.owned_by
@@ -27,11 +28,3 @@ class Ownable:
         player.sub_cash_balance(self.rent_cost)
         self.owned_by.add_cash_balance(self.rent_cost)
         return self.rent_cost      
-
-    def mortgage_property(self, bank) -> None:
-        if self.is_mortgaged:
-            raise errors.PropertyAlreadyMortgagedError
-        self.is_mortgaged = True
-        self.owned_by = bank
-        self.value = self.value / 2
-        

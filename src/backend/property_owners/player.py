@@ -1,7 +1,9 @@
-from backend.bank import Bank
+from backend.non_ownables.go import Go
+from backend.property_owners import bank
+from backend.property_owners.bank import Bank
 import errors
 from backend.enums.game_token import GameToken
-from backend.property_holder import PropertyHolder
+from backend.property_owners.property_holder import PropertyHolder
 from backend.enums.property_group import PropertyGroup
 from backend.ownables.ownable import Ownable
 from backend.non_ownables.jail import Jail
@@ -16,21 +18,7 @@ class Player(PropertyHolder):
         self.get_out_of_jail_cards: int = 0
         self.is_in_jail: bool = False
         self.is_first_circuit_complete: bool = False
-        self.current_position: int = 0
-        self.num_of_stations_owned: int = 0
-        self.num_of_utilities_owned: int = 0
-        self.owns_all_utilities: bool = False
-        self.owns_all_stations: bool = False
-        # Flags for ownership of all properties in each group
-        # self.owns_all_brown: bool = False
-        # self.owns_all_blue: bool = False
-        # self.owns_all_purple: bool = False
-        # self.owns_all_orange: bool = False
-        # self.owns_all_red: bool = False
-        # self.owns_all_yellow: bool = False
-        # self.owns_all_green: bool = False
-        # self.owns_all_deep_blue: bool = False
-        
+        self.current_position: int = 0  
         self.is_bankrupt: bool = False
 
     def use_get_out_of_jail(self, jail: Jail) -> None:
@@ -45,6 +33,9 @@ class Player(PropertyHolder):
             raise errors.PlayerAlreadyInJailError
         self.is_in_jail = True
         jail.put_in_jail(self)
+    
+    def add_get_out_of_jail(self) -> None:
+        self.get_out_of_jail_cards += 1
 
     def purchase_property(self, property: Ownable, bank: Bank) -> None:
         if property.owned_by != bank:
@@ -70,153 +61,173 @@ class Player(PropertyHolder):
             raise errors.PropertyNotOwnedByPlayerError
         
         if property.is_mortgaged:
-            
-        
-        property_cost = property.get_cost()
-        self.add_cash_balance(property_cost)
-        bank.sub_cash_balance(property_cost)
-        
-    def move_player(self, steps: int) -> int:
-        # Faciliate circular board
-        if self.current_position + steps > 40:
-            self.is_first_circuit_complete = True
-            self.current_position = (self.current_position + steps) % 40
+            self.add_cash_balance(property.get_cost() / 2)
+            bank.sub_cash_balance(property.get_cost() / 2)
+            property.is_mortgaged = False
         else:
-            self.current_position += steps
-        return self.current_position
-
-    def get_current_position(self) -> int:
-        return self.current_position
-
-    def get_num_of_stations_owned(self) -> int:
-        return self.num_of_stations_owned
-
-    def get_num_of_utilities_owned(self) -> int:
-        return self.num_of_utilities_owned
-
-    def retire_player(self, bank) -> None:
-        pass
-
-    def get_player_net_worth(self) -> int:
-        pass 
-    
+            self.add_cash_balance(property.get_cost())
+            bank.sub_cash_balance(property.get_cost())
+        
     @override
     def add_property_to_portfolio(self, property: Ownable) -> None:
         if property in self.owned_properties[property.property_group]:
             raise errors.PropertyAlreadyInPortfolioError
         
         self.owned_properties[property.property_group].append(property)
-        
+        # Check if player owns all properties in a BROWN group
         if property.property_group == PropertyGroup.BROWN:
             if len(self.owned_properties[property.property_group]) == TOTAL_BROWN_PROPERTIES:
                 for property in self.owned_properties[property.property_group]:
                     property.owner_owns_all_properties = True
-                # self.owns_all_brown = True
+        # Check if player owns all properties in a BLUE group
         elif property.property_group == PropertyGroup.BLUE:
             if len(self.owned_properties[property.property_group]) == TOTAL_BLUE_PROPERTIES:
                 for property in self.owned_properties[property.property_group]:
                     property.owner_owns_all_properties = True
-                # self.owns_all_blue = True
+        # Check if player owns all properties in a PURPLE group
         elif property.property_group == PropertyGroup.PURPLE:
             if len(self.owned_properties[property.property_group]) == TOTAL_PURPLE_PROPERTIES:
                 for property in self.owned_properties[property.property_group]:
                     property.owner_owns_all_properties = True
-                # self.owns_all_purple = True
+        # Check if player owns all properties in a ORANGE group
         elif property.property_group == PropertyGroup.ORANGE:
             if len(self.owned_properties[property.property_group]) == TOTAL_ORANGE_PROPERTIES:
                 for property in self.owned_properties[property.property_group]:
                     property.owner_owns_all_properties = True
-                # self.owns_all_orange = True
+        # Check if player owns all properties in a RED group
         elif property.property_group == PropertyGroup.RED:
             if len(self.owned_properties[property.property_group]) == TOTAL_RED_PROPERTIES:
                 for property in self.owned_properties[property.property_group]:
                     property.owner_owns_all_properties = True
-                # self.owns_all_red = True
+        # Check if player owns all properties in a YELLOW group
         elif property.property_group == PropertyGroup.YELLOW:
             if len(self.owned_properties[property.property_group]) == TOTAL_YELLOW_PROPERTIES:
                 for property in self.owned_properties[property.property_group]:
                     property.owner_owns_all_properties = True
-                # self.owns_all_yellow = True
+        # Check if player owns all properties in a GREEN group
         elif property.property_group == PropertyGroup.GREEN:
             if len(self.owned_properties[property.property_group]) == TOTAL_GREEN_PROPERTIES:
                 for property in self.owned_properties[property.property_group]:
                     property.owner_owns_all_properties = True
-                # self.owns_all_green = True
+        # Check if player owns all properties in a DEEP_BLUE group
         elif property.property_group == PropertyGroup.DEEP_BLUE:
             if len(self.owned_properties[property.property_group]) == TOTAL_DEEP_BLUE_PROPERTIES:
                 for property in self.owned_properties[property.property_group]:
                     property.owner_owns_all_properties = True
-                # self.owns_all_deep_blue = True
+        # Check if player owns all stations 
         elif property.property_group == PropertyGroup.STATION:
             property.num_of_stations_owned_by_owner += 1
             if self.num_of_stations_owned == TOTAL_STATIONS:
                 for property in self.owned_properties[property.property_group]:
                     property.owner_owns_all_stations = True
-                # self.owns_all_stations = True
+        # Check if player owns all utilities
         elif property.property_group == PropertyGroup.UTILITY:
             property.num_of_utilities_owned_by_owner += 1
             if self.num_of_utilities_owned == TOTAL_UTILITIES:
                 for property in self.owned_properties[property.property_group]:
                     property.owner_owns_all_utilities = True
-                # self.owns_all_utilities = True
-        
-        
+     
     @override
     def remove_property_from_portfolio(self, property: Ownable) -> None:
         if property not in self.owned_properties[property.property_group]:
             raise errors.PropertyNotInPortfolioError
         
         self.owned_properties[property.property_group].remove(property)
-        
+        # Check if player owns all properties in a BROWN group
         if property.property_group == PropertyGroup.BROWN:
             if len(self.owned_properties[property.property_group]) != TOTAL_BROWN_PROPERTIES:
                 for property in self.owned_properties[property.property_group]:
                     property.owner_owns_all_properties = False
-                # self.owns_all_brown = False
+        # Check if player owns all properties in a BLUE group
         elif property.property_group == PropertyGroup.BLUE:
             if len(self.owned_properties[property.property_group]) != TOTAL_BLUE_PROPERTIES:
                 for property in self.owned_properties[property.property_group]:
                     property.owner_owns_all_properties = False
-                # self.owns_all_blue = False
+        # Check if player owns all properties in a PURPLE group
         elif property.property_group == PropertyGroup.PURPLE:
             if len(self.owned_properties[property.property_group]) != TOTAL_PURPLE_PROPERTIES:
                 for property in self.owned_properties[property.property_group]:
                     property.owner_owns_all_properties = False
-                # self.owns_all_purple = False
+        # Check if player owns all properties in a ORANGE group
         elif property.property_group == PropertyGroup.ORANGE:
             if len(self.owned_properties[property.property_group]) != TOTAL_ORANGE_PROPERTIES:
                 for property in self.owned_properties[property.property_group]:
                     property.owner_owns_all_properties = False
-                # self.owns_all_orange = True
+        # Check if player owns all properties in a RED group
         elif property.property_group == PropertyGroup.RED:
             if len(self.owned_properties[property.property_group]) != TOTAL_RED_PROPERTIES:
                 for property in self.owned_properties[property.property_group]:
                     property.owner_owns_all_properties = False
-                # self.owns_all_red = True
+        # Check if player owns all properties in a YELLOW group
         elif property.property_group == PropertyGroup.YELLOW:
             if len(self.owned_properties[property.property_group]) != TOTAL_YELLOW_PROPERTIES:
                 for property in self.owned_properties[property.property_group]:
                     property.owner_owns_all_properties = False
-                # self.owns_all_yellow = True
+        # Check if player owns all properties in a GREEN group
         elif property.property_group == PropertyGroup.GREEN:
             if len(self.owned_properties[property.property_group]) != TOTAL_GREEN_PROPERTIES:
                 for property in self.owned_properties[property.property_group]:
                     property.owner_owns_all_properties = False
-                # self.owns_all_green = True
+        # Check if player owns all properties in a DEEP_BLUE group
         elif property.property_group == PropertyGroup.DEEP_BLUE:
             if len(self.owned_properties[property.property_group]) != TOTAL_DEEP_BLUE_PROPERTIES:
                 for property in self.owned_properties[property.property_group]:
                     property.owner_owns_all_properties = False
-                # self.owns_all_deep_blue = True
+        # Check if player owns all stations
         elif property.property_group == PropertyGroup.STATION:
             property.num_of_stations_owned_by_owner -= 1
             if self.num_of_stations_owned != TOTAL_STATIONS:
                 for property in self.owned_properties[property.property_group]:
                     property.owner_owns_all_stations = False
-                # self.owns_all_stations = True
+        # Check if player owns all utilities
         elif property.property_group == PropertyGroup.UTILITY:
             property.num_of_utilities_owned_by_owner -= 1
             if self.num_of_utilities_owned != TOTAL_UTILITIES:
                 for property in self.owned_properties[property.property_group]:
                     property.owner_owns_all_utilities = False
-                # se
+
+    def mortgage_property(self, property: Ownable, bank: Bank) -> None:
+        if property.owned_by != self:
+            raise errors.PropertyNotOwnedByPlayerError
+        
+        if property.is_mortgaged:
+            raise errors.PropertyAlreadyMortgagedError
+        
+        property.is_mortgaged = True
+        property.owned_by = bank
+        self.add_cash_balance(property.value / 2)
+        bank.sub_cash_balance(property.value / 2)
+
+### CURRENTLY MOVING PLAYER METHODS DO NOT PAY PLAYER FOR PASSING GO ###
+    # Updates current_position and is_first_circuit_complete and returns new position
+    def move_player(self, steps: int) -> int:
+        # Faciliate circular board
+        if self.current_position + steps > 40:
+            if not self.is_first_circuit_complete:
+                self.is_first_circuit_complete = True
+            self.current_position = (self.current_position + steps) % 40    
+        else:
+            self.current_position += steps
+        return self.current_position
+
+    # Updates current_position to a specified position
+    def move_player_to_position(self, position: int) -> None:
+        self.current_position = position
+        
+    def retire_player(self, bank) -> None:
+        self.sub_cash_balance(self.get_cash_balance())
+        bank.add_cash_balance(self.get_cash_balance())
+        for property_group in self.owned_properties:
+            for property in property_group:
+                property.set_owner(bank)
+
+    def get_player_net_worth(self) -> int:
+        net_worth = self.cash_balance
+        for property_group in self.owned_properties:
+            for property in property_group:
+                if property.is_mortgaged:
+                    net_worth += property.value / 2
+                else:
+                    net_worth += property.value
+        return net_worth
+    

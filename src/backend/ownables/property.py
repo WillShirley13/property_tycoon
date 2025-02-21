@@ -1,5 +1,5 @@
 from backend.ownables.ownable import Ownable
-from backend.player import Player
+from backend.property_owners.player import Player
 from constants import *
 import errors
 class Property(Ownable):
@@ -13,7 +13,8 @@ class Property(Ownable):
         self.owner_owns_all_properties: bool = False
 
     def buy_house(self, bank) -> None:
-        
+        if not self.check_max_difference_between_houses_owned_is_1_within_property_group(self.houses + 1):
+            raise errors.MaxDifferenceBetweenHousesOrHotelsError
         if self.houses < 4:
             try:
                 cost = PROPERTY_BUILD_COSTS[self.property_group.value]["house"]
@@ -21,6 +22,7 @@ class Property(Ownable):
                 bank.add_cash_balance(cost)
                 self.houses += 1
                 self.set_rent_cost()
+                self.value = self.value + self.house_cost
             except:
                 raise errors.InsufficientFundsError
         else:
@@ -34,18 +36,22 @@ class Property(Ownable):
                 bank.add_cash_balance(cost)
                 self.hotel += 1
                 self.set_rent_cost()
+                self.value = self.value + self.hotel_cost
             except:
                 raise errors.InsufficientFundsError
         else:
             raise errors.MaxHousesOrHotelsError
 
     def sell_house(self, bank) -> None:
+        if not self.check_max_difference_between_houses_owned_is_1_within_property_group(self.houses - 1):
+            raise errors.MaxDifferenceBetweenHousesOrHotelsError
         if self.houses > 0:
             cost = PROPERTY_BUILD_COSTS[self.property_group.value]["house"]
             self.owned_by.add_cash_balance(cost)
             bank.sub_cash_balance(cost)
             self.houses -= 1
             self.set_rent_cost()
+            self.value = self.value - self.house_cost
         else:
             raise errors.NoHousesOrHotelsToSellError
 
@@ -57,6 +63,7 @@ class Property(Ownable):
             bank.sub_cash_balance(cost)
             self.hotel -= 1
             self.set_rent_cost()
+            self.value = self.value - self.hotel_cost
         else:
             raise errors.NoHousesOrHotelsToSellError
     
@@ -73,8 +80,12 @@ class Property(Ownable):
             self.rent = PROPERTY_DATA[self.name]["rents"][4]
         elif self.hotel == 1:
             self.rent = PROPERTY_DATA[self.name]["rents"][5]
-            
 
-
-    def check_max_difference_between_houses_owned_is_1_within_property_group(self) -> bool:
-        houses_for_property_in_group = [property.houses for property in self.owned_by.owned_properties[self.property_group] if property.houses > 0]
+    # Checks if the max difference between the houses owned by the player in the property group is 1
+    def check_max_difference_between_houses_owned_is_1_within_property_group(self, this_props_houses_after_change: int) -> bool:
+        houses_for_property_in_group = [(property.name, property.houses) for property in self.owned_by.owned_properties[self.property_group]]
+        for property in houses_for_property_in_group:
+            if abs(property[1] - this_props_houses_after_change) > 1:
+                return False
+        return True
+        
