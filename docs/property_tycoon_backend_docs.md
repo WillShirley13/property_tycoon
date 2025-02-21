@@ -21,7 +21,6 @@ This document provides an overview of the backend architecture for Property Tyco
    - [FreeParking](#freeparking)
 3. [Constants](#constants)
 4. [Errors](#errors)
-5. [Final Notes](#final-notes)
 
 ---
 
