@@ -1,3 +1,2 @@
-PropertyTycoonBoardData.csv
-PropertyTycoonBoardData.xlsx
-PropertyTycoonCardData.xlsx
+*.csv
+*.xlsx
