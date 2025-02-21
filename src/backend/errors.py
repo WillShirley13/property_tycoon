@@ -49,3 +49,17 @@ class MaxHousesOrHotelsError(Exception):
 class MaxDifferenceBetweenHousesOrHotelsError(Exception):
     """Raised when trying to build houses/hotels that would create an illegal imbalance in a color set"""
     pass
+
+class FirstCircuitNotCompleteError(Exception):
+    """Raised when trying to buy a property before the first circuit is complete"""
+    pass
+
+class MustOwnAllPropertiesInGroupError(Exception):
+    """Raised when trying to build houses/hotels on a property that the player doesn't own all of the properties in the group"""
+    pass
+
+class PropertyNotOwnedByPlayerError(Exception):
+    """Raised when trying to sell a property that isn't owned by the player"""
+    pass
+
+

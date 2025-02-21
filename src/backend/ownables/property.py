@@ -10,11 +10,13 @@ class Property(Ownable):
         self.hotel: int = 0  
         self.hotel_cost: int = hotel_cost 
         self.rent: int = rent 
-        self.owner_owns_all_properties: bool = False
+        self.owner_owns_all_properties_in_group: bool = False
 
     def buy_house(self, bank) -> None:
         if not self.check_max_difference_between_houses_owned_is_1_within_property_group(self.houses + 1):
             raise errors.MaxDifferenceBetweenHousesOrHotelsError
+        if not self.owner_owns_all_properties_in_group:
+            raise errors.MustOwnAllPropertiesInGroupError
         if self.houses < 4:
             try:
                 cost = PROPERTY_BUILD_COSTS[self.property_group.value]["house"]

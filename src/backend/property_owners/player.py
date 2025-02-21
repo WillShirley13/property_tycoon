@@ -38,6 +38,9 @@ class Player(PropertyHolder):
         self.get_out_of_jail_cards += 1
 
     def purchase_property(self, property: Ownable, bank: Bank) -> None:
+        if not self.is_first_circuit_complete:
+            raise errors.FirstCircuitNotCompleteError
+        
         if property.owned_by != bank:
             raise errors.PropertyNotOwnedByBankError
         
@@ -79,35 +82,35 @@ class Player(PropertyHolder):
             case PropertyGroup.BROWN:
                 if len(self.owned_properties[PropertyGroup.BROWN]) == TOTAL_BROWN_PROPERTIES:
                     for prop in self.owned_properties[PropertyGroup.BROWN]:
-                        prop.owner_owns_all_properties = True
+                        prop.owner_owns_all_properties_in_group = True
             case PropertyGroup.BLUE:
                 if len(self.owned_properties[PropertyGroup.BLUE]) == TOTAL_BLUE_PROPERTIES:
                     for prop in self.owned_properties[PropertyGroup.BLUE]:
-                        prop.owner_owns_all_properties = True
+                        prop.owner_owns_all_properties_in_group = True
             case PropertyGroup.PURPLE:
                 if len(self.owned_properties[PropertyGroup.PURPLE]) == TOTAL_PURPLE_PROPERTIES:
                     for prop in self.owned_properties[PropertyGroup.PURPLE]:
-                        prop.owner_owns_all_properties = True
+                        prop.owner_owns_all_properties_in_group = True
             case PropertyGroup.ORANGE:
                 if len(self.owned_properties[PropertyGroup.ORANGE]) == TOTAL_ORANGE_PROPERTIES:
                     for prop in self.owned_properties[PropertyGroup.ORANGE]:
-                        prop.owner_owns_all_properties = True
+                        prop.owner_owns_all_properties_in_group = True
             case PropertyGroup.RED:
                 if len(self.owned_properties[PropertyGroup.RED]) == TOTAL_RED_PROPERTIES:
                     for prop in self.owned_properties[PropertyGroup.RED]:
-                        prop.owner_owns_all_properties = True
+                        prop.owner_owns_all_properties_in_group = True
             case PropertyGroup.YELLOW:
                 if len(self.owned_properties[PropertyGroup.YELLOW]) == TOTAL_YELLOW_PROPERTIES:
                     for prop in self.owned_properties[PropertyGroup.YELLOW]:
-                        prop.owner_owns_all_properties = True
+                        prop.owner_owns_all_properties_in_group = True
             case PropertyGroup.GREEN:
                 if len(self.owned_properties[PropertyGroup.GREEN]) == TOTAL_GREEN_PROPERTIES:
                     for prop in self.owned_properties[PropertyGroup.GREEN]:
-                        prop.owner_owns_all_properties = True
+                        prop.owner_owns_all_properties_in_group = True
             case PropertyGroup.DEEP_BLUE:
                 if len(self.owned_properties[PropertyGroup.DEEP_BLUE]) == TOTAL_DEEP_BLUE_PROPERTIES:
                     for prop in self.owned_properties[PropertyGroup.DEEP_BLUE]:
-                        prop.owner_owns_all_properties = True
+                        prop.owner_owns_all_properties_in_group = True
             case PropertyGroup.STATION:
                 property.num_of_stations_owned_by_owner += 1
                 if self.num_of_stations_owned == TOTAL_STATIONS:
@@ -132,35 +135,35 @@ class Player(PropertyHolder):
             case PropertyGroup.BROWN:
                 if len(self.owned_properties[PropertyGroup.BROWN]) != TOTAL_BROWN_PROPERTIES:
                     for prop in self.owned_properties[PropertyGroup.BROWN]:
-                        prop.owner_owns_all_properties = False
+                        prop.owner_owns_all_properties_in_group = False
             case PropertyGroup.BLUE:
                 if len(self.owned_properties[PropertyGroup.BLUE]) != TOTAL_BLUE_PROPERTIES:
                     for prop in self.owned_properties[PropertyGroup.BLUE]:
-                        prop.owner_owns_all_properties = False
+                        prop.owner_owns_all_properties_in_group = False
             case PropertyGroup.PURPLE:
                 if len(self.owned_properties[PropertyGroup.PURPLE]) != TOTAL_PURPLE_PROPERTIES:
                     for prop in self.owned_properties[PropertyGroup.PURPLE]:
-                        prop.owner_owns_all_properties = False
+                        prop.owner_owns_all_properties_in_group = False
             case PropertyGroup.ORANGE:
                 if len(self.owned_properties[PropertyGroup.ORANGE]) != TOTAL_ORANGE_PROPERTIES:
                     for prop in self.owned_properties[PropertyGroup.ORANGE]:
-                        prop.owner_owns_all_properties = False
+                        prop.owner_owns_all_properties_in_group = False
             case PropertyGroup.RED:
                 if len(self.owned_properties[PropertyGroup.RED]) != TOTAL_RED_PROPERTIES:
                     for prop in self.owned_properties[PropertyGroup.RED]:
-                        prop.owner_owns_all_properties = False
+                        prop.owner_owns_all_properties_in_group = False
             case PropertyGroup.YELLOW:
                 if len(self.owned_properties[PropertyGroup.YELLOW]) != TOTAL_YELLOW_PROPERTIES:
                     for prop in self.owned_properties[PropertyGroup.YELLOW]:
-                        prop.owner_owns_all_properties = False
+                        prop.owner_owns_all_properties_in_group = False
             case PropertyGroup.GREEN:
                 if len(self.owned_properties[PropertyGroup.GREEN]) != TOTAL_GREEN_PROPERTIES:
                     for prop in self.owned_properties[PropertyGroup.GREEN]:
-                        prop.owner_owns_all_properties = False
+                        prop.owner_owns_all_properties_in_group = False
             case PropertyGroup.DEEP_BLUE:
                 if len(self.owned_properties[PropertyGroup.DEEP_BLUE]) != TOTAL_DEEP_BLUE_PROPERTIES:
                     for prop in self.owned_properties[PropertyGroup.DEEP_BLUE]:
-                        prop.owner_owns_all_properties = False
+                        prop.owner_owns_all_properties_in_group = False
             case PropertyGroup.STATION:
                 property.num_of_stations_owned_by_owner -= 1
                 if self.num_of_stations_owned != TOTAL_STATIONS:

@@ -1,6 +1,7 @@
 import random
 from backend.enums.property_group import PropertyGroup
 from backend.non_ownables.free_parking import FreeParking
+from backend.non_ownables.jail import Jail
 from backend.ownables.property import Property
 from backend.property_owners.player import Player
 from backend.property_owners.bank import Bank
@@ -18,7 +19,7 @@ class GameCard:
         return (card, self.card_ids[card])
     
     # Facilitates actions of card id passed. Function may raise errror if player does not have enough funds  
-    def process_card(self, player: Player, bank: Bank, card_id: int, free_parking: FreeParking, players: list[Player]) -> None:
+    def process_card(self, player: Player, bank: Bank, card_id: int, free_parking: FreeParking, jail: Jail, players: list[Player]) -> None:
         match card_id:
             # Pot Luck Cards (1-17)
             case 1:  # "You inherit £200"
@@ -83,7 +84,7 @@ class GameCard:
                 bank.sub_cash_balance(100)
                 
             case 14:  # "Go to jail"
-                player.go_to_jail()
+                player.go_to_jail(jail)
                 
             case 15:  # "Received interest on shares"
                 player.add_cash_balance(25)
@@ -164,7 +165,7 @@ class GameCard:
                 player.move_player_to_position(12)
                 
             case 31:  # "Go to jail"
-                player.go_to_jail()
+                player.go_to_jail(jail)
                 
             case 32:  # "Drunk in charge of hoverboard"
                 free_parking.add_fine(30, player)
@@ -173,4 +174,4 @@ class GameCard:
                 player.add_get_out_of_jail()
 
     def shuffle_pack(self) -> None:
-        self.card_pack = random.shuffle(self.card_pack)
+        random.shuffle(self.card_pack)

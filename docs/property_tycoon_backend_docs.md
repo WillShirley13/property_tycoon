@@ -162,7 +162,7 @@ Models the game card decks (both Pot Luck and Opportunity Knocks) and implements
 **Methods:**
 - **`get_card() -> tuple[str, int]`**  
   Retrieves and returns the next card from the deck as a tuple `(card text, card id)`, using a cyclic rotation.
-- **`process_card(player: Player, bank: Bank, card_id: int, free_parking: FreeParking, players: list[Player]) -> None`**  
+- **`process_card(player: Player, bank: Bank, card_id: int, free_parking: FreeParking, jail: Jail, players: list[Player]) -> None`**  
   Executes actions associated with a given card id. May involve cash transactions, movement, jail operations, or repair fee payments. If funds are insufficient in any case, it raises an `InsufficientFundsError`.
 - **`shuffle_pack() -> None`**  
   Shuffles the card pack in place using Python's built-in random shuffle.

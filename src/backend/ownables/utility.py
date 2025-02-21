@@ -18,8 +18,13 @@ class Utility(Ownable):
     
     @override
     def get_rent_due_from_player(self, player: Player, dice_roll: int) -> int:
+        # If property is mortgaged, no rent is due
         if self.is_mortgaged:
             return 0
+        # If player is in jail, no rent is due
+        if player.is_in_jail:
+            return 0
+        # Calculate rent due
         if self.num_of_utilities_owned_by_owner == 1:
             rent = dice_roll * ONE_UTILITY_RENT_DICE_MULTIPLIER
         elif self.num_of_utilities_owned_by_owner == 2:
