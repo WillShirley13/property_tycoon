@@ -1,9 +1,10 @@
+from backend.enums.property_group import PropertyGroup
 from backend.ownables.ownable import Ownable
 from backend.property_owners.player import Player
 from constants import *
 import errors
 class Property(Ownable):
-    def __init__(self, value: int, property_group, name: str, house_cost: int, hotel_cost: int, rent: int):
+    def __init__(self, value: int, property_group: PropertyGroup, name: str, house_cost: int, hotel_cost: int, rent: int):
         super().__init__(value, property_group, name)
         self.houses: int = 0  
         self.house_cost: int = house_cost  
