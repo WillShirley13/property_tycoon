@@ -194,8 +194,25 @@ def draw_game():
     draw_text('Name', text_font, black, 860, 290)
     draw_text('Houses', text_font, black, 860, 310)
 
+    command = 0
+    #pop up screen
+    # menu_btn = pygame.draw.rect(screen, 'light gray', [120, 350, 260, 40], 0, 5)
+    # pygame.draw.rect(screen, 'dark gray', [120, 350, 260, 40], 5, 5)
+    # text = font.render('Exit Menu', True, 'black')
+    # screen.blit(text, (135, 357))
+    # if menu_btn.collidepoint(pygame.mouse.get_pos()) and pygame.mouse.get_pressed()[0]:
+    #     menu = False
+    # else:
+    #     menu = True
+    # return menu 
+    pygame.draw.rect(screen, 'black', [1000, 300, 200, 200])
+    menu_btn = Button('Exit Menu', (1000, 300))
+    menu_btn.draw()
+    if menu_btn.check_clicked():
+         command = 5
+    return command
+
 def dice():
-        #screen.fill(white)
     x,y=450, 300
     r= random.randint(1, 6)
     pygame.draw.rect(screen,(255,0,0),(x,y,100,100))
@@ -228,23 +245,6 @@ def dice():
         pygame.draw.circle(screen,black,(x+70,y+50),10)
         pygame.draw.circle(screen,black,(x+30,y+75),10)   
 
-    command = 0
-    #pop up screen
-    # menu_btn = pygame.draw.rect(screen, 'light gray', [120, 350, 260, 40], 0, 5)
-    # pygame.draw.rect(screen, 'dark gray', [120, 350, 260, 40], 5, 5)
-    # text = font.render('Exit Menu', True, 'black')
-    # screen.blit(text, (135, 357))
-    # if menu_btn.collidepoint(pygame.mouse.get_pos()) and pygame.mouse.get_pressed()[0]:
-    #     menu = False
-    # else:
-    #     menu = True
-    # return menu 
-    pygame.draw.rect(screen, 'black', [1000, 300, 200, 200])
-    menu_btn = Button('Exit Menu', (1000, 300))
-    menu_btn.draw()
-    if menu_btn.check_clicked():
-         command = 5
-    return command
 
 
 menu_command = 0
@@ -273,12 +273,12 @@ while run:
         if menu_command == 5:
              main_menu = True
              show_text = False
-        elif menu_command == 4:
-             input_active = True
-             input_text = ""
+        elif menu_command == 4: #Enter Names button is clicked
+             input_active = True 
+             input_text = "" #Input text
              show_text = True
 
-    if show_text:
+    if show_text: #This only appears as long as the button you pressed was the "Enter names button"
         text = font.render('Enter your name', True, 'black')
         screen.blit(text, (100, 200))
         
@@ -301,18 +301,18 @@ while run:
                     dice()
                     pygame.display.update()
     
-    if input_active:
-        input_rect = pygame.Rect(50, 100, 200, 32)
+    if input_active and show_text: # The input box dissapears if you pressed any other buttons
+        input_rect = pygame.Rect(50, 100, 200, 32) #Size of the name input box
         pygame.draw.rect(screen, black, input_rect, 2)
         input_surface = font.render(input_text, True, black)
         screen.blit(input_surface, (input_rect.x + 5, input_rect.y + 5))
 
     # Display player names
-    y_offset = 150
+    y_offset = 150 # distance of input away from hte input box
     for player in players:
         name_surface = font.render(player, True, black)
         screen.blit(name_surface, (50, y_offset))
-        y_offset += 30
+        y_offset += 30 #distance between the name inputs
 
     pygame.display.flip()
 pygame.quit()    
