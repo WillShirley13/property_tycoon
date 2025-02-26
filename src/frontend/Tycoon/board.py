@@ -3,12 +3,12 @@ import random
 
 pygame.init()
 screen = pygame.display.set_mode([1280, 720])
-pygame.display.set_caption('Property Tycoon')
+pygame.display.set_caption('Property tycoon')
 #font = pygame.font.Font('freesansbold.ttf', 30)
 timer = pygame.time.Clock()
 fps = 60
 black = (0, 0, 0) 
-red=(255,0,0)
+red= (255,0,0)
 white = (255, 255, 255)
 #creating variables to represent colour code
 font = pygame.font.Font('freesansbold.ttf', 24)
@@ -18,6 +18,8 @@ def draw_text(text, font, text_col, x, y):
         img = font.render(text, True, text_col)
         screen.blit(img, (x,y))
 #creates a variable to set font size and function to make texts
+
+rolled_number = None #Stores the last drawn dice
 
 rects = [
     pygame.Rect(200, 30, 120, 120),
@@ -212,38 +214,23 @@ def draw_game():
          command = 5
     return command
 
-def dice():
-    x,y=450, 300
-    r= random.randint(1, 6)
-    pygame.draw.rect(screen,(255,0,0),(x,y,100,100))
-    if r==1:
-        pygame.draw.circle(screen,black,(x+50,y+50),10) 
-    elif r==2:
-        pygame.draw.circle(screen,black,(x+30,y+30),10)
-        pygame.draw.circle(screen,black,(x+70,y+70),10)
-    elif r==3:
-        pygame.draw.circle(screen,black,(x+30,y+30),10)
-        pygame.draw.circle(screen,black,(x+50,y+50),10)
-        pygame.draw.circle(screen,black,(x+70,y+70),10)
+def draw_dice(r):
+    """Draw the dice with the given number."""
+    x, y = 450, 300  # Dice position
 
-    elif r==4:
-        pygame.draw.circle(screen,black,(x+30,y+30),10)
-        pygame.draw.circle(screen,black,(x+70,y+30),10)
-        pygame.draw.circle(screen,black,(x+30,y+70),10) 
-        pygame.draw.circle(screen,black,(x+70,y+70),10)
-    elif r==5:
-        pygame.draw.circle(screen,black,(x+30,y+30),10)
-        pygame.draw.circle(screen,black,(x+70,y+30),10)
-        pygame.draw.circle(screen,black,(x+50,y+50),10) 
-        pygame.draw.circle(screen,black,(x+30,y+70),10)
-        pygame.draw.circle(screen,black,(x+70,y+70),10)
-    elif r==6:
-        pygame.draw.circle(screen,black,(x+30,y+25),10) 
-        pygame.draw.circle(screen,black,(x+70,y+25),10)
-        pygame.draw.circle(screen,black,(x+70,y+75),10) 
-        pygame.draw.circle(screen,black,(x+30,y+50),10)
-        pygame.draw.circle(screen,black,(x+70,y+50),10)
-        pygame.draw.circle(screen,black,(x+30,y+75),10)   
+    pygame.draw.rect(screen, red, (x, y, 100, 100))
+    
+    dots = {
+        1: [(x + 50, y + 50)],
+        2: [(x + 30, y + 30), (x + 70, y + 70)],
+        3: [(x + 30, y + 30), (x + 50, y + 50), (x + 70, y + 70)],
+        4: [(x + 30, y + 30), (x + 70, y + 30), (x + 30, y + 70), (x + 70, y + 70)],
+        5: [(x + 30, y + 30), (x + 70, y + 30), (x + 50, y + 50), (x + 30, y + 70), (x + 70, y + 70)],
+        6: [(x + 30, y + 25), (x + 70, y + 25), (x + 30, y + 50), (x + 70, y + 50), (x + 30, y + 75), (x + 70, y + 75)]
+    }
+
+    for dot in dots[r]:
+        pygame.draw.circle(screen, black, dot, 10)
 
 
 
@@ -281,7 +268,10 @@ while run:
     if show_text: #This only appears as long as the button you pressed was the "Enter names button"
         text = font.render('Enter your name', True, 'black')
         screen.blit(text, (100, 200))
-        
+
+    if rolled_number is not None: #Draw the last rolled dice (if any)
+        draw_dice(rolled_number)
+
     #event handling
     for event in pygame.event.get():
         if event.type == pygame.KEYDOWN and input_active:
@@ -298,9 +288,11 @@ while run:
             run = False
         if event.type== pygame.KEYDOWN:
                 if event.key==pygame.K_SPACE:
-                    dice()
-                    pygame.display.update()
-    
+                    rolled_number = random.randint(1, 6) # Roll new dice
+                    
+        pygame.display.update()
+        timer.tick(60)
+
     if input_active and show_text: # The input box dissapears if you pressed any other buttons
         input_rect = pygame.Rect(50, 100, 200, 32) #Size of the name input box
         pygame.draw.rect(screen, black, input_rect, 2)
