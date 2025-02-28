@@ -1,25 +1,28 @@
 import random
-from backend.enums.property_group import PropertyGroup
-from backend.non_ownables.free_parking import FreeParking
-from backend.non_ownables.jail import Jail
-from backend.ownables.property import Property
-from backend.property_owners.player import Player
-from backend.property_owners.bank import Bank
-import errors
+from typing import TYPE_CHECKING, Dict, List, Tuple
+from ..enums.property_group import PropertyGroup
+
+if TYPE_CHECKING:
+    from ..non_ownables.free_parking import FreeParking
+    from ..non_ownables.jail import Jail
+    from ..ownables.property import Property
+    from ..property_owners.player import Player
+    from ..property_owners.bank import Bank
+
 class GameCard:
-    def __init__(self, card_ids: dict[str, int], card_pack: list[str]):
-        self.card_ids: dict[str, int] = card_ids
-        self.card_pack: list[str] = card_pack
+    def __init__(self, card_ids: Dict[str, int], card_pack: List[str]):
+        self.card_ids: Dict[str, int] = card_ids
+        self.card_pack: List[str] = card_pack
         self.shuffle_pack()
 
     # Returns a tuple of the card and the card id
-    def get_card(self) -> tuple[str, int]:
-        card = self.card_pack.pop()
-        self.card_pack.insert(0, card)
+    def get_card(self) -> Tuple[str, int]:
+        card = self.card_pack[0]
+        self.card_pack.append(self.card_pack.pop(0))
         return (card, self.card_ids[card])
     
     # Facilitates actions of card id passed. Function may raise errror if player does not have enough funds  
-    def process_card(self, player: Player, bank: Bank, card_id: int, free_parking: FreeParking, jail: Jail, players: list[Player]) -> None:
+    def process_card(self, player: 'Player', bank: 'Bank', card_id: int, free_parking: 'FreeParking', jail: 'Jail', players: List['Player']) -> None:
         match card_id:
             # Pot Luck Cards (1-17)
             case 1:  # "You inherit £200"

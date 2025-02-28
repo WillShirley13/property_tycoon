@@ -1,14 +1,15 @@
-from backend.non_ownables.go import Go
-from backend.property_owners import bank
-from backend.property_owners.bank import Bank
-import errors
-from backend.enums.game_token import GameToken
-from backend.property_owners.property_holder import PropertyHolder
-from backend.enums.property_group import PropertyGroup
-from backend.ownables.ownable import Ownable
-from backend.non_ownables.jail import Jail
-from backend.constants import *
-from typing import override
+from typing import TYPE_CHECKING, override
+from ..property_owners.property_holder import PropertyHolder
+from ..enums.game_token import GameToken
+from ..enums.property_group import PropertyGroup
+from ..constants import *
+from .. import errors
+
+if TYPE_CHECKING:
+    from ..non_ownables.go import Go
+    from ..non_ownables.jail import Jail
+    from ..ownables.ownable import Ownable
+    from ..property_owners.bank import Bank
 
 class Player(PropertyHolder):
     def __init__(self, game_token: GameToken, name: str):
@@ -21,14 +22,14 @@ class Player(PropertyHolder):
         self.current_position: int = 0  
         self.is_bankrupt: bool = False
 
-    def use_get_out_of_jail(self, jail: Jail) -> None:
+    def use_get_out_of_jail(self, jail: 'Jail') -> None:
         if self.get_out_of_jail_cards > 0:
             jail.remove_player(self)
             self.get_out_of_jail_cards -= 1
         else:
             raise errors.NoGetOutOfJailCardsError
 
-    def go_to_jail(self, jail: Jail) -> None:
+    def go_to_jail(self, jail: 'Jail') -> None:
         if self.is_in_jail:
             raise errors.PlayerAlreadyInJailError
         self.is_in_jail = True
@@ -37,7 +38,7 @@ class Player(PropertyHolder):
     def add_get_out_of_jail(self) -> None:
         self.get_out_of_jail_cards += 1
 
-    def purchase_property(self, property: Ownable, bank: Bank) -> None:
+    def purchase_property(self, property: 'Ownable', bank: 'Bank') -> None:
         if not self.is_first_circuit_complete:
             raise errors.FirstCircuitNotCompleteError
         
@@ -59,7 +60,7 @@ class Player(PropertyHolder):
         # update ownership
         property.set_owner(self)
         
-    def sell_property(self, property: Ownable, bank: Bank) -> None:
+    def sell_property(self, property: 'Ownable', bank: 'Bank') -> None:
         if property.owned_by != self:
             raise errors.PropertyNotOwnedByPlayerError
         
@@ -71,8 +72,7 @@ class Player(PropertyHolder):
             self.add_cash_balance(property.get_cost())
             bank.sub_cash_balance(property.get_cost())
         
-    @override
-    def add_property_to_portfolio(self, property: Ownable) -> None:
+    def add_property_to_portfolio(self, property: 'Ownable') -> None:
         if property in self.owned_properties[property.property_group]:
             raise errors.PropertyAlreadyInPortfolioError
         
@@ -125,7 +125,7 @@ class Player(PropertyHolder):
                 pass
 
     @override
-    def remove_property_from_portfolio(self, property: Ownable) -> None:
+    def remove_property_from_portfolio(self, property: 'Ownable') -> None:
         if property not in self.owned_properties[property.property_group]:
             raise errors.PropertyNotInPortfolioError
         
@@ -177,7 +177,7 @@ class Player(PropertyHolder):
             case _:
                 pass
 
-    def mortgage_property(self, property: Ownable, bank: Bank) -> None:
+    def mortgage_property(self, property: 'Ownable', bank: 'Bank') -> None:
         if property.owned_by != self:
             raise errors.PropertyNotOwnedByPlayerError
         
@@ -205,7 +205,7 @@ class Player(PropertyHolder):
     def move_player_to_position(self, position: int) -> None:
         self.current_position = position
         
-    def retire_player(self, bank) -> None:
+    def retire_player(self, bank: 'Bank') -> None:
         self.sub_cash_balance(self.get_cash_balance())
         bank.add_cash_balance(self.get_cash_balance())
         for property_group in self.owned_properties:

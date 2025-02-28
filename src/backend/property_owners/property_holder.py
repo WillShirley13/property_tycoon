@@ -1,11 +1,14 @@
-from backend.enums.property_group import PropertyGroup
-from backend.ownables.ownable import Ownable
-import errors
+from typing import TYPE_CHECKING, Dict, List
+from ..enums.property_group import PropertyGroup
+from .. import errors
+
+if TYPE_CHECKING:
+    from ..ownables.ownable import Ownable
 
 class PropertyHolder:
     def __init__(self, initial_cash: int):
         self.cash_balance: int = initial_cash
-        self.owned_properties: dict[PropertyGroup, list[Ownable]] = {}
+        self.owned_properties: Dict[PropertyGroup, List['Ownable']] = {}
 
     def get_cash_balance(self) -> int:
         return self.cash_balance
@@ -18,10 +21,10 @@ class PropertyHolder:
             raise errors.InsufficientFundsError
         self.cash_balance -= amount
         
-    def get_owned_properties(self) -> dict[PropertyGroup, list[Ownable]]:
+    def get_owned_properties(self) -> Dict[PropertyGroup, List['Ownable']]:
         return self.owned_properties
 
-    def add_property_to_portfolio(self, property: Ownable) -> None:
+    def add_property_to_portfolio(self, property: 'Ownable') -> None:
         # Check if property is already in portfolio
         if property in self.owned_properties[property.property_group]:
             raise errors.PropertyAlreadyInPortfolioError
@@ -33,7 +36,7 @@ class PropertyHolder:
         # Add property to portfolio
         self.owned_properties[property.property_group].append(property)
     
-    def remove_property_from_portfolio(self, property: Ownable) -> None:
+    def remove_property_from_portfolio(self, property: 'Ownable') -> None:
         # Check if property group exists in portfolio
         if property.property_group not in self.owned_properties:
             raise errors.PropertyNotInPortfolioError

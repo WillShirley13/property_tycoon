@@ -1,31 +1,48 @@
-from backend.constants import OPPORTUNITY_KNOCKS_CARDS, POT_LUCK_CARDS
-from backend.enums.game_token import GameToken
-from backend.enums.property_group import PropertyGroup
-from backend.ownables.ownable import Ownable
-from backend.non_ownables.free_parking import FreeParking
-from backend.non_ownables.jail import Jail
-from backend.non_ownables.go import Go
-from backend.non_ownables.game_card import GameCard
-from backend.ownables.property import Property
-from backend.ownables.station import Station
-from backend.ownables.utility import Utility
-from backend.property_owners.player import Player
-from backend.property_owners.bank import Bank
+from .constants import OPPORTUNITY_KNOCKS_CARDS, POT_LUCK_CARDS
+from .enums.game_token import GameToken
+from .enums.property_group import PropertyGroup
+from .ownables.ownable import Ownable
+from .non_ownables.free_parking import FreeParking
+from .non_ownables.jail import Jail
+from .non_ownables.go import Go
+from .non_ownables.game_card import GameCard
+from .ownables.property import Property
+from .ownables.station import Station
+from .ownables.utility import Utility
+from .property_owners.player import Player
+from .property_owners.bank import Bank
+from . import errors
 
 class Admin:
-    def __init__(self, player_names: list[(str, GameToken)]):
+    def __init__(self, player_names: list[(str, GameToken)], time_limit: int = 0):
         # game board - each index corresponds to a space on the board (in order provided in docs from company)
         self.game_board: list[Ownable | FreeParking | Jail | Go | GameCard] = []
         # helper dictionary to quickly look up the index of a space on the board
         self.game_space_helper: dict[Ownable | FreeParking | Jail | Go | GameCard, int] = {}
         self.players: list[Player] = []
         self.bank: Bank = Bank()
+        self.time_limit: int = time_limit
         
         # Initialize players
         self.create_players()
         
         # Initialize game board
         self.create_game_board()
+    
+    def get_time_limit(self) -> int:
+        return self.time_limit
+    
+    def get_players(self) -> list[Player]:
+        return self.players
+    
+    def get_bank(self) -> Bank:
+        return self.bank
+    
+    def get_game_board(self) -> list[Ownable | FreeParking | Jail | Go | GameCard]:
+        return self.game_board
+    
+    def get_game_space_helper(self) -> dict[Ownable | FreeParking | Jail | Go | GameCard, int]:
+        return self.game_space_helper
 
     def create_game_board(self):
         # Initialize game board list
@@ -84,6 +101,13 @@ class Admin:
             self.game_space_helper[space] = i
 
     def create_players(self):
+        if len(self.player_names) > 5:
+            raise errors.ExceededMaxPlayersError
         for name, token in self.player_names:
             self.players.append(Player(token, name))
+    
+            
+    
+
+
 

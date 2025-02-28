@@ -123,4 +123,21 @@ OPPORTUNITY_KNOCKS_CARDS = {
     "Get out of jail free": 33
 }
 
+# Bank constants
+BANK_STARTING_CASH = 500_000
+
+# Property constants
+HOUSE_COST = 50
+HOTEL_COST = 100
+
+# Station constants
+STATION_RENT_VALUES = [25, 50, 100, 200]  # Rent for 1, 2, 3, 4 stations
+
+# Player constants
+PLAYER_STARTING_CASH = 1500
+GO_PAYOUT = 200
+
+# Game board constants
+NUM_SPACES = 40
+
 

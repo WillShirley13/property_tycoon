@@ -1,22 +1,28 @@
-from backend.property_owners.player import Player
+from typing import TYPE_CHECKING, List, Tuple
+
+if TYPE_CHECKING:
+    from ..property_owners.player import Player
 
 class Jail:
     def __init__(self):
-        self.currently_in_jail: list[tuple[Player, int]] = []
+        self.currently_in_jail: List[Tuple['Player', int]] = []
         self.release_cost: int = 50
 
-    def release_from_jail(self, player) -> None:
-        for player in self.currently_in_jail:
-            if player[0] == player:
-                self.currently_in_jail.remove(player)
+    def release_from_jail(self, player: 'Player') -> None:
+        for i, (p, _) in enumerate(self.currently_in_jail):
+            if p == player:
+                self.currently_in_jail.pop(i)
+                player.is_in_jail = False
+                break
 
-    def put_in_jail(self, player) -> None:
+    def put_in_jail(self, player: 'Player') -> None:
         self.currently_in_jail.append((player, 0))
-        
+        player.is_in_jail = True
+
     def get_release_cost(self) -> int:
         return self.release_cost
 
-    def get_is_in_jail(self) -> list[tuple[Player, int]]:
+    def get_is_in_jail(self) -> List[Tuple['Player', int]]:
         return self.currently_in_jail
     
     def pay_fine_for_release(self, player) -> None:

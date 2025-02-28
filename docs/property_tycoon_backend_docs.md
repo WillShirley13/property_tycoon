@@ -1,6 +1,6 @@
 # Property Tycoon Backend Documentation
 
-This document provides an overview of the backend architecture for Property Tycoon, including enums, classes, constants, and errors. The documentation has been updated to reflect the latest code changes.
+This document provides an overview of the backend architecture for Property Tycoon, including enums, classes, constants, and errors.
 
 ---
 
@@ -19,6 +19,7 @@ This document provides an overview of the backend architecture for Property Tyco
    - [Jail](#jail)
    - [Go](#go)
    - [FreeParking](#freeparking)
+   - [Admin](#admin)
 3. [Constants](#constants)
 4. [Errors](#errors)
 
@@ -327,6 +328,40 @@ Handles the collection of fines in the Free Parking area and manages payouts to 
 
 ---
 
+### Admin
+**Description:**  
+Manages the game board, players, and overall game state.
+
+**Attributes:**
+- **`game_board: list[Ownable | FreeParking | Jail | Go | GameCard]`**  
+  A list representing the game board, where each index corresponds to a space on the board.
+- **`game_space_helper: dict[Ownable | FreeParking | Jail | Go | GameCard, int]`**  
+  A helper dictionary to quickly look up the index of a space on the board.
+- **`players: list[Player]`**  
+  A list of all players in the game.
+- **`bank: Bank`**  
+  The game's bank instance.
+- **`time_limit: int`**  
+  The time limit for the game (default is 0, indicating no limit).
+
+**Methods:**
+- **`create_game_board() -> None`**  
+  Initializes the game board with all spaces in the correct order, including properties, stations, utilities, and special spaces like Go, Jail, and Free Parking. Also creates card decks for Pot Luck and Opportunity Knocks.
+- **`create_players() -> None`**  
+  Creates player instances based on the provided player names and tokens.
+- **`get_time_limit() -> int`**  
+  Returns the time limit for the game. Default set to 0 for full game.
+- **`get_players() -> list[Player]`**  
+  Returns the list of players in the game.
+- **`get_bank() -> Bank`**  
+  Returns the bank instance for the game.
+- **`get_game_board() -> list[Ownable | FreeParking | Jail | Go | GameCard]`**  
+  Returns the current game board.
+- **`get_game_space_helper() -> dict[Ownable | FreeParking | Jail | Go | GameCard, int]`**  
+  Returns the helper dictionary for quick position lookup of game spaces.
+
+---
+
 ## Constants
 
 Defined in `constants.py`:
@@ -355,6 +390,10 @@ Defined in `constants.py`:
 
 - **Property Build Costs and Rent Data:**  
   Managed via `PROPERTY_BUILD_COSTS` and `PROPERTY_DATA`.
+
+- **Card Decks:**
+  - `OPPORTUNITY_KNOCKS_CARDS`: Dictionary mapping card text to card IDs for Opportunity Knocks cards.
+  - `POT_LUCK_CARDS`: Dictionary mapping card text to card IDs for Pot Luck cards.
 
 ---
 
