@@ -1,18 +1,18 @@
 from typing import TYPE_CHECKING, Union
 from ..enums.property_group import PropertyGroup
 from .. import errors
-
+from ..constants import PROPERTY_DATA
 if TYPE_CHECKING:
     from ..property_owners.player import Player
     from ..property_owners.bank import Bank
 
 class Ownable:
-    def __init__(self, value: int, rent_cost: int, property_group: PropertyGroup, name: str):
+    def __init__(self, cost: int, property_group: PropertyGroup, name: str, owner: Bank):
         self.name: str = name
         self.owned_by = None  # Will be Player or Bank
-        self.cost_to_buy: int = value
-        self.value: int = value
-        self.rent_cost: int = rent_cost
+        self.cost_to_buy: int = cost
+        self.value: int = cost
+        self.rent_cost: int = PROPERTY_DATA[self.name]["rents"][0]
         self.is_mortgaged: bool = False
         self.property_group: PropertyGroup = property_group
         

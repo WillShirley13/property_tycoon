@@ -1,64 +1,25 @@
 from typing import TYPE_CHECKING, List, Optional, Union
 from ..enums.property_group import PropertyGroup
-from ..constants import HOUSE_COST, HOTEL_COST
+from ..constants import PROPERTY_BUILD_COSTS, PROPERTY_DATA
 from .ownable import Ownable
-
+from .. import errors
 if TYPE_CHECKING:
     from ..property_owners.player import Player
 
 class Property(Ownable):
-    def __init__(self, name: str, cost: int, property_group: PropertyGroup, rent_values: List[int]):
-        super().__init__(name, cost)
-        self.property_group: PropertyGroup = property_group
-        self.rent_values: List[int] = rent_values
+    def __init__(self, name: str, cost: int, property_group: PropertyGroup, owner: Bank):
+        super().__init__(name=name, cost=cost, property_group=property_group, owner=owner)
         self.houses: int = 0
         self.hotel: bool = False
         
     def get_property_group(self) -> PropertyGroup:
         return self.property_group
     
-    def get_rent_due_from_player(self, player: 'Player') -> int:
-        # Get the rent due from a player based on the property's development
-        # ... implementation details ...
-        return self.rent_values[0]  # Placeholder
-    
     def get_houses(self) -> int:
         return self.houses
     
     def get_hotel(self) -> bool:
         return self.hotel
-    
-    def add_house(self) -> None:
-        if self.houses < 4:
-            self.houses += 1
-        else:
-            raise ValueError("Cannot add more than 4 houses to a property")
-    
-    def add_hotel(self) -> None:
-        if self.houses == 4:
-            self.houses = 0
-            self.hotel = True
-        else:
-            raise ValueError("Cannot add a hotel without 4 houses")
-    
-    def remove_house(self) -> None:
-        if self.houses > 0:
-            self.houses -= 1
-        else:
-            raise ValueError("Cannot remove a house when there are none")
-    
-    def remove_hotel(self) -> None:
-        if self.hotel:
-            self.hotel = False
-            self.houses = 4
-        else:
-            raise ValueError("Cannot remove a hotel when there is none")
-    
-    def get_house_cost(self) -> int:
-        return HOUSE_COST
-    
-    def get_hotel_cost(self) -> int:
-        return HOTEL_COST
 
     def buy_house(self, bank) -> None:
         if not self.check_max_difference_between_houses_owned_is_1_within_property_group(self.houses + 1):
@@ -119,17 +80,17 @@ class Property(Ownable):
     
     def set_rent_cost(self, new_rent_cost: int) -> None:
         if self.owner_owns_all_properties and self.houses == 0 and self.hotel == 0:
-            self.rent = self.rent * 2
+            self.rent_cost = self.rent_cost * 2
         elif self.houses == 1:
-            self.rent = PROPERTY_DATA[self.name]["rents"][1]
+            self.rent_cost = PROPERTY_DATA[self.name]["rents"][1]
         elif self.houses == 2:
-            self.rent = PROPERTY_DATA[self.name]["rents"][2]
+            self.rent_cost = PROPERTY_DATA[self.name]["rents"][2]
         elif self.houses == 3:
-            self.rent = PROPERTY_DATA[self.name]["rents"][3]
+            self.rent_cost = PROPERTY_DATA[self.name]["rents"][3]
         elif self.houses == 4:
-            self.rent = PROPERTY_DATA[self.name]["rents"][4]
+            self.rent_cost = PROPERTY_DATA[self.name]["rents"][4]
         elif self.hotel == 1:
-            self.rent = PROPERTY_DATA[self.name]["rents"][5]
+            self.rent_cost = PROPERTY_DATA[self.name]["rents"][5]
 
     # Checks if the max difference between the houses owned by the player in the property group is 1
     def check_max_difference_between_houses_owned_is_1_within_property_group(self, this_props_houses_after_change: int) -> bool:

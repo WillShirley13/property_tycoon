@@ -4,6 +4,7 @@ from ..enums.game_token import GameToken
 from ..enums.property_group import PropertyGroup
 from ..constants import *
 from .. import errors
+import random
 
 if TYPE_CHECKING:
     from ..non_ownables.go import Go
@@ -18,33 +19,35 @@ class Player(PropertyHolder):
         self.game_token: GameToken = game_token
         self.get_out_of_jail_cards: int = 0
         self.is_in_jail: bool = False
+        self.rounds_in_jail: int = 0
         self.is_first_circuit_complete: bool = False
+        self.has_passed_go_flag: bool = False
         self.current_position: int = 0  
+        self.doubles_rolled: int = 0
         self.is_bankrupt: bool = False
 
     def use_get_out_of_jail(self, jail: 'Jail') -> None:
         if self.get_out_of_jail_cards > 0:
-            jail.remove_player(self)
+            jail.release_from_jail(self)
             self.get_out_of_jail_cards -= 1
-        else:
-            raise errors.NoGetOutOfJailCardsError
-
-    def go_to_jail(self, jail: 'Jail') -> None:
-        if self.is_in_jail:
-            raise errors.PlayerAlreadyInJailError
-        self.is_in_jail = True
-        jail.put_in_jail(self)
+    
+    def get_get_out_of_jail_cards(self) -> int:
+        return self.get_out_of_jail_cards
     
     def add_get_out_of_jail(self) -> None:
         self.get_out_of_jail_cards += 1
+        
+    def set_rounds_in_jail(self, rounds: int) -> None:
+        self.rounds_in_jail = rounds
+        
+    def reset_has_passed_go(self) -> None:
+        self.has_passed_go_flag = False
+    
+    def get_has_passed_go(self) -> bool:
+        return self.has_passed_go_flag
 
-    def purchase_property(self, property: 'Ownable', bank: 'Bank') -> None:
-        if not self.is_first_circuit_complete:
-            raise errors.FirstCircuitNotCompleteError
-        
-        if property.owned_by != bank:
-            raise errors.PropertyNotOwnedByBankError
-        
+
+    def purchase_property(self, property: 'Ownable', bank: 'Bank') -> None:      
         property_cost = property.get_cost()
         if self.cash_balance < property_cost:
             raise errors.InsufficientFundsError
@@ -60,17 +63,29 @@ class Player(PropertyHolder):
         # update ownership
         property.set_owner(self)
         
-    def sell_property(self, property: 'Ownable', bank: 'Bank') -> None:
-        if property.owned_by != self:
-            raise errors.PropertyNotOwnedByPlayerError
-        
+    def sell_property(self, property: 'Ownable', bank: 'Bank') -> None:      
         if property.is_mortgaged:
+            # update property portfolios
             self.add_cash_balance(property.get_cost() / 2)
             bank.sub_cash_balance(property.get_cost() / 2)
             property.is_mortgaged = False
         else:
             self.add_cash_balance(property.get_cost())
             bank.sub_cash_balance(property.get_cost())
+        self.remove_property_from_portfolio(property)
+        bank.add_property_to_portfolio(property)
+    
+    def mortgage_property(self, property: 'Ownable', bank: 'Bank') -> None:
+        if property.owned_by != self:
+            raise errors.PropertyNotOwnedByPlayerError
+        
+        if property.is_mortgaged:
+            raise errors.PropertyAlreadyMortgagedError
+        
+        property.is_mortgaged = True
+        property.owned_by = bank
+        self.add_cash_balance(property.value / 2)
+        bank.sub_cash_balance(property.value / 2)
         
     def add_property_to_portfolio(self, property: 'Ownable') -> None:
         if property in self.owned_properties[property.property_group]:
@@ -177,29 +192,28 @@ class Player(PropertyHolder):
             case _:
                 pass
 
-    def mortgage_property(self, property: 'Ownable', bank: 'Bank') -> None:
-        if property.owned_by != self:
-            raise errors.PropertyNotOwnedByPlayerError
-        
-        if property.is_mortgaged:
-            raise errors.PropertyAlreadyMortgagedError
-        
-        property.is_mortgaged = True
-        property.owned_by = bank
-        self.add_cash_balance(property.value / 2)
-        bank.sub_cash_balance(property.value / 2)
-
 ### CURRENTLY MOVING PLAYER METHODS DO NOT PAY PLAYER FOR PASSING GO ###
     # Updates current_position and is_first_circuit_complete and returns new position
-    def move_player(self, steps: int) -> int:
+    # Returns a list of dice rolls and the new position
+    def move_player(self) -> list[list[int], int] | None:
+        dice_rolls: list[int] = [random.randint(1, 6) for _ in range(2)]
+        if dice_rolls[0] == dice_rolls[1]:
+            self.doubles_rolled += 1
+        else:
+            self.doubles_rolled = 0
+        if self.doubles_rolled == 3:
+            self.reset_doubles_rolled()
+            return None
+    
         # Faciliate circular board
-        if self.current_position + steps > 40:
+        if self.current_position + sum(dice_rolls) > 39:
             if not self.is_first_circuit_complete:
                 self.is_first_circuit_complete = True
-            self.current_position = (self.current_position + steps) % 40    
+                self.has_passed_go_flag = True
+            self.current_position = (self.current_position + sum(dice_rolls)) % 40    
         else:
-            self.current_position += steps
-        return self.current_position
+            self.current_position += sum(dice_rolls)
+        return [dice_rolls, self.current_position]
 
     # Updates current_position to a specified position
     def move_player_to_position(self, position: int) -> None:
@@ -221,4 +235,10 @@ class Player(PropertyHolder):
                 else:
                     net_worth += property.value
         return net_worth
+    
+    def get_doubles_rolled(self) -> int:
+        return self.doubles_rolled
+    
+    def reset_doubles_rolled(self) -> None:
+        self.doubles_rolled = 0
     

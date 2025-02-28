@@ -1,4 +1,5 @@
 from typing import TYPE_CHECKING, List, Tuple
+from .. import errors
 
 if TYPE_CHECKING:
     from ..property_owners.player import Player
@@ -13,6 +14,7 @@ class Jail:
             if p == player:
                 self.currently_in_jail.pop(i)
                 player.is_in_jail = False
+                player.set_rounds_in_jail(0)
                 break
 
     def put_in_jail(self, player: 'Player') -> None:

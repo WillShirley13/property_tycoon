@@ -80,8 +80,8 @@ PROPERTY_DATA = {
     "Portslade Station": {"cost": 200, "rents": [25, 50, 100, 200]},
     
     # Utilities
-    "Tesla Power Co": {"cost": 150, "multipliers": [4, 10]},  # multipliers for 1 or 2 utilities owned
-    "Edison Water": {"cost": 150, "multipliers": [4, 10]},
+    "Tesla Power Co": {"cost": 150, "rents": [4, 10]},  # multipliers for 1 or 2 utilities owned
+    "Edison Water": {"cost": 150, "rents": [4, 10]},
 }
 
 POT_LUCK_CARDS = {
@@ -126,9 +126,6 @@ OPPORTUNITY_KNOCKS_CARDS = {
 # Bank constants
 BANK_STARTING_CASH = 500_000
 
-# Property constants
-HOUSE_COST = 50
-HOTEL_COST = 100
 
 # Station constants
 STATION_RENT_VALUES = [25, 50, 100, 200]  # Rent for 1, 2, 3, 4 stations

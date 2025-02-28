@@ -1,13 +1,13 @@
 from typing import TYPE_CHECKING, List
 from .ownable import Ownable
 from ..constants import *
-
+from ..enums.property_group import PropertyGroup
 if TYPE_CHECKING:
     from ..property_owners.player import Player
 
 class Station(Ownable):
-    def __init__(self, value: int, property_group, name: str):
-        super().__init__(value, property_group, name)
+    def __init__(self, cost: int, property_group: PropertyGroup, name: str, owner: Bank):
+        super().__init__(cost=cost, property_group=property_group, name=name, owner=owner)
         self.owner_owns_all_stations: bool = False
         self.num_of_stations_owned_by_owner: int = 0
         self.rent_values: List[int] = STATION_RENT_VALUES

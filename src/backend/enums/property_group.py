@@ -9,5 +9,5 @@ class PropertyGroup(Enum):
     YELLOW = "yellow"
     GREEN = "green"
     DEEP_BLUE = "deep_blue"
-    UTILITIES = "utilities"
+    UTILITY = "utility"
     STATION = "station" 

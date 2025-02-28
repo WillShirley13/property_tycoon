@@ -1,3 +1,4 @@
+import threading
 from .constants import OPPORTUNITY_KNOCKS_CARDS, POT_LUCK_CARDS
 from .enums.game_token import GameToken
 from .enums.property_group import PropertyGroup
@@ -12,6 +13,7 @@ from .ownables.utility import Utility
 from .property_owners.player import Player
 from .property_owners.bank import Bank
 from . import errors
+import time
 
 class Admin:
     def __init__(self, player_names: list[(str, GameToken)], time_limit: int = 0):
@@ -20,14 +22,32 @@ class Admin:
         # helper dictionary to quickly look up the index of a space on the board
         self.game_space_helper: dict[Ownable | FreeParking | Jail | Go | GameCard, int] = {}
         self.players: list[Player] = []
+        self.player_names: list[(str, GameToken)] = player_names
         self.bank: Bank = Bank()
+        self.free_parking: FreeParking = FreeParking()
+        self.go: Go = Go()
+        self.jail: Jail = Jail()
         self.time_limit: int = time_limit
+        self.game_over: bool = False
         
         # Initialize players
         self.create_players()
         
         # Initialize game board
         self.create_game_board()
+        
+    def start_timer(self):
+        self.timer_thread = threading.Thread(target=self.countdown)
+        self.timer_thread.start()
+        
+    def countdown(self):
+        print(f"Game will end in {self.time_limit} minutes.")
+        time.sleep(self.time_limit * 60)
+        self.game_over = True
+
+        
+    def is_game_over(self) -> bool:
+        return self.game_over
     
     def get_time_limit(self) -> int:
         return self.time_limit
@@ -38,6 +58,15 @@ class Admin:
     def get_bank(self) -> Bank:
         return self.bank
     
+    def get_free_parking(self) -> FreeParking:
+        return self.free_parking
+    
+    def get_go(self) -> Go:
+        return self.go
+    
+    def get_jail(self) -> Jail:
+        return self.jail
+
     def get_game_board(self) -> list[Ownable | FreeParking | Jail | Go | GameCard]:
         return self.game_board
     
@@ -49,51 +78,51 @@ class Admin:
         self.game_board = []
         
         # Create Pot Luck and Opportunity Knocks card packs
-        pot_luck_cards = GameCard(POT_LUCK_CARDS, list(POT_LUCK_CARDS.keys()))
-        opportunity_knocks = GameCard(OPPORTUNITY_KNOCKS_CARDS, list(OPPORTUNITY_KNOCKS_CARDS.keys()))
+        pot_luck_cards = GameCard(card_ids=POT_LUCK_CARDS, card_pack=list(POT_LUCK_CARDS.keys()))
+        opportunity_knocks = GameCard(card_ids=OPPORTUNITY_KNOCKS_CARDS, card_pack=list(OPPORTUNITY_KNOCKS_CARDS.keys()))
         
         # Create board spaces in sequential order
         self.game_board = [
             Go(),  # Position 1
-            Property(60, PropertyGroup.BROWN, "The Old Creek", 50, 50, 2),  # Position 2
+            Property(cost=60, property_group=PropertyGroup.BROWN, name="The Old Creek", owner=self.bank),  # Position 2
             pot_luck_cards,  # Position 3
-            Property(60, PropertyGroup.BROWN, "Gangsters Paradise", 50, 50, 4),  # Position 4
+            Property(cost=60, property_group=PropertyGroup.BROWN, name="Gangsters Paradise", owner=self.bank),  # Position 4
             FreeParking(),  # Position 5 (Income Tax - using FreeParking to collect £200)
-            Station(200, PropertyGroup.STATION, "Brighton Station"),  # Position 6
-            Property(100, PropertyGroup.BLUE, "The Angels Delight", 50, 50, 6),  # Position 7
+            Station(cost=200, property_group=PropertyGroup.STATION, name="Brighton Station", owner=self.bank),  # Position 6
+            Property(cost=100, property_group=PropertyGroup.BLUE, name="The Angels Delight", owner=self.bank),  # Position 7
             opportunity_knocks,  # Position 8
-            Property(100, PropertyGroup.BLUE, "Potter Avenue", 50, 50, 6),  # Position 9
-            Property(120, PropertyGroup.BLUE, "Granger Drive", 50, 50, 8),  # Position 10
+            Property(cost=100, property_group=PropertyGroup.BLUE, name="Potter Avenue", owner=self.bank),  # Position 9
+            Property(cost=120, property_group=PropertyGroup.BLUE, name="Granger Drive", owner=self.bank),  # Position 10
             Jail(),  # Position 11
-            Property(140, PropertyGroup.PURPLE, "Skywalker Drive", 100, 100, 10),  # Position 12
-            Utility(150, PropertyGroup.UTILITIES, "Tesla Power Co"),  # Position 13
-            Property(140, PropertyGroup.PURPLE, "Wookie Hole", 100, 100, 10),  # Position 14
-            Property(160, PropertyGroup.PURPLE, "Rey Lane", 100, 100, 12),  # Position 15
-            Station(200, PropertyGroup.STATION, "Hove Station"),  # Position 16
-            Property(180, PropertyGroup.ORANGE, "Bishop Drive", 100, 100, 14),  # Position 17
+            Property(cost=140, property_group=PropertyGroup.PURPLE, name="Skywalker Drive", owner=self.bank),  # Position 12
+            Utility(cost=150, property_group=PropertyGroup.UTILITY, name="Tesla Power Co", owner=self.bank),  # Position 13
+            Property(cost=140, property_group=PropertyGroup.PURPLE, name="Wookie Hole", owner=self.bank),  # Position 14
+            Property(cost=160, property_group=PropertyGroup.PURPLE, name="Rey Lane", owner=self.bank),  # Position 15
+            Station(cost=200, property_group=PropertyGroup.STATION, name="Hove Station", owner=self.bank),  # Position 16
+            Property(cost=180, property_group=PropertyGroup.ORANGE, name="Bishop Drive", owner=self.bank),  # Position 17
             pot_luck_cards,  # Position 18
-            Property(180, PropertyGroup.ORANGE, "Dunham Street", 100, 100, 14),  # Position 19
-            Property(200, PropertyGroup.ORANGE, "Broyles Lane", 100, 100, 16),  # Position 20
+            Property(cost=180, property_group=PropertyGroup.ORANGE, name="Dunham Street", owner=self.bank),  # Position 19
+            Property(cost=200, property_group=PropertyGroup.ORANGE, name="Broyles Lane", owner=self.bank),  # Position 20
             FreeParking(),  # Position 21
-            Property(220, PropertyGroup.RED, "Yue Fei Square", 150, 150, 18),  # Position 22
+            Property(cost=220, property_group=PropertyGroup.RED, name="Yue Fei Square", owner=self.bank),  # Position 22
             opportunity_knocks,  # Position 23
-            Property(220, PropertyGroup.RED, "Mulan Rouge", 150, 150, 18),  # Position 24
-            Property(240, PropertyGroup.RED, "Han Xin Gardens", 150, 150, 20),  # Position 25
-            Station(200, PropertyGroup.STATION, "Falmer Station"),  # Position 26
-            Property(260, PropertyGroup.YELLOW, "Shatner Close", 150, 150, 22),  # Position 27
-            Property(260, PropertyGroup.YELLOW, "Picard Avenue", 150, 150, 22),  # Position 28
-            Utility(150, PropertyGroup.UTILITIES, "Edison Water"),  # Position 29
-            Property(280, PropertyGroup.YELLOW, "Crusher Creek", 150, 150, 22),  # Position 30
+            Property(cost=220, property_group=PropertyGroup.RED, name="Mulan Rouge", owner=self.bank),  # Position 24
+            Property(cost=240, property_group=PropertyGroup.RED, name="Han Xin Gardens", owner=self.bank),  # Position 25
+            Station(cost=200, property_group=PropertyGroup.STATION, name="Falmer Station", owner=self.bank),  # Position 26
+            Property(cost=260, property_group=PropertyGroup.YELLOW, name="Shatner Close", owner=self.bank),  # Position 27
+            Property(cost=260, property_group=PropertyGroup.YELLOW, name="Picard Avenue", owner=self.bank),  # Position 28
+            Utility(cost=150, property_group=PropertyGroup.UTILITY, name="Edison Water", owner=self.bank),  # Position 29
+            Property(cost=280, property_group=PropertyGroup.YELLOW, name="Crusher Creek", owner=self.bank),  # Position 30
             Jail(),  # Position 31 (Go to Jail)
-            Property(300, PropertyGroup.GREEN, "Sirat Mews", 200, 200, 26),  # Position 32
-            Property(300, PropertyGroup.GREEN, "Ghengis Crescent", 200, 200, 26),  # Position 33
+            Property(cost=300, property_group=PropertyGroup.GREEN, name="Sirat Mews", owner=self.bank),  # Position 32
+            Property(cost=300, property_group=PropertyGroup.GREEN, name="Ghengis Crescent", owner=self.bank),  # Position 33
             pot_luck_cards,  # Position 34
-            Property(320, PropertyGroup.GREEN, "Ibis Close", 200, 200, 28),  # Position 35
-            Station(200, PropertyGroup.STATION, "Portslade Station"),  # Position 36
+            Property(cost=320, property_group=PropertyGroup.GREEN, name="Ibis Close", owner=self.bank),  # Position 35
+            Station(cost=200, property_group=PropertyGroup.STATION, name="Portslade Station", owner=self.bank),  # Position 36
             opportunity_knocks,  # Position 37
-            Property(350, PropertyGroup.DEEP_BLUE, "James Webb Way", 200, 200, 35),  # Position 38
+            Property(cost=350, property_group=PropertyGroup.DEEP_BLUE, name="James Webb Way", owner=self.bank),  # Position 38
             FreeParking(),  # Position 39 (Super Tax - using FreeParking to collect £100)
-            Property(400, PropertyGroup.DEEP_BLUE, "Turing Heights", 200, 200, 50)  # Position 40
+            Property(cost=400, property_group=PropertyGroup.DEEP_BLUE, name="Turing Heights", owner=self.bank)  # Position 40
         ]
         
         # Create helper dictionary for quick position lookup
