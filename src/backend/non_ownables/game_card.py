@@ -1,6 +1,8 @@
 import random
 from typing import TYPE_CHECKING, Dict, List, Tuple
 from ..enums.property_group import PropertyGroup
+from ..constants import POT_LUCK_CARDS, OPPORTUNITY_KNOCKS_CARDS
+from .. import errors
 
 if TYPE_CHECKING:
     from ..non_ownables.free_parking import FreeParking
@@ -8,6 +10,7 @@ if TYPE_CHECKING:
     from ..ownables.property import Property
     from ..property_owners.player import Player
     from ..property_owners.bank import Bank
+    
 
 class GameCard:
     def __init__(self, card_ids: Dict[str, int], card_pack: List[str]):
@@ -22,7 +25,7 @@ class GameCard:
         return (card, self.card_ids[card])
     
     # Facilitates actions of card id passed. Function may raise errror if player does not have enough funds  
-    def process_card(self, player: 'Player', bank: 'Bank', card_id: int, free_parking: 'FreeParking', jail: 'Jail', players: List['Player']) -> None:
+    def process_card(self, player: 'Player', bank: 'Bank', card_id: int, free_parking: 'FreeParking', jail: 'Jail', other_players: List['Player']) -> None:
         match card_id:
             # Pot Luck Cards (1-17)
             case 1:  # "You inherit £200"
@@ -94,7 +97,7 @@ class GameCard:
                 bank.sub_cash_balance(25)
                 
             case 16:  # "It's your birthday"
-                for other_player in players:
+                for other_player in other_players:
                     try:
                         other_player.sub_cash_balance(10)
                         player.add_cash_balance(10)

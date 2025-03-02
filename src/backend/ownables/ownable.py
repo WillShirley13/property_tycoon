@@ -7,9 +7,9 @@ if TYPE_CHECKING:
     from ..property_owners.bank import Bank
 
 class Ownable:
-    def __init__(self, cost: int, property_group: PropertyGroup, name: str, owner: Bank):
+    def __init__(self, cost: int, property_group: PropertyGroup, name: str, owner: "Bank"):
         self.name: str = name
-        self.owned_by = None  # Will be Player or Bank
+        self.owned_by = owner  # Will be Player or Bank
         self.cost_to_buy: int = cost
         self.value: int = cost
         self.rent_cost: int = PROPERTY_DATA[self.name]["rents"][0]
@@ -30,7 +30,7 @@ class Ownable:
         if self.is_mortgaged:
             return 0
         # If player is in jail, no rent is due
-        if player.is_in_jail:
+        if self.owned_by.is_in_jail:
             return 0
         player.sub_cash_balance(self.rent_cost)
         self.owned_by.add_cash_balance(self.rent_cost)

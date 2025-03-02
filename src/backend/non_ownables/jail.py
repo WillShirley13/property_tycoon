@@ -3,6 +3,7 @@ from .. import errors
 
 if TYPE_CHECKING:
     from ..property_owners.player import Player
+    from ..non_ownables.free_parking import FreeParking
 
 class Jail:
     def __init__(self):
@@ -15,6 +16,7 @@ class Jail:
                 self.currently_in_jail.pop(i)
                 player.is_in_jail = False
                 player.set_rounds_in_jail(0)
+                player.move_player_to_position(10)
                 break
 
     def put_in_jail(self, player: 'Player') -> None:
@@ -27,9 +29,9 @@ class Jail:
     def get_is_in_jail(self) -> List[Tuple['Player', int]]:
         return self.currently_in_jail
     
-    def pay_fine_for_release(self, player) -> None:
+    def pay_fine_for_release(self, player: 'Player', free_parking: 'FreeParking') -> None:
         try:
-            player.sub_cash_balance(self.release_cost)
+            free_parking.add_fine(self.release_cost, player)
             self.release_from_jail(player)
         except:
             raise errors.InsufficientFundsError

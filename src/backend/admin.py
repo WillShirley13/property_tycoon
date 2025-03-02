@@ -27,8 +27,10 @@ class Admin:
         self.free_parking: FreeParking = FreeParking()
         self.go: Go = Go()
         self.jail: Jail = Jail()
+        self.pot_luck_cards: GameCard = GameCard(card_ids=POT_LUCK_CARDS, card_pack=list(POT_LUCK_CARDS.keys()))
+        self.opportunity_knocks: GameCard = GameCard(card_ids=OPPORTUNITY_KNOCKS_CARDS, card_pack=list(OPPORTUNITY_KNOCKS_CARDS.keys()))
         self.time_limit: int = time_limit
-        self.game_over: bool = False
+        self.is_time_limit_reached: bool = False
         
         # Initialize players
         self.create_players()
@@ -43,11 +45,11 @@ class Admin:
     def countdown(self):
         print(f"Game will end in {self.time_limit} minutes.")
         time.sleep(self.time_limit * 60)
-        self.game_over = True
+        self.is_time_limit_reached = True
 
         
-    def is_game_over(self) -> bool:
-        return self.game_over
+    def get_is_time_limit_reached(self) -> bool:
+        return self.is_time_limit_reached
     
     def get_time_limit(self) -> int:
         return self.time_limit
@@ -66,6 +68,12 @@ class Admin:
     
     def get_jail(self) -> Jail:
         return self.jail
+    
+    def get_pot_luck_cards(self) -> GameCard:
+        return self.pot_luck_cards
+    
+    def get_opportunity_knocks(self) -> GameCard:
+        return self.opportunity_knocks
 
     def get_game_board(self) -> list[Ownable | FreeParking | Jail | Go | GameCard]:
         return self.game_board

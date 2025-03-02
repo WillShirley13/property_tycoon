@@ -25,28 +25,64 @@ class Player(PropertyHolder):
         self.current_position: int = 0  
         self.doubles_rolled: int = 0
         self.is_bankrupt: bool = False
+        
+    # Name and token methods
+    def get_name(self) -> str:
+        return self.name
+    
+    def get_game_token(self) -> GameToken:
+        return self.game_token
 
+    # Jail card methods
+    def get_get_out_of_jail_cards(self) -> int:
+        return self.get_out_of_jail_cards
+    
+    def add_get_out_of_jail_card(self) -> None:
+        self.get_out_of_jail_cards += 1
+        
     def use_get_out_of_jail(self, jail: 'Jail') -> None:
         if self.get_out_of_jail_cards > 0:
             jail.release_from_jail(self)
             self.get_out_of_jail_cards -= 1
     
-    def get_get_out_of_jail_cards(self) -> int:
-        return self.get_out_of_jail_cards
+    # Jail status methods
+    def get_is_in_jail(self) -> bool:
+        return self.is_in_jail
     
-    def add_get_out_of_jail(self) -> None:
-        self.get_out_of_jail_cards += 1
+    def get_rounds_in_jail(self) -> int:
+        return self.rounds_in_jail
         
     def set_rounds_in_jail(self, rounds: int) -> None:
         self.rounds_in_jail = rounds
-        
-    def reset_has_passed_go(self) -> None:
+    
+    # Position and movement methods
+    def get_current_position(self) -> int:
+        return self.current_position
+    
+    def get_is_first_circuit_complete(self) -> bool:
+        return self.is_first_circuit_complete
+    
+    def get_has_passed_go_flag(self) -> bool:
+        return self.has_passed_go_flag
+    
+    def reset_has_passed_go_flag(self) -> None:
         self.has_passed_go_flag = False
     
-    def get_has_passed_go(self) -> bool:
-        return self.has_passed_go_flag
+    # Doubles methods
+    def get_doubles_rolled(self) -> int:
+        return self.doubles_rolled
+    
+    def reset_doubles_rolled(self) -> None:
+        self.doubles_rolled = 0
+    
+    # Bankruptcy methods
+    def get_is_bankrupt(self) -> bool:
+        return self.is_bankrupt
+    
+    def set_is_bankrupt(self) -> None:
+        self.is_bankrupt = True
 
-
+    # Property transaction methods
     def purchase_property(self, property: 'Ownable', bank: 'Bank') -> None:      
         property_cost = property.get_cost()
         if self.cash_balance < property_cost:
@@ -86,11 +122,9 @@ class Player(PropertyHolder):
         property.owned_by = bank
         self.add_cash_balance(property.value / 2)
         bank.sub_cash_balance(property.value / 2)
-        
+    
+    @override
     def add_property_to_portfolio(self, property: 'Ownable') -> None:
-        if property in self.owned_properties[property.property_group]:
-            raise errors.PropertyAlreadyInPortfolioError
-        
         self.owned_properties[property.property_group].append(property)
 
         match property.property_group:
@@ -192,7 +226,8 @@ class Player(PropertyHolder):
             case _:
                 pass
 
-### CURRENTLY MOVING PLAYER METHODS DO NOT PAY PLAYER FOR PASSING GO ###
+    # Movement methods
+    ### CURRENTLY MOVING PLAYER METHODS DO NOT PAY PLAYER FOR PASSING GO ###
     # Updates current_position and is_first_circuit_complete and returns new position
     # Returns a list of dice rolls and the new position
     def move_player(self) -> list[list[int], int] | None:
@@ -218,7 +253,8 @@ class Player(PropertyHolder):
     # Updates current_position to a specified position
     def move_player_to_position(self, position: int) -> None:
         self.current_position = position
-        
+    
+    # Player status methods
     def retire_player(self, bank: 'Bank') -> None:
         self.sub_cash_balance(self.get_cash_balance())
         bank.add_cash_balance(self.get_cash_balance())
@@ -235,10 +271,4 @@ class Player(PropertyHolder):
                 else:
                     net_worth += property.value
         return net_worth
-    
-    def get_doubles_rolled(self) -> int:
-        return self.doubles_rolled
-    
-    def reset_doubles_rolled(self) -> None:
-        self.doubles_rolled = 0
     

@@ -4,9 +4,10 @@ from ..constants import ONE_UTILITY_RENT_DICE_MULTIPLIER, TWO_UTILITY_RENT_DICE_
 from ..enums.property_group import PropertyGroup
 if TYPE_CHECKING:
     from ..property_owners.player import Player
+    from ..property_owners.bank import Bank
 
 class Utility(Ownable):
-    def __init__(self, name: str, cost: int, property_group: PropertyGroup, owner: Bank):
+    def __init__(self, name: str, cost: int, property_group: PropertyGroup, owner: "Bank"):
         super().__init__(name=name, cost=cost, property_group=property_group, owner=owner)
         self.owner_owns_all_utilities: bool = False
         self.num_of_utilities_owned_by_owner: int = 0
