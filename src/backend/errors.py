@@ -65,3 +65,8 @@ class PropertyNotOwnedByPlayerError(Exception):
 class ExceededMaxPlayersError(Exception):
     """Raised when trying to create more than 5 players"""
     pass
+
+class CannotSellPropertyWithHousesError(Exception):
+    """Raised when trying to sell a property that has houses on it"""
+    pass
+

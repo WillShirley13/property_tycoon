@@ -16,6 +16,9 @@ class Ownable:
         self.is_mortgaged: bool = False
         self.property_group: PropertyGroup = property_group
         
+    def get_name(self) -> str:
+        return self.name
+    
     def get_cost(self) -> int:
         return self.cost_to_buy
 

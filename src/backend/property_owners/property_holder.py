@@ -8,7 +8,18 @@ if TYPE_CHECKING:
 class PropertyHolder:
     def __init__(self, initial_cash: int):
         self.cash_balance: int = initial_cash
-        self.owned_properties: Dict[PropertyGroup, List['Ownable']] = {}
+        self.owned_properties: Dict[PropertyGroup, List['Ownable']] = {
+        PropertyGroup.BROWN: [],
+        PropertyGroup.BLUE: [],
+        PropertyGroup.PURPLE: [],
+        PropertyGroup.ORANGE: [],
+        PropertyGroup.RED: [],
+        PropertyGroup.YELLOW: [],
+        PropertyGroup.GREEN: [],
+        PropertyGroup.DEEP_BLUE: [],
+        PropertyGroup.UTILITY: [],
+        PropertyGroup.STATION: []
+    }
 
     def get_cash_balance(self) -> int:
         return self.cash_balance

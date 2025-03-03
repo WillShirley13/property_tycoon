@@ -126,12 +126,11 @@ OPPORTUNITY_KNOCKS_CARDS = {
 # Bank constants
 BANK_STARTING_CASH = 500_000
 
-
 # Station constants
 STATION_RENT_VALUES = [25, 50, 100, 200]  # Rent for 1, 2, 3, 4 stations
 
 # Player constants
-PLAYER_STARTING_CASH = 1500
+PLAYER_STARTING_CASH = 1_500
 GO_PAYOUT = 200
 
 # Game board constants

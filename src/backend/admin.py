@@ -38,6 +38,9 @@ class Admin:
         # Initialize game board
         self.create_game_board()
         
+        # Assign all properties to bank
+        self.assign_all_properties_to_bank()
+        
     def start_timer(self):
         self.timer_thread = threading.Thread(target=self.countdown)
         self.timer_thread.start()
@@ -59,6 +62,11 @@ class Admin:
     
     def get_bank(self) -> Bank:
         return self.bank
+    
+    def assign_all_properties_to_bank(self):
+        for prop in self.game_board:
+            if isinstance(prop, Ownable):
+                self.bank.add_property_to_portfolio(prop)
     
     def get_free_parking(self) -> FreeParking:
         return self.free_parking

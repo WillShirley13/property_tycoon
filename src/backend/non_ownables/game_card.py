@@ -62,7 +62,7 @@ class GameCard:
                     raise errors.InsufficientFundsError
                 
             case 8:  # "Advance to go"
-                player.move_player(0)
+                player.move_player_to_position(0)
                 
             case 9:  # "From sale of Bitcoin"
                 player.add_cash_balance(50)
@@ -106,7 +106,7 @@ class GameCard:
                         raise errors.InsufficientFundsError
                 
             case 17:  # "Get out of jail free"
-                player.add_get_out_of_jail()
+                player.add_get_out_of_jail_card()
                 
             # Opportunity Knocks Cards (18-33)
             case 18:  # "Bank pays you dividend"
@@ -145,7 +145,7 @@ class GameCard:
                 
             case 26:  # "Repairs £40/house, £115/hotel"
                 total = 0
-                for property_group in player.get_owned_properties():
+                for property_group in player.get_owned_properties().values():
                     for property in property_group:
                         if isinstance(property, Property):
                             total += (property.houses * 40) + (property.hotels * 115)
@@ -171,7 +171,7 @@ class GameCard:
                 player.move_player_to_position(12)
                 
             case 31:  # "Go to jail"
-                player.go_to_jail(jail)
+                jail.put_in_jail(player)
                 
             case 32:  # "Drunk in charge of hoverboard"
                 free_parking.add_fine(30, player)

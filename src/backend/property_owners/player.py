@@ -99,7 +99,7 @@ class Player(PropertyHolder):
         # update ownership
         property.set_owner(self)
         
-    def sell_property(self, property: 'Ownable', bank: 'Bank') -> None:      
+    def sell_property(self, property: 'Ownable', bank: 'Bank') -> None:
         if property.is_mortgaged:
             # update property portfolios
             self.add_cash_balance(property.get_cost() / 2)
@@ -132,42 +132,58 @@ class Player(PropertyHolder):
                 if len(self.owned_properties[PropertyGroup.BROWN]) == TOTAL_BROWN_PROPERTIES:
                     for prop in self.owned_properties[PropertyGroup.BROWN]:
                         prop.owner_owns_all_properties_in_group = True
+                        if prop.check_max_difference_between_houses_owned_is_1_within_property_group(prop.get_houses() + 1):
+                            prop.is_eligible_for_upgrade = True
             case PropertyGroup.BLUE:
                 if len(self.owned_properties[PropertyGroup.BLUE]) == TOTAL_BLUE_PROPERTIES:
                     for prop in self.owned_properties[PropertyGroup.BLUE]:
                         prop.owner_owns_all_properties_in_group = True
+                        if prop.check_max_difference_between_houses_owned_is_1_within_property_group(prop.get_houses() + 1):
+                            prop.is_eligible_for_upgrade = True
             case PropertyGroup.PURPLE:
                 if len(self.owned_properties[PropertyGroup.PURPLE]) == TOTAL_PURPLE_PROPERTIES:
                     for prop in self.owned_properties[PropertyGroup.PURPLE]:
                         prop.owner_owns_all_properties_in_group = True
+                        if prop.check_max_difference_between_houses_owned_is_1_within_property_group(prop.get_houses() + 1):
+                            prop.is_eligible_for_upgrade = True
             case PropertyGroup.ORANGE:
                 if len(self.owned_properties[PropertyGroup.ORANGE]) == TOTAL_ORANGE_PROPERTIES:
                     for prop in self.owned_properties[PropertyGroup.ORANGE]:
                         prop.owner_owns_all_properties_in_group = True
+                        if prop.check_max_difference_between_houses_owned_is_1_within_property_group(prop.get_houses() + 1):
+                            prop.is_eligible_for_upgrade = True
             case PropertyGroup.RED:
                 if len(self.owned_properties[PropertyGroup.RED]) == TOTAL_RED_PROPERTIES:
                     for prop in self.owned_properties[PropertyGroup.RED]:
                         prop.owner_owns_all_properties_in_group = True
+                        if prop.check_max_difference_between_houses_owned_is_1_within_property_group(prop.get_houses() + 1):
+                            prop.is_eligible_for_upgrade = True
             case PropertyGroup.YELLOW:
                 if len(self.owned_properties[PropertyGroup.YELLOW]) == TOTAL_YELLOW_PROPERTIES:
                     for prop in self.owned_properties[PropertyGroup.YELLOW]:
                         prop.owner_owns_all_properties_in_group = True
+                        if prop.check_max_difference_between_houses_owned_is_1_within_property_group(prop.get_houses() + 1):
+                            prop.is_eligible_for_upgrade = True
             case PropertyGroup.GREEN:
                 if len(self.owned_properties[PropertyGroup.GREEN]) == TOTAL_GREEN_PROPERTIES:
                     for prop in self.owned_properties[PropertyGroup.GREEN]:
                         prop.owner_owns_all_properties_in_group = True
+                        if prop.check_max_difference_between_houses_owned_is_1_within_property_group(prop.get_houses() + 1):
+                            prop.is_eligible_for_upgrade = True
             case PropertyGroup.DEEP_BLUE:
                 if len(self.owned_properties[PropertyGroup.DEEP_BLUE]) == TOTAL_DEEP_BLUE_PROPERTIES:
                     for prop in self.owned_properties[PropertyGroup.DEEP_BLUE]:
                         prop.owner_owns_all_properties_in_group = True
+                        if prop.check_max_difference_between_houses_owned_is_1_within_property_group(prop.get_houses() + 1):
+                            prop.is_eligible_for_upgrade = True
             case PropertyGroup.STATION:
                 property.num_of_stations_owned_by_owner += 1
-                if self.num_of_stations_owned == TOTAL_STATIONS:
+                if len(self.owned_properties[PropertyGroup.STATION]) == TOTAL_STATIONS:
                     for prop in self.owned_properties[PropertyGroup.STATION]:
                         prop.owner_owns_all_stations = True
             case PropertyGroup.UTILITY:
                 property.num_of_utilities_owned_by_owner += 1
-                if self.num_of_utilities_owned == TOTAL_UTILITIES:
+                if len(self.owned_properties[PropertyGroup.UTILITY]) == TOTAL_UTILITIES:
                     for prop in self.owned_properties[PropertyGroup.UTILITY]:
                         prop.owner_owns_all_utilities = True
             case _:
@@ -215,12 +231,12 @@ class Player(PropertyHolder):
                         prop.owner_owns_all_properties_in_group = False
             case PropertyGroup.STATION:
                 property.num_of_stations_owned_by_owner -= 1
-                if self.num_of_stations_owned != TOTAL_STATIONS:
+                if len(self.owned_properties[PropertyGroup.STATION]) != TOTAL_STATIONS:
                     for prop in self.owned_properties[PropertyGroup.STATION]:
                         prop.owner_owns_all_stations = False
             case PropertyGroup.UTILITY:
                 property.num_of_utilities_owned_by_owner -= 1
-                if self.num_of_utilities_owned != TOTAL_UTILITIES:
+                if len(self.owned_properties[PropertyGroup.UTILITY]) != TOTAL_UTILITIES:
                     for prop in self.owned_properties[PropertyGroup.UTILITY]:
                         prop.owner_owns_all_utilities = False
             case _:
