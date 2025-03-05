@@ -37,4 +37,18 @@ class Ownable:
             return 0
         player.sub_cash_balance(self.rent_cost)
         self.owned_by.add_cash_balance(self.rent_cost)
-        return self.rent_cost      
+        return self.rent_cost  
+    
+    def get_rent_cost(self) -> int:
+        return self.rent_cost
+
+    def get_is_mortgaged(self) -> bool:
+        return self.is_mortgaged
+    
+    def set_is_mortgaged(self, is_mortgaged: bool) -> None:
+        self.is_mortgaged = is_mortgaged
+    
+    def get_property_group(self) -> PropertyGroup:
+        return self.property_group
+    
+    

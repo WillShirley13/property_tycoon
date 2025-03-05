@@ -27,4 +27,12 @@ class Utility(Ownable):
         player.sub_cash_balance(rent)
         self.owned_by.add_cash_balance(rent)
         return rent
+    
+    def get_owner_owns_all_utilities(self) -> bool:
+        return self.owner_owns_all_utilities
+    
+    def set_owner_owns_all_utilities(self, owner_owns_all_utilities: bool) -> None:
+        self.owner_owns_all_utilities = owner_owns_all_utilities
+        
+        
 
