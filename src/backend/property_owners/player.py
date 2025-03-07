@@ -26,6 +26,7 @@ class Player(PropertyHolder):
         self.current_position: int = 0  
         self.doubles_rolled: int = 0
         self.is_bankrupt: bool = False
+        self.recent_dice_rolls: list[int] = []
         
     # Name and token methods
     def get_name(self) -> str:
@@ -150,50 +151,42 @@ class Player(PropertyHolder):
                 if len(self.owned_properties[PropertyGroup.BROWN]) == TOTAL_BROWN_PROPERTIES:
                     for prop in self.owned_properties[PropertyGroup.BROWN]:
                         prop.set_owner_owns_all_properties_in_group(True)
-                        if prop.check_max_difference_between_houses_owned_is_1_within_property_group(prop.get_houses() + 1):
-                            prop.set_is_eligible_for_house_upgrade(True)
+                        prop.set_is_eligible_for_house_upgrade_or_downgrade(True)
             case PropertyGroup.BLUE:
                 if len(self.owned_properties[PropertyGroup.BLUE]) == TOTAL_BLUE_PROPERTIES:
                     for prop in self.owned_properties[PropertyGroup.BLUE]:
                         prop.set_owner_owns_all_properties_in_group(True)
-                        if prop.check_max_difference_between_houses_owned_is_1_within_property_group(prop.get_houses() + 1):
-                            prop.set_is_eligible_for_house_upgrade(True)
+                        prop.set_is_eligible_for_house_upgrade_or_downgrade(True)
             case PropertyGroup.PURPLE:
                 if len(self.owned_properties[PropertyGroup.PURPLE]) == TOTAL_PURPLE_PROPERTIES:
                     for prop in self.owned_properties[PropertyGroup.PURPLE]:
                         prop.set_owner_owns_all_properties_in_group(True)
-                        if prop.check_max_difference_between_houses_owned_is_1_within_property_group(prop.get_houses() + 1):
-                            prop.set_is_eligible_for_hotel_upgrade(True)
+                        prop.set_is_eligible_for_house_upgrade_or_downgrade(True)
             case PropertyGroup.ORANGE:
                 if len(self.owned_properties[PropertyGroup.ORANGE]) == TOTAL_ORANGE_PROPERTIES:
                     for prop in self.owned_properties[PropertyGroup.ORANGE]:
                         prop.set_owner_owns_all_properties_in_group(True)
-                        if prop.check_max_difference_between_houses_owned_is_1_within_property_group(prop.get_houses() + 1):
-                            prop.set_is_eligible_for_hotel_upgrade(True)
+                        prop.set_is_eligible_for_house_upgrade_or_downgrade(True)
             case PropertyGroup.RED:
                 if len(self.owned_properties[PropertyGroup.RED]) == TOTAL_RED_PROPERTIES:
                     for prop in self.owned_properties[PropertyGroup.RED]:
                         prop.set_owner_owns_all_properties_in_group(True)
-                        if prop.check_max_difference_between_houses_owned_is_1_within_property_group(prop.get_houses() + 1):
-                            prop.set_is_eligible_for_hotel_upgrade(True)
+                        prop.set_is_eligible_for_house_upgrade_or_downgrade(True)
             case PropertyGroup.YELLOW:
                 if len(self.owned_properties[PropertyGroup.YELLOW]) == TOTAL_YELLOW_PROPERTIES:
                     for prop in self.owned_properties[PropertyGroup.YELLOW]:
                         prop.set_owner_owns_all_properties_in_group(True)
-                        if prop.check_max_difference_between_houses_owned_is_1_within_property_group(prop.get_houses() + 1):
-                            prop.set_is_eligible_for_hotel_upgrade(True)
+                        prop.set_is_eligible_for_house_upgrade_or_downgrade(True)
             case PropertyGroup.GREEN:
                 if len(self.owned_properties[PropertyGroup.GREEN]) == TOTAL_GREEN_PROPERTIES:
                     for prop in self.owned_properties[PropertyGroup.GREEN]:
                         prop.set_owner_owns_all_properties_in_group(True)
-                        if prop.check_max_difference_between_houses_owned_is_1_within_property_group(prop.get_houses() + 1):
-                            prop.set_is_eligible_for_hotel_upgrade(True)
+                        prop.set_is_eligible_for_house_upgrade_or_downgrade(True)
             case PropertyGroup.DEEP_BLUE:
                 if len(self.owned_properties[PropertyGroup.DEEP_BLUE]) == TOTAL_DEEP_BLUE_PROPERTIES:
                     for prop in self.owned_properties[PropertyGroup.DEEP_BLUE]:
                         prop.set_owner_owns_all_properties_in_group(True)
-                        if prop.check_max_difference_between_houses_owned_is_1_within_property_group(prop.get_houses() + 1):
-                            prop.set_is_eligible_for_hotel_upgrade(True)
+                        prop.set_is_eligible_for_house_upgrade_or_downgrade(True)
             case PropertyGroup.STATION:
                 property.num_of_stations_owned_by_owner += 1
                 if len(self.owned_properties[PropertyGroup.STATION]) == TOTAL_STATIONS:
@@ -223,30 +216,44 @@ class Player(PropertyHolder):
                 if len(self.owned_properties[PropertyGroup.BLUE]) != TOTAL_BLUE_PROPERTIES:
                     for prop in self.owned_properties[PropertyGroup.BLUE]:
                         prop.set_owner_owns_all_properties_in_group(False)
+                        prop.set_is_eligible_for_house_upgrade_or_downgrade(False)
+                        prop.set_is_eligible_for_hotel_upgrade_or_downgrade(False)
             case PropertyGroup.PURPLE:
                 if len(self.owned_properties[PropertyGroup.PURPLE]) != TOTAL_PURPLE_PROPERTIES:
                     for prop in self.owned_properties[PropertyGroup.PURPLE]:
                         prop.set_owner_owns_all_properties_in_group(False)
+                        prop.set_is_eligible_for_house_upgrade_or_downgrade(False)
+                        prop.set_is_eligible_for_hotel_upgrade_or_downgrade(False)
             case PropertyGroup.ORANGE:
                 if len(self.owned_properties[PropertyGroup.ORANGE]) != TOTAL_ORANGE_PROPERTIES:
                     for prop in self.owned_properties[PropertyGroup.ORANGE]:
                         prop.set_owner_owns_all_properties_in_group(False)
+                        prop.set_is_eligible_for_house_upgrade_or_downgrade(False)
+                        prop.set_is_eligible_for_hotel_upgrade_or_downgrade(False)
             case PropertyGroup.RED:
                 if len(self.owned_properties[PropertyGroup.RED]) != TOTAL_RED_PROPERTIES:
                     for prop in self.owned_properties[PropertyGroup.RED]:
                         prop.set_owner_owns_all_properties_in_group(False)
+                        prop.set_is_eligible_for_house_upgrade_or_downgrade(False)
+                        prop.set_is_eligible_for_hotel_upgrade_or_downgrade(False)
             case PropertyGroup.YELLOW:
                 if len(self.owned_properties[PropertyGroup.YELLOW]) != TOTAL_YELLOW_PROPERTIES:
                     for prop in self.owned_properties[PropertyGroup.YELLOW]:
                         prop.set_owner_owns_all_properties_in_group(False)
+                        prop.set_is_eligible_for_house_upgrade_or_downgrade(False)
+                        prop.set_is_eligible_for_hotel_upgrade_or_downgrade(False)
             case PropertyGroup.GREEN:
                 if len(self.owned_properties[PropertyGroup.GREEN]) != TOTAL_GREEN_PROPERTIES:
                     for prop in self.owned_properties[PropertyGroup.GREEN]:
                         prop.set_owner_owns_all_properties_in_group(False)
+                        prop.set_is_eligible_for_house_upgrade_or_downgrade(False)
+                        prop.set_is_eligible_for_hotel_upgrade_or_downgrade(False)
             case PropertyGroup.DEEP_BLUE:
                 if len(self.owned_properties[PropertyGroup.DEEP_BLUE]) != TOTAL_DEEP_BLUE_PROPERTIES:
                     for prop in self.owned_properties[PropertyGroup.DEEP_BLUE]:
                         prop.set_owner_owns_all_properties_in_group(False)
+                        prop.set_is_eligible_for_house_upgrade_or_downgrade(False)
+                        prop.set_is_eligible_for_hotel_upgrade_or_downgrade(False)
             case PropertyGroup.STATION:
                 property.num_of_stations_owned_by_owner -= 1
                 if len(self.owned_properties[PropertyGroup.STATION]) != TOTAL_STATIONS:
@@ -282,11 +289,15 @@ class Player(PropertyHolder):
             self.current_position = (self.current_position + sum(dice_rolls)) % 40    
         else:
             self.current_position += sum(dice_rolls)
+        self.recent_dice_rolls = dice_rolls
         return [dice_rolls, self.current_position]
 
     # Updates current_position to a specified position
     def move_player_to_position(self, position: int) -> None:
         self.current_position = position
+    
+    def get_recent_dice_rolls(self) -> list[int]:
+        return self.recent_dice_rolls
     
     # Player status methods
     def retire_player(self, bank: 'Bank') -> None:
@@ -298,7 +309,7 @@ class Player(PropertyHolder):
 
     def get_player_net_worth(self) -> int:
         net_worth = self.cash_balance
-        for property_group in self.owned_properties:
+        for property_group in self.owned_properties.values():
             for property in property_group:
                 if property.is_mortgaged:
                     net_worth += property.value / 2

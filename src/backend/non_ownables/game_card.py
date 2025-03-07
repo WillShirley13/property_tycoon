@@ -90,12 +90,11 @@ class GameCard:
                 bank.sub_cash_balance(100)
                 
             case 14:  # "Go to jail"
-                player.go_to_jail(jail)
+                jail.put_in_jail(player)
                 
             case 15:  # "Received interest on shares"
                 player.add_cash_balance(25)
                 bank.sub_cash_balance(25)
-                
             case 16:  # "It's your birthday"
                 for other_player in other_players:
                     try:
@@ -157,7 +156,7 @@ class GameCard:
                 
             case 28:  # "Repairs £25/house, £100/hotel"
                 total = 0
-                for property_group in player.get_owned_properties():
+                for property_group in player.get_owned_properties().values():
                     for property in property_group:
                         if isinstance(property, Property):
                             total += (property.houses * 25) + (property.hotels * 100)
@@ -177,7 +176,7 @@ class GameCard:
                 free_parking.add_fine(30, player)
                 
             case 33:  # "Get out of jail free"
-                player.add_get_out_of_jail()
+                player.add_get_out_of_jail_card()
 
     def shuffle_pack(self) -> None:
         random.shuffle(self.card_pack)

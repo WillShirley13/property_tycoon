@@ -9,7 +9,7 @@ if TYPE_CHECKING:
 class Ownable:
     def __init__(self, cost: int, property_group: PropertyGroup, name: str, owner: "Bank"):
         self.name: str = name
-        self.owned_by = owner  # Will be Player or Bank
+        self.owned_by: Player | Bank = owner  # Will be Player or Bank
         self.cost_to_buy: int = cost
         self.value: int = cost
         self.rent_cost: int = PROPERTY_DATA[self.name]["rents"][0]
@@ -21,6 +21,12 @@ class Ownable:
     
     def get_cost(self) -> int:
         return self.cost_to_buy
+    
+    def get_value(self) -> int:
+        return self.value
+    
+    def set_value(self, value: int) -> None:
+        self.value = value
 
     def get_owner(self) -> Union['Player', 'Bank']:
         return self.owned_by
@@ -29,12 +35,10 @@ class Ownable:
         self.owned_by = new_owner
 
     def get_rent_due_from_player(self, player: 'Player') -> int:
-        # If property is mortgaged, no rent is due
-        if self.is_mortgaged:
+        # If property is mortgaged or owner in jail, no rent is due
+        if self.is_mortgaged or self.owned_by.is_in_jail:
             return 0
-        # If player is in jail, no rent is due
-        if self.owned_by.is_in_jail:
-            return 0
+
         player.sub_cash_balance(self.rent_cost)
         self.owned_by.add_cash_balance(self.rent_cost)
         return self.rent_cost  

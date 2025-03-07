@@ -8,6 +8,7 @@ from .non_ownables.go import Go
 from .property_owners.bank import Bank
 from .non_ownables.game_card import GameCard
 from .ownables.ownable import Ownable
+from .ownables.property import Property
 from .enums.property_group import PropertyGroup
 from . import errors
 import time
@@ -47,7 +48,7 @@ def raise_capital(player: Player,
 def handle_insufficient_funds(current_player: Player, 
                             bank: Bank, 
                             action_description: str) -> bool:
-    print(f"{current_player.get_name()} does not have enough funds for {action_description}")
+    print(f"\n{current_player.get_name()} does not have enough funds for {action_description}\n")
     
     # TODO: front end needs to ask which property to sell/mortgage. MUST ONLY SHOW PROPERTIES THAT CAN BE SOLD/MORTGAGED. E.G. PROPERTIES THAT HAVE NO HOUSES/HOTELS ON THEM.
     property_to_use: Ownable = show_player_properties(current_player) # returns a tuple of (property, action_type), if action_type is then sell
@@ -75,7 +76,7 @@ def show_player_properties(player: Player) -> Tuple[Ownable, int]:
     props_to_downgrade = []
     for properties_in_group in player.get_owned_properties().values():
         for property in properties_in_group:
-            if property.get_houses() > 0 or property.get_hotel():
+            if property.get_houses() > 0 or property.get_hotel() == 1:
                 idx = len(props_to_downgrade)
                 props_to_downgrade.append((idx, property))
             else:
@@ -83,10 +84,10 @@ def show_player_properties(player: Player) -> Tuple[Ownable, int]:
                 props_to_sell.append((idx, property))
     print(f"{player.get_name()} has the following properties, houses or hotels they can sell/mortgage:")
     for property in props_to_sell:
-        print(f"{property[0]}: {property[1].get_name()}")
+        print(f"{property[0]}: {property[1].get_name()} (cost: £{property[1].get_value()})")
     print(f"{player.get_name()} has the following properties they can downgrade:")
     for property in props_to_downgrade:
-        print(f"{property[0]}: {property[1].get_name()}")
+        print(f"{property[0]}: {property[1].get_name()} (cost: £)")
         
     print('Reply with "y" to only one of the following 3 questions...')
     wants_to_sell_property: bool = get_player_input("Do you want to sell a property? (y/n): ")
@@ -124,7 +125,7 @@ player_names: list[(str, GameToken)] = [("Player 1", GameToken.BOOT),
                                         ("Player 5", GameToken.SHIP)]
 
 # TODO: get time limit from frontend
-time_limit = 0 # int(input("Enter time limit for game (in minutes)(enter 0 for no time limit): "))
+time_limit = int(input("Enter time limit for game (in minutes)(enter 0 for no time limit): "))
 
 admin: Admin = Admin(player_names, time_limit)
 
@@ -139,318 +140,271 @@ jail: Jail = admin.get_jail()
 pot_luck_cards: GameCard = admin.get_pot_luck_cards()
 opportunity_knocks: GameCard = admin.get_opportunity_knocks()
 
-P1: Player = players[0]
-P1.is_first_circuit_complete = True
 
-print(f'The bank has the following properties:')
-for property in bank.get_owned_properties()[PropertyGroup.BROWN]:
-    print(property.get_name())
+# TODO: frontend needs to display time limit somewhere?
+if time_limit > 0:
+    admin.start_timer()
 
-print(f"{P1.get_name()} has £{P1.get_cash_balance()}")
-P1.purchase_property(game_board[1], bank)
-print(f"{P1.get_name()} purchased property for £{game_board[1].get_cost()}")
-print(f"{P1.get_name()} now has £{P1.get_cash_balance()}\n")
 
-P1.purchase_property(game_board[3], bank)
-print(f"{P1.get_name()} purchased property for £{game_board[3].get_cost()}")
-print(f"{P1.get_name()} now has £{P1.get_cash_balance()}\n")
+# TODO: frontend needs to display current player somewhere
 
-for property in P1.get_owned_properties().values():
-    print(property)
+# Main game loop
+while True:
+###################################################
+# Section: check if game is over
+###################################################
+    if len(players) <= 0:
+        if admin.get_is_time_limit_reached():
+            break
+        else:
+            print("\n\n----------NEXT ROUND----------\n\n")
+            players = [player for player in admin.get_players() if not player.get_is_bankrupt()]
+            if len(players) == 0:
+                break
     
-print(f'The bank has the following properties:')
-for property in bank.get_owned_properties()[PropertyGroup.BROWN]:
-    print(property.get_name())
+    # Get current player
+    current_player = players[0]
+    print("\nNEXT PLAYER IN ROUND\n")
+    print(f"Current player: {current_player.name}")
+    print(f"Current player's cash balance: {current_player.get_cash_balance()}\n")
     
-print()
-for property in P1.get_owned_properties()[PropertyGroup.BROWN]:
-    property.upgrade_property(bank)
-    property.upgrade_property(bank)
-    print(f'{property.get_name()} now has {property.get_houses()} houses and {property.get_hotel()} hotel')
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# # TODO: frontend needs to display time limit somewhere?
-# if time_limit > 0:
-#     admin.start_timer()
-
-
-# # TODO: frontend needs to display current player somewhere
-
-# # Main game loop
-# while True:
-# ###################################################
-# # Section: check if game is over
-# ###################################################
-#     if len(players) <= 0:
-#         if admin.get_is_time_limit_reached():
-#             break
-#         else:
-#             print("\n\n----------NEXT ROUND----------\n\n")
-#             players = [player for player in admin.get_players() if not player.get_is_bankrupt()]
-#             if len(players) == 0:
-#                 break
-    
-#     # Get current player
-#     current_player = players[0]
-#     print("\nNEXT PLAYER IN ROUND\n")
-#     print(f"Current player: {current_player.name}")
-#     print(f"Current player's cash balance: {current_player.get_cash_balance()}\n")
-    
-# ###################################################
-# # Section: is current player in jail?
-# ###################################################
-#     if current_player.get_is_in_jail():
-#         if current_player.get_rounds_in_jail() == 2:
-#             jail.release_from_jail(current_player)           
-#         elif current_player.get_get_out_of_jail_cards() > 0:
-#             # front end needs to ask if player wants to use an out of jail card
-#             use_get_out_of_jail_card: bool = get_player_input("Do you want to use an out of jail card? (y/n): ") # TODO: get from frontend 
-#             if use_get_out_of_jail_card:
-#                 current_player.use_get_out_of_jail()
-#         else:
-#             # TODO: front end needs to ask if player wants to pay $50 fine
-#             pay_fine: bool = get_player_input("Do you want to pay the fine to get out of jail? (y/n): ") # TODO: get from frontend        
-#             if pay_fine:
-#                 print(f"{current_player.get_name()} chooses to pay the fine to get out of jail")
-#             # Try to pay jail fine, loop until successful or player chooses to stay in jail
-#                 pay_fine_loop_flag = False
-#                 while not pay_fine_loop_flag:
-#                     try:
-#                         jail.pay_fine_for_release(current_player, free_parking)
-#                         pay_fine_loop_flag = True
-#                         print(f"{current_player.get_name()} has paid the fine and is released from jail")
-#                     except errors.InsufficientFundsError:
-#                         if not handle_insufficient_funds(current_player, bank, "paying the jail fine"):
-#                             # Player can't pay fine and doesn't want to sell or mortgage a property
-#                             print(f"{current_player.get_name()} stays in jail")
-#                             current_player.set_rounds_in_jail(current_player.get_rounds_in_jail() + 1)
-#                             pay_fine_loop_flag = True  # Exit the loop
-#                             players.pop(0)
-#                             continue
-#             else:
-#                 # Player stays in jail
-#                 print(f"{current_player.get_name()} stays in jail")
-#                 current_player.set_rounds_in_jail(current_player.get_rounds_in_jail() + 1)
-#                 players.pop(0)
-#                 continue
+###################################################
+# Section: is current player in jail?
+###################################################
+    if current_player.get_is_in_jail():
+        if current_player.get_rounds_in_jail() == 2:
+            jail.release_from_jail(current_player)           
+        elif current_player.get_get_out_of_jail_cards() > 0:
+            # front end needs to ask if player wants to use an out of jail card
+            use_get_out_of_jail_card: bool = get_player_input("Do you want to use an out of jail card? (y/n): ") # TODO: get from frontend 
+            if use_get_out_of_jail_card:
+                current_player.use_get_out_of_jail(jail)
+        else:
+            # TODO: front end needs to ask if player wants to pay $50 fine
+            pay_fine: bool = get_player_input("Do you want to pay the fine to get out of jail? (y/n): ") # TODO: get from frontend        
+            if pay_fine:
+                print(f"{current_player.get_name()} chooses to pay the fine to get out of jail")
+            # Try to pay jail fine, loop until successful or player chooses to stay in jail
+                pay_fine_loop_flag = False
+                while not pay_fine_loop_flag:
+                    try:
+                        jail.pay_fine_for_release(current_player, free_parking)
+                        pay_fine_loop_flag = True
+                        print(f"{current_player.get_name()} has paid the fine and is released from jail")
+                    except errors.InsufficientFundsError:
+                        if not handle_insufficient_funds(current_player, bank, "paying the jail fine"):
+                            # Player can't pay fine and doesn't want to sell or mortgage a property
+                            print(f"{current_player.get_name()} stays in jail")
+                            current_player.set_rounds_in_jail(current_player.get_rounds_in_jail() + 1)
+                            pay_fine_loop_flag = True  # Exit the loop
+                            players.pop(0)
+                            continue
+            else:
+                # Player stays in jail
+                print(f"{current_player.get_name()} stays in jail")
+                current_player.set_rounds_in_jail(current_player.get_rounds_in_jail() + 1)
+                players.pop(0)
+                continue
     
     
     
-# ###################################################
-# # Section: Roll dice
-# ###################################################
-#     move_result: list[list[int], int] | None = current_player.move_player() # return list of dice rolls and new position or None if player rolled 3 doubles
-#     if move_result is None:
-#         # Player rolls three doubles and goes to jail
-#         jail.put_in_jail(current_player)
-#         players.pop(0)
-#         continue
+###################################################
+# Section: Roll dice
+###################################################
+    move_result: list[list[int], int] | None = current_player.move_player() # return list of dice rolls and new position or None if player rolled 3 doubles
+    if move_result is None:
+        # Player rolls three doubles and goes to jail
+        jail.put_in_jail(current_player)
+        players.pop(0)
+        continue
     
-#     dice_rolls, new_position = move_result
-#     print(f"{current_player.get_name()} rolled a {dice_rolls[0]} and a {dice_rolls[1]} and moved to {new_position}")
+    dice_rolls, new_position = move_result
+    print(f"{current_player.get_name()} rolled a {dice_rolls[0]} and a {dice_rolls[1]} and moved to {new_position}")
     
-#     space_on_board: Ownable | FreeParking | Jail | Go | GameCard = game_board[new_position]
+    space_on_board: Ownable | FreeParking | Jail | Go | GameCard = game_board[new_position]
     
-#     # Check if passed go (potentially move to backend logic?)
-#     if current_player.get_has_passed_go_flag():
-#         go.pay_player(current_player, bank)
-#         current_player.reset_has_passed_go_flag()
-#         print(f"{current_player.get_name()} passed go and collected £200!")
+    # Check if passed go (potentially move to backend logic?)
+    if current_player.get_has_passed_go_flag():
+        go.pay_player(current_player, bank)
+        current_player.reset_has_passed_go_flag()
+        print(f"{current_player.get_name()} passed go and collected £200!")
     
-# ###################################################
-# # Section: Land on space and handle logic
-# ###################################################
-#     match space_on_board:
-#         case Ownable():
-#             print(f"{current_player.get_name()} landed on {space_on_board.name}, which is an ownable property.")
-#             if space_on_board.get_owner() == current_player:
-#                 print(f"{current_player.get_name()} landed on their own property, {space_on_board.name}. No action required.")
-#                 break
-#             elif space_on_board.get_owner() == bank:
-#                 print(f"{current_player.get_name()} landed on a property that is owned by the bank, {space_on_board.name}. Offer to purchase the property.")
+###################################################
+# Section: Land on space and handle logic
+###################################################
+    match space_on_board:
+        case Ownable():
+            print(f"{current_player.get_name()} landed on {space_on_board.name}, which is an ownable property.")
+            if space_on_board.get_owner() == current_player:
+                print(f"{current_player.get_name()} landed on their own property, {space_on_board.name}. No action required.")
+                continue
+            elif space_on_board.get_owner() == bank:
+                print(f"{current_player.get_name()} landed on a property that is owned by the bank, {space_on_board.name}. Offer to purchase the property.")
                 
-#                 if not current_player.get_is_first_circuit_complete():
-#                     print(f"{current_player.get_name()} is on the first circuit. They cannot make purchases until they have completed the first circuit.")
-#                     players.pop(0)
-#                     continue
-#                 # TODO: front end needs to ask if player wants to buy the property
-#                 wants_to_buy_property: bool = get_player_input("Do you want to buy this property? (y/n): ")
-#                 if wants_to_buy_property:
-#                     # flag to check if purchase was successful or player decided to not purchase the property
-#                     property_purchase_loop_flag = False
-#                     while not property_purchase_loop_flag:
-#                         try:
-#                             current_player.purchase_property(space_on_board, bank)
-#                             property_purchase_loop_flag = True
-#                             print(f"{current_player.get_name()} purchased {space_on_board.name} for £{space_on_board.get_cost()}")
-#                         except errors.InsufficientFundsError:
-#                             if not handle_insufficient_funds(current_player, bank, f"purchasing {space_on_board.name}"):
-#                                 # Player doesn't want to sell or mortgage, so they don't purchase
-#                                 print(f"{current_player.get_name()} decided not to purchase {space_on_board.name}")
-#                                 property_purchase_loop_flag = True  # Exit the loop
-#                 else:
-#                     # AUCTION LOGIC HERE
-#                     None
-#             # Player landed on an ownable property that is owned by another player
-#             else:
-#                 other_players = [player for player in admin.get_players() if player != current_player]
-#                 for player in other_players:
-#                     if space_on_board.get_owner() == player:
-#                         print(f"{current_player.get_name()} landed on {space_on_board.name} and is being charged rent to {player.get_name()}")
-#                         pay_rent_loop_flag = False
-#                         while not pay_rent_loop_flag:
-#                             try:
-#                                 space_on_board.get_rent_due_from_player(current_player)
-#                                 pay_rent_loop_flag = True
-#                             except errors.InsufficientFundsError:
-#                                 if not handle_insufficient_funds(current_player, bank, f"paying rent to {player.get_name()}"):
-#                                     # Player can't sell or mortgage, so they are declared bankrupt
-#                                     print(f"{current_player.get_name()} is unable to pay rent and is therefore bankrupt")
-#                                     current_player.set_is_bankrupt(True)
-#                                     players.pop(0)
-#                                     continue
-#                         break
-#                 else:
-#                     print(f"{current_player.get_name()} landed on {space_on_board.name} and is not being charged rent")
+                if not current_player.get_is_first_circuit_complete():
+                    print(f"{current_player.get_name()} is on the first circuit. They cannot make purchases until they have completed the first circuit.")
+                    players.pop(0)
+                    continue
+                # TODO: front end needs to ask if player wants to buy the property
+                wants_to_buy_property: bool = get_player_input("Do you want to buy this property? (y/n): ")
+                if wants_to_buy_property:
+                    # flag to check if purchase was successful or player decided to not purchase the property
+                    property_purchase_loop_flag = False
+                    while not property_purchase_loop_flag:
+                        try:
+                            current_player.purchase_property(space_on_board, bank)
+                            property_purchase_loop_flag = True
+                            print(f"{current_player.get_name()} purchased {space_on_board.name} for £{space_on_board.get_cost()}")
+                        except errors.InsufficientFundsError:
+                            if not handle_insufficient_funds(current_player, bank, f"purchasing {space_on_board.name}"):
+                                # Player doesn't want to sell or mortgage, so they don't purchase
+                                print(f"{current_player.get_name()} decided not to purchase {space_on_board.name}")
+                                property_purchase_loop_flag = True  # Exit the loop
+                else:
+                    # AUCTION LOGIC HERE
+                    None
+            # Player landed on an ownable property that is owned by another player
+            else:
+                other_players = [player for player in admin.get_players() if player != current_player]
+                for player in other_players:
+                    if space_on_board.get_owner() == player:
+                        print(f"{current_player.get_name()} landed on {space_on_board.name} and is being charged rent to {player.get_name()}")
+                        pay_rent_loop_flag = False
+                        current_player.cash_balance = 0
+                        while not pay_rent_loop_flag:
+                            try:
+                                space_on_board.get_rent_due_from_player(current_player)
+                                pay_rent_loop_flag = True
+                            except errors.InsufficientFundsError:
+                                if not handle_insufficient_funds(current_player, bank, f"paying rent to {player.get_name()}"):
+                                    # Player can't sell or mortgage, so they are declared bankrupt
+                                    print(f"{current_player.get_name()} is unable to pay rent and is therefore bankrupt")
+                                    current_player.set_is_bankrupt(True)
+                                    players.pop(0)
+                                    continue
+                        break
+                else:
+                    print(f"{current_player.get_name()} landed on {space_on_board.name} and is not being charged rent")
                     
-#         case FreeParking():
-#             print(f"{current_player.get_name()} landed on Free Parking. All previous fines that have been collected are now being paid out to the player.")
-#             free_parking.payout_fines(current_player)
-#             # Additional logic for Free Parking can be added here
-#         case Jail():
-#             print(f"{current_player.get_name()} landed in Jail.")
-#             jail.put_in_jail(current_player)
-#             players.pop(0)
-#             continue
-#         case Go():
-#             print(f"{current_player.get_name()} landed on Go and collects $200!")
-#         case GameCard():
-#             print(f"{current_player.get_name()} landed on a Game Card space. Drawing a card...")
-#             pot_luck_card_positions = [0, 17, 33]
-#             opportunity_knocks_card_positions = [7, 22, 36]
-#             other_players = [player for player in admin.get_players() if player != current_player]
-#             if game_space_helper[space_on_board] in pot_luck_card_positions:
-#                 card_info = pot_luck_cards.get_card()
-#                 print(f'{current_player.get_name()} drew a pot luck card: {card_info[0]}')
-#                 pot_luck_card_loop_flag = False
-#                 while not pot_luck_card_loop_flag:
-#                     try:
-#                         pot_luck_cards.process_card(player=current_player, 
-#                                                 bank=bank, 
-#                                                 card_id=card_info[1], 
-#                                                 free_parking=free_parking, 
-#                                                 jail=jail, 
-#                                                 other_players=other_players)
-#                         pot_luck_card_loop_flag = True
-#                     except errors.InsufficientFundsError:
-#                         if not handle_insufficient_funds(current_player, bank, f"paying rent to {player.get_name()}"):
-#                             # Player can't sell or mortgage, so they are declared bankrupt
-#                             print(f"{current_player.get_name()} is unable to pay rent and is therefore bankrupt")
-#                             current_player.set_is_bankrupt(True)
-#                             players.pop(0)
-#                             continue
-#             elif game_space_helper[space_on_board] in opportunity_knocks_card_positions:
-#                 card_info = opportunity_knocks.get_card()
-#                 print(f"{current_player.get_name()} drew an opportunity knocks card: {card_info[0]}")
-#                 opportunity_knocks_card_loop_flag = False
-#                 while not opportunity_knocks_card_loop_flag:
-#                     try:
-#                         opportunity_knocks.process_card(player=current_player, 
-#                                                     bank=bank, 
-#                                                     card_id=card_info[1], 
-#                                                     free_parking=free_parking, 
-#                                                     jail=jail, 
-#                                                     other_players=other_players)
-#                         opportunity_knocks_card_loop_flag = True
-#                     except errors.InsufficientFundsError:
-#                         if not handle_insufficient_funds(current_player, bank, f"paying rent to {player.get_name()}"):
-#                             # Player can't sell or mortgage, so they are declared bankrupt
-#                             print(f"{current_player.get_name()} is unable to pay rent and is therefore bankrupt")
-#                             current_player.set_is_bankrupt(True)
-#                             players.pop(0)
-#                             continue
-#         case _:
-#             print(f"{current_player.get_name()} landed on an unknown space.")
+        case FreeParking():
+            print(f"{current_player.get_name()} landed on Free Parking. All previous fines that have been collected are now being paid out to the player.")
+            free_parking.payout_fines(current_player)
+            # Additional logic for Free Parking can be added here
+        case Jail():
+            print(f"{current_player.get_name()} landed in Jail.")
+            jail.put_in_jail(current_player)
+            players.pop(0)
+            continue
+        case Go():
+            print(f"{current_player.get_name()} landed on Go and collects $200!")
+        case GameCard():
+            print(f"{current_player.get_name()} landed on a Game Card space. Drawing a card...")
+            pot_luck_card_positions = [0, 17, 33]
+            opportunity_knocks_card_positions = [7, 22, 36]
+            other_players = [player for player in admin.get_players() if player != current_player]
+            if game_space_helper[space_on_board] in pot_luck_card_positions:
+                card_info = pot_luck_cards.get_card()
+                print(f'{current_player.get_name()} drew a pot luck card: {card_info[0]}')
+                pot_luck_card_loop_flag = False
+                while not pot_luck_card_loop_flag:
+                    try:
+                        pot_luck_cards.process_card(player=current_player, 
+                                                bank=bank, 
+                                                card_id=card_info[1], 
+                                                free_parking=free_parking, 
+                                                jail=jail, 
+                                                other_players=other_players)
+                        pot_luck_card_loop_flag = True
+                    except errors.InsufficientFundsError:
+                        if not handle_insufficient_funds(current_player, bank, f"paying rent to {player.get_name()}"):
+                            # Player can't sell or mortgage, so they are declared bankrupt
+                            print(f"{current_player.get_name()} is unable to pay rent and is therefore bankrupt")
+                            current_player.set_is_bankrupt(True)
+                            players.pop(0)
+                            continue
+            elif game_space_helper[space_on_board] in opportunity_knocks_card_positions:
+                card_info = opportunity_knocks.get_card()
+                print(f"{current_player.get_name()} drew an opportunity knocks card: {card_info[0]}")
+                opportunity_knocks_card_loop_flag = False
+                while not opportunity_knocks_card_loop_flag:
+                    try:
+                        opportunity_knocks.process_card(player=current_player, 
+                                                    bank=bank, 
+                                                    card_id=card_info[1], 
+                                                    free_parking=free_parking, 
+                                                    jail=jail, 
+                                                    other_players=other_players)
+                        opportunity_knocks_card_loop_flag = True
+                    except errors.InsufficientFundsError:
+                        if not handle_insufficient_funds(current_player, bank, f"paying rent to {player.get_name()}"):
+                            # Player can't sell or mortgage, so they are declared bankrupt
+                            print(f"{current_player.get_name()} is unable to pay rent and is therefore bankrupt")
+                            current_player.set_is_bankrupt(True)
+                            players.pop(0)
+                            continue
+        case _:
+            print(f"{current_player.get_name()} landed on an unknown space.")
     
-# ###################################################
-# # Section: Offer player chance to upgrade property
-# ###################################################
-#     #TODO: front end needs to show the player the properties eligible for upgrade
-#     properties_eligible_for_upgrade = []
-#     for prop_group, props in current_player.get_owned_properties().items():
-#         for prop in props:
-#             if type(prop) == Property:
-#                 if prop.get_is_eligible_for_house_upgrade() or prop.get_is_eligible_for_hotel_upgrade():
-#                     properties_eligible_for_upgrade.append(prop)
-#     if len(properties_eligible_for_upgrade) > 0:
-#         upgrade_loop_flag = False
-#         while not upgrade_loop_flag:
-#             print(f"{current_player.get_name()} has the following properties eligible for upgrade:")
+###################################################
+# Section: Offer player chance to upgrade property
+###################################################
+    #TODO: front end needs to show the player the properties eligible for upgrade
+    properties_eligible_for_upgrade = []
+    for prop_group, props in current_player.get_owned_properties().items():
+        for prop in props:
+            if type(prop) == Property:
+                if prop.get_is_eligible_for_upgrade():
+                    properties_eligible_for_upgrade.append(prop)
+    if len(properties_eligible_for_upgrade) > 0:
+        upgrade_loop_flag = False
+        while not upgrade_loop_flag:
+            print(f"{current_player.get_name()} has the following properties eligible for upgrade:")
             
-#             prop_with_index = []
-#             for index, prop in enumerate(properties_eligible_for_upgrade):
-#                 prop_with_index.append((index, prop))
-#                 print(f"{index}: {prop.get_name()}")
+            prop_with_index = []
+            for index, prop in enumerate(properties_eligible_for_upgrade):
+                prop_with_index.append((index, prop))
+                print(f"{index}: {prop.get_name()}")
             
-#             if len(properties_eligible_for_upgrade) == 0:
-#                 #TODO: front end needs to tell player that they have no properties eligible for upgrade
-#                 print(f"\n{current_player.get_name()} has no properties eligible for upgrade")
-#                 upgrade_loop_flag = False
-#             else:
-#                 #TODO: front end needs to ask player if they want to upgrade
-#                 upgrade_choice = input("Would you like to upgrade any of your properties? (reply with the index of the property you want to upgrade or 'n' if you don't want to upgrade any properties): ")
-#                 if int(upgrade_choice) in range(len(properties_eligible_for_upgrade)):
-#                     upgrade_loop_flag = False
-#                     while not upgrade_loop_flag:
-#                         try:
-#                             prop_to_upgrade = prop_with_index[int(upgrade_choice)][1]
-#                             prop_to_upgrade.upgrade_property()
-#                             upgrade_loop_flag = True
-#                             break
-#                         except errors.InsufficientFundsError:
-#                             if not handle_insufficient_funds(current_player, bank, f"upgrading {prop_to_upgrade.get_name()}"):
-#                                 # Player can't sell or mortgage, so they are declared bankrupt
-#                                 print(f"{current_player.get_name()} is unable to upgrade {prop_to_upgrade.get_name()} due to insufficient funds")
-#                                 break
+            if len(properties_eligible_for_upgrade) == 0:
+                #TODO: front end needs to tell player that they have no properties eligible for upgrade
+                print(f"\n{current_player.get_name()} has no properties eligible for upgrade")
+                upgrade_loop_flag = False
+            else:
+                #TODO: front end needs to ask player if they want to upgrade
+                upgrade_choice = input("Would you like to upgrade any of your properties? (reply with the index of the property you want to upgrade or 'n' if you don't want to upgrade any properties): ")
+                if int(upgrade_choice) in range(len(properties_eligible_for_upgrade)):
+                    upgrade_loop_flag = False
+                    while not upgrade_loop_flag:
+                        try:
+                            prop_to_upgrade = prop_with_index[int(upgrade_choice)][1]
+                            prop_to_upgrade.upgrade_property()
+                            upgrade_loop_flag = True
+                            break
+                        except errors.InsufficientFundsError:
+                            if not handle_insufficient_funds(current_player, bank, f"upgrading {prop_to_upgrade.get_name()}"):
+                                # Player can't sell or mortgage, so they are declared bankrupt
+                                print(f"{current_player.get_name()} is unable to upgrade {prop_to_upgrade.get_name()} due to insufficient funds")
+                                break
                         
-#                 elif upgrade_choice == "n":
-#                     upgrade_loop_flag = False
-#                 else:
-#                     print("Invalid input. Please enter 'y' or 'n'.")
+                elif upgrade_choice == "n":
+                    upgrade_loop_flag = False
+                else:
+                    print("Invalid input. Please enter 'y' or 'n'.")
                     
-#     # TODO: check if player rolled a double and should roll again
-#     if current_player.get_doubles_rolled() > 0:
-#         continue
-#     else:
-#         players.pop(0)
+    # TODO: check if player rolled a double and should roll again
+    if current_player.get_doubles_rolled() > 0:
+        continue
+    else:
+        players.pop(0)
             
     
-# # Establish winner
-# winner = players[0]
-# for player in admin.get_players():
-#     if player.get_player_net_worth() > winner.get_player_net_worth():
-#         winner = player
+# Establish winner
+winner = players[0]
+for player in admin.get_players():
+    if player.get_player_net_worth() > winner.get_player_net_worth():
+        winner = player
 
-# print(f"{winner.get_name()} is the winner of the game!")# Start timer if time limit is passed
+print(f"{winner.get_name()} is the winner of the game!")# Start timer if time limit is passed
 
 
 

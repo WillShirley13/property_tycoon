@@ -13,15 +13,15 @@ class Utility(Ownable):
         self.num_of_utilities_owned_by_owner: int = 0
     
     @override
-    def get_rent_due_from_player(self, player: 'Player', dice_roll: int) -> int:
+    def get_rent_due_from_player(self, player: 'Player') -> int:
         # If property is mortgaged, no rent is due
         if self.is_mortgaged:
             return 0
         # Calculate rent due
         if self.num_of_utilities_owned_by_owner == 1:
-            rent = dice_roll * ONE_UTILITY_RENT_DICE_MULTIPLIER
+            rent = sum(player.get_recent_dice_rolls()) * ONE_UTILITY_RENT_DICE_MULTIPLIER
         elif self.num_of_utilities_owned_by_owner == 2:
-            rent = dice_roll * TWO_UTILITY_RENT_DICE_MULTIPLIER
+            rent = sum(player.get_recent_dice_rolls()) * TWO_UTILITY_RENT_DICE_MULTIPLIER
         else:
             rent = 0
         player.sub_cash_balance(rent)
