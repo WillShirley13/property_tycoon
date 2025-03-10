@@ -14,9 +14,10 @@ class Property(Ownable):
         self.hotel: int = 0
         self.next_upgrade_cost: int = PROPERTY_BUILD_COSTS[self.property_group.value]["house"]
         self.owner_owns_all_properties_in_group: bool = False
-        self.is_eligible_for__upgrade: bool = False
-        self.is_eligible_for__downgrade: bool = False
+        self.is_eligible_for_upgrade: bool = False
+        self.is_eligible_for_downgrade: bool = False
         
+    # Getters and Setters
     def get_property_group(self) -> PropertyGroup:
         return self.property_group
     
@@ -33,7 +34,7 @@ class Property(Ownable):
         self.hotel = hotel
     
     def get_is_eligible_for_upgrade(self) -> bool:
-        return self.is_eligible_for_house_upgrade
+        return self.is_eligible_for_upgrade
     
     def set_is_eligible_for_upgrade(self, is_eligible_for_upgrade: bool) -> None:
         self.is_eligible_for_upgrade = is_eligible_for_upgrade
@@ -44,7 +45,13 @@ class Property(Ownable):
     def set_is_eligible_for_downgrade(self, is_eligible_for_downgrade: bool) -> None:
         self.is_eligible_for_downgrade = is_eligible_for_downgrade
     
+    def get_owner_owns_all_properties_in_group(self) -> bool:
+        return self.owner_owns_all_properties_in_group
     
+    def set_owner_owns_all_properties_in_group(self, owner_owns_all_properties_in_group: bool) -> None:
+        self.owner_owns_all_properties_in_group = owner_owns_all_properties_in_group
+    
+    # Property Management
     def upgrade_property(self, bank) -> None:
         """
         Upgrades a property by adding a house or hotel.
@@ -167,11 +174,5 @@ class Property(Ownable):
                 return False
         # If we get here, the difference is at most 1 for all properties
         return True
-    
-    def get_owner_owns_all_properties_in_group(self) -> bool:
-        return self.owner_owns_all_properties_in_group
-    
-    def set_owner_owns_all_properties_in_group(self, owner_owns_all_properties_in_group: bool) -> None:
-        self.owner_owns_all_properties_in_group = owner_owns_all_properties_in_group
     
     

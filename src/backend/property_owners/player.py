@@ -64,25 +64,20 @@ class Player(PropertyHolder):
     def get_is_first_circuit_complete(self) -> bool:
         return self.is_first_circuit_complete
     
+    def set_is_first_circuit_complete(self) -> None:
+        self.is_first_circuit_complete = True
+    
     def get_has_passed_go_flag(self) -> bool:
+        if self.has_passed_go_flag:
+            self.has_passed_go_flag = False
         return self.has_passed_go_flag
     
-    def reset_has_passed_go_flag(self) -> None:
-        self.has_passed_go_flag = False
+    def set_has_passed_go_flag(self, has_passed_go_flag: bool) -> None:
+        self.has_passed_go_flag = has_passed_go_flag
     
-    # Doubles methods
-    def get_doubles_rolled(self) -> int:
-        return self.doubles_rolled
-    
-    def reset_doubles_rolled(self) -> None:
-        self.doubles_rolled = 0
-    
-    # Bankruptcy methods
-    def get_is_bankrupt(self) -> bool:
-        return self.is_bankrupt
-    
-    def set_is_bankrupt(self) -> None:
-        self.is_bankrupt = True
+    # functionality has been moved above to get_has_passed_go_flag
+    # def reset_has_passed_go_flag(self) -> None:
+    #     self.has_passed_go_flag = False
 
     # Property transaction methods
     def purchase_property(self, property: 'Ownable', bank: 'Bank') -> None:      
@@ -95,7 +90,7 @@ class Player(PropertyHolder):
         bank.add_cash_balance(property_cost)
         
         # update property portfolios
-        self.add_property_to_portfolio(property)
+        self._add_property_to_portfolio(property)
         bank.remove_property_from_portfolio(property)
         
         # update ownership
@@ -110,7 +105,7 @@ class Player(PropertyHolder):
         else:
             self.add_cash_balance(property.get_cost())
             bank.sub_cash_balance(property.get_cost())
-        self.remove_property_from_portfolio(property)
+        self._remove_property_from_portfolio(property)
         bank.add_property_to_portfolio(property)
     
     def mortgage_property(self, property: 'Ownable', bank: 'Bank') -> None:    
@@ -143,7 +138,7 @@ class Player(PropertyHolder):
             raise errors.InsufficientFundsError
     
     @override
-    def add_property_to_portfolio(self, property: 'Ownable') -> None:
+    def _add_property_to_portfolio(self, property: 'Ownable') -> None:
         self.owned_properties[property.property_group].append(property)
 
         match property.get_property_group():
@@ -201,7 +196,7 @@ class Player(PropertyHolder):
                 pass
 
     @override
-    def remove_property_from_portfolio(self, property: 'Ownable') -> None:
+    def _remove_property_from_portfolio(self, property: 'Ownable') -> None:
         if property not in self.owned_properties[property.property_group]:
             raise errors.PropertyNotInPortfolioError
         
@@ -274,22 +269,23 @@ class Player(PropertyHolder):
     def move_player(self) -> list[list[int], int] | None:
         dice_rolls: list[int] = [random.randint(1, 6) for _ in range(2)]
         if dice_rolls[0] == dice_rolls[1]:
-            self.doubles_rolled += 1
+            self.set_doubles_rolled(self.get_doubles_rolled() + 1)
         else:
-            self.doubles_rolled = 0
-        if self.doubles_rolled == 3:
-            self.reset_doubles_rolled()
+            self.set_doubles_rolled(0)
+        if self.get_doubles_rolled() == 3:
+            self.set_doubles_rolled(0)
+            # return None to indicate that the player has rolled three doubles and should go to jail
             return None
     
         # Faciliate circular board
         if self.current_position + sum(dice_rolls) > 39:
-            if not self.is_first_circuit_complete:
-                self.is_first_circuit_complete = True
-                self.has_passed_go_flag = True
+            if not self.get_is_first_circuit_complete():
+                self.set_is_first_circuit_complete()
+                self.set_has_passed_go_flag(True)
             self.current_position = (self.current_position + sum(dice_rolls)) % 40    
         else:
             self.current_position += sum(dice_rolls)
-        self.recent_dice_rolls = dice_rolls
+        self.set_recent_dice_rolls(dice_rolls)
         return [dice_rolls, self.current_position]
 
     # Updates current_position to a specified position
@@ -298,6 +294,19 @@ class Player(PropertyHolder):
     
     def get_recent_dice_rolls(self) -> list[int]:
         return self.recent_dice_rolls
+    
+    def set_recent_dice_rolls(self, recent_dice_rolls: list[int]) -> None:
+        self.recent_dice_rolls = recent_dice_rolls
+    
+    # Doubles methods
+    def get_doubles_rolled(self) -> int:
+        return self.doubles_rolled
+    
+    def set_doubles_rolled(self, doubles_rolled: int) -> None:
+        self.doubles_rolled = doubles_rolled
+    
+    def reset_doubles_rolled(self) -> None:
+        self.doubles_rolled = 0
     
     # Player status methods
     def retire_player(self, bank: 'Bank') -> None:
@@ -316,4 +325,12 @@ class Player(PropertyHolder):
                 else:
                     net_worth += property.value
         return net_worth
+    
+        
+    # Bankruptcy methods
+    def get_is_bankrupt(self) -> bool:
+        return self.is_bankrupt
+    
+    def set_is_bankrupt(self) -> None:
+        self.is_bankrupt = True
     

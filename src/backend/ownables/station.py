@@ -27,7 +27,7 @@ class Station(Ownable):
     def get_rent_due_from_player(self, player: 'Player') -> int:
         # Get the rent due from a player based on the number of stations owned
         # ... implementation details ...
-        return self.rent_values[0]  # Placeholder
+        return self.rent_cost
     
     def get_owner_owns_all_stations(self) -> bool:
         return self.owner_owns_all_stations

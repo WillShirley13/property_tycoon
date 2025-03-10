@@ -34,5 +34,12 @@ class Utility(Ownable):
     def set_owner_owns_all_utilities(self, owner_owns_all_utilities: bool) -> None:
         self.owner_owns_all_utilities = owner_owns_all_utilities
         
+    def get_num_of_utilities_owned_by_owner(self) -> int:
+        return self.num_of_utilities_owned_by_owner
+    
+    def set_num_of_utilities_owned_by_owner(self, num_of_utilities_owned_by_owner: int) -> None:
+        self.num_of_utilities_owned_by_owner = num_of_utilities_owned_by_owner
+        
+        
         
 

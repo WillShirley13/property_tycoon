@@ -26,7 +26,7 @@ class Jail:
     def get_release_cost(self) -> int:
         return self.release_cost
 
-    def get_is_in_jail(self) -> List[Tuple['Player', int]]:
+    def get_currently_in_jail(self) -> List[Tuple['Player', int]]:
         return self.currently_in_jail
     
     def pay_fine_for_release(self, player: 'Player', free_parking: 'FreeParking') -> None:

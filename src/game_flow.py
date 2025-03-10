@@ -1,16 +1,16 @@
 from typing import Tuple
-from .admin import Admin
-from .property_owners.player import Player
-from .enums.game_token import GameToken
-from .non_ownables.jail import Jail
-from .non_ownables.free_parking import FreeParking
-from .non_ownables.go import Go
-from .property_owners.bank import Bank
-from .non_ownables.game_card import GameCard
-from .ownables.ownable import Ownable
-from .ownables.property import Property
-from .enums.property_group import PropertyGroup
-from . import errors
+from .backend.admin import Admin
+from .backend.property_owners.player import Player
+from .backend.enums.game_token import GameToken
+from .backend.non_ownables.jail import Jail
+from .backend.non_ownables.free_parking import FreeParking
+from .backend.non_ownables.go import Go
+from .backend.property_owners.bank import Bank
+from .backend.non_ownables.game_card import GameCard
+from .backend.ownables.ownable import Ownable
+from .backend.ownables.property import Property
+from .backend.enums.property_group import PropertyGroup
+from .backend import errors
 import time
 
 # TEMP FUNCTION TO GET PLAYER INPUT
@@ -291,10 +291,7 @@ while True:
             free_parking.payout_fines(current_player)
             # Additional logic for Free Parking can be added here
         case Jail():
-            print(f"{current_player.get_name()} landed in Jail.")
-            jail.put_in_jail(current_player)
-            players.pop(0)
-            continue
+            print(f"{current_player.get_name()} is just visiting Jail.")
         case Go():
             print(f"{current_player.get_name()} landed on Go and collects $200!")
         case GameCard():
