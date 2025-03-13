@@ -7,7 +7,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from backend.enums.game_token import GameToken
 from temp_frontend.board import Board
-from temp_frontend.player_display import draw_player_display
+from temp_frontend.player_display import PlayerDisplay
 from temp_frontend.space_data import SPACE_COLORS
 from backend.property_owners.player import Player
 from backend.property_owners.bank import Bank
@@ -16,7 +16,7 @@ from backend.non_ownables.go import Go
 from backend.non_ownables.jail import Jail
 from backend.non_ownables.game_card import GameCard
 from backend.ownables.ownable import Ownable
-from temp_frontend.current_player_display import draw_current_player_display
+from temp_frontend.current_player_display import CurrentPlayerDisplay
 
 class MainGameDisplay:
     def __init__(self, screen_width, screen_height, players, admin=None):
@@ -33,96 +33,87 @@ class MainGameDisplay:
         self.screen_height = screen_height
         self.players_data = players
         self.admin = admin
+        self.running = True
+        
+        # Initialize display components
+        self.board = Board(screen_width, screen_height)
+        self.player_display = PlayerDisplay(20, 20)  # Position in the top left corner
+        self.current_player_display = CurrentPlayerDisplay(
+            20,                    # x position
+            screen_height - 150,   # y position
+            300,                   # width
+            130                    # height
+        )
+        
+        # Initialize game flow variables
+        self.current_player = None
+        self.current_player_index = 0
+        self.current_player_turn_finished = False
+        self.players_objects = []
         
         # Game state data from Admin
         if admin:
-            self.players_objects = admin.get_players()
-            self.bank = admin.get_bank()
-            self.game_board = admin.get_game_board()
-            self.game_space_helper = admin.get_game_space_helper()
-            self.time_limit = admin.get_time_limit()
-            self.free_parking = admin.get_free_parking()
-            self.go = admin.get_go()
-            self.jail = admin.get_jail()
-            self.pot_luck_cards = admin.get_pot_luck_cards()
-            self.opportunity_knocks = admin.get_opportunity_knocks()
+            self.set_admin(admin)
             
-            # Game flow state
-            self.current_player_index = 0
-            self.current_player = self.players_objects[self.current_player_index]
-        else:
-            # Default for initialization without admin
-            self.current_player_index = 0
-            self.current_player = None
-        
-        # Create the board
-        self.board = Board(screen_width, screen_height)
-        
-        # Calculate display positions
-        self.player_display_x = 20
-        self.player_display_y = 20
-        self.player_display_width = 250
-        self.player_display_height = min(400, screen_height - 200)  # Ensure it fits on screen
-        
-        # Calculate current player display position (below player_display)
-        self.current_player_display_x = self.player_display_x
-        self.current_player_display_y = self.player_display_y + self.player_display_height + 20
-        self.current_player_display_width = self.player_display_width
-        self.current_player_display_height = 150
-        
-        self.current_player_turn_finished = False
-        
-    def draw(self, screen):
+    def draw(self, screen: pygame.Surface) -> None:
         """
-        Draw the main game display including the board and player info.
+        Draw the main game display including the board and player information.
         
         Args:
-            screen (pygame.Surface): The game screen
+            screen: The pygame surface to draw on
         """
         # Fill the screen with the background color
-        screen.fill(SPACE_COLORS["screen_bg"])
+        screen.fill((255, 255, 255))  # White background
         
         # Draw the board
         self.board.draw(screen)
         
         # Draw the player display
-        draw_player_display(
-            screen, 
-            self.players_data, 
-            self.player_display_x, 
-            self.player_display_y, 
-            self.player_display_width, 
-            self.player_display_height
-        )
+        self.player_display.draw(screen, self.players_data)
         
         # Draw current player display if we have player objects
-        if self.current_player:
-            draw_current_player_display(
-                screen,
-                self.current_player,
-                self.current_player_display_x,
-                self.current_player_display_y,
-                self.current_player_display_width,
-                self.current_player_display_height
-            )
+        if self.players_objects and self.current_player:
+            self.current_player_display.draw(screen, self.current_player)
         
     def handle_events(self):
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                self.running = False
-            # Handle other events, but remove the space key handler
+        """
+        Handle game-specific events and game state changes.
+        
+        Returns:
+            bool: True if the game should continue running, False if it should exit
+        """
+        # Handle keyboard events for game control
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_SPACE]:
+            # Space key advances the turn
+            self.current_player_turn_finished = True
             
         # Check if the current player's turn is finished
         if self.current_player_turn_finished:
-            self.process_player_turn()
             self.next_player()
             self.current_player_turn_finished = False  # Reset the flag for the next player
+            
+        # Return the running state
+        return self.running
 
     def process_player_turn(self):
         # This method would contain the game flow logic for a player's turn
         # When all required actions for a turn are completed, set the flag
         
-        return None
+        # Example: After dice roll, movement, and any required actions
+        if self.all_turn_actions_completed():
+            self.current_player_turn_finished = True
+    
+    def all_turn_actions_completed(self):
+        """
+        Check if all required actions for the current player's turn are completed.
+        This is a placeholder method that should be implemented with actual game logic.
+        
+        Returns:
+            bool: True if all actions are completed, False otherwise
+        """
+        # Placeholder implementation - in a real game, this would check various conditions
+        return False
         
     def next_player(self):
         """
@@ -167,5 +158,6 @@ class MainGameDisplay:
         self.opportunity_knocks = admin.get_opportunity_knocks()
         
         # Initialize game flow
-        self.current_player_index = 0
-        self.current_player = self.players_objects[self.current_player_index] 
+        if self.players_objects:
+            self.current_player_index = 0
+            self.current_player = self.players_objects[self.current_player_index] 

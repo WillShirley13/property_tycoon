@@ -1,19 +1,8 @@
 import pygame
 import sys
 
+# Gets player names form input and returns them to the main.py
 def display_start_screen(screen, screen_width, screen_height):
-    """
-    Display a start screen with player name inputs and a start button.
-    Adapts to dynamic screen sizes.
-    
-    Args:
-        screen (pygame.Surface): The game screen
-        screen_width (int): Width of the screen
-        screen_height (int): Height of the screen
-        
-    Returns:
-        list: List of player names (empty strings removed)
-    """
     # Initialize pygame font
     pygame.font.init()
     
@@ -112,7 +101,7 @@ def display_start_screen(screen, screen_width, screen_height):
         screen.blit(title_surface, title_rect)
         
         # Draw subtitle
-        subtitle_surface = subtitle_font.render("Enter player names (2-5 players)", True, TEXT_COLOR)
+        subtitle_surface = subtitle_font.render("Enter player names (1-5 players)", True, TEXT_COLOR)
         subtitle_rect = subtitle_surface.get_rect(center=(screen_width // 2, title_rect.bottom + 30))
         screen.blit(subtitle_surface, subtitle_rect)
         
@@ -153,4 +142,4 @@ def display_start_screen(screen, screen_width, screen_height):
         clock.tick(30)
     
     # Default return if loop exits unexpectedly
-    return ["Player 1"] 
+    return [] 

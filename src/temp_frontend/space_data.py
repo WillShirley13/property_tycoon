@@ -50,55 +50,54 @@ PROPERTY_COLORS = {
     "ORANGE": (255, 165, 0),      # Orange
     "RED": (255, 0, 0),           # Red
     "YELLOW": (255, 255, 0),      # Yellow
-    "GREEN": (0, 128, 0),         # Green
-    "DEEP_BLUE": (0, 0, 139),     # Dark Blue
-    "STATION": (120, 120, 120),   # Gray for stations
-    "UTILITY": (200, 200, 255),   # Light blue-gray for utilities
-    "SPECIAL": (240, 240, 240)    # Light gray for special spaces (GO, JAIL, etc.)
+    "GREEN": (0, 255, 0),         # Green
+    "DEEP_BLUE": (0, 0, 139),     # Deep Blue
+    "STATION": (128, 128, 128),   # Gray for stations
+    "UTILITY": (192, 192, 192)    # Light gray for utilities
 }
 
-# Space property groups
+# Space property groups (maps each space to its property group)
 SPACE_PROPERTY_GROUPS = [
-    "SPECIAL",      # 0 - GO
-    "BROWN",        # 1 - The Old Creek
-    "SPECIAL",      # 2 - Pot Luck
-    "BROWN",        # 3 - Gangsters Paradise
-    "SPECIAL",      # 4 - Free Parking (Income Tax)
-    "STATION",      # 5 - Brighton Station
-    "BLUE",         # 6 - The Angels Delight
-    "SPECIAL",      # 7 - Opportunity Knocks
-    "BLUE",         # 8 - Potter Avenue
-    "BLUE",         # 9 - Granger Drive
-    "SPECIAL",      # 10 - JAIL
-    "PURPLE",       # 11 - Skywalker Drive
-    "UTILITY",      # 12 - Tesla Power Co
-    "PURPLE",       # 13 - Wookie Hole
-    "PURPLE",       # 14 - Rey Lane
-    "STATION",      # 15 - Hove Station
-    "ORANGE",       # 16 - Bishop Drive
-    "SPECIAL",      # 17 - Pot Luck
-    "ORANGE",       # 18 - Dunham Street
-    "ORANGE",       # 19 - Broyles Lane
-    "SPECIAL",      # 20 - FREE PARKING
-    "RED",          # 21 - Yue Fei Square
-    "SPECIAL",      # 22 - Opportunity Knocks
-    "RED",          # 23 - Mulan Rouge
-    "RED",          # 24 - Han Xin Gardens
-    "STATION",      # 25 - Falmer Station
-    "YELLOW",       # 26 - Shatner Close
-    "YELLOW",       # 27 - Picard Avenue
-    "UTILITY",      # 28 - Edison Water
-    "YELLOW",       # 29 - Crusher Creek
-    "SPECIAL",      # 30 - GO TO JAIL
-    "GREEN",        # 31 - Sirat Mews
-    "GREEN",        # 32 - Ghengis Crescent
-    "SPECIAL",      # 33 - Pot Luck
-    "GREEN",        # 34 - Ibis Close
-    "STATION",      # 35 - Portslade Station
-    "SPECIAL",      # 36 - Opportunity Knocks
-    "DEEP_BLUE",    # 37 - James Webb Way
-    "SPECIAL",      # 38 - Free Parking (Super Tax)
-    "DEEP_BLUE"     # 39 - Turing Heights
+    "SPECIAL",      # GO
+    "BROWN",        # The Old Creek
+    "SPECIAL",      # Pot Luck
+    "BROWN",        # Gangsters Paradise
+    "SPECIAL",      # Free Parking
+    "STATION",      # Brighton Station
+    "BLUE",         # The Angels Delight
+    "SPECIAL",      # Opportunity Knocks
+    "BLUE",         # Potter Avenue
+    "BLUE",         # Granger Drive
+    "SPECIAL",      # JAIL
+    "PURPLE",       # Skywalker Drive
+    "UTILITY",      # Tesla Power Co
+    "PURPLE",       # Wookie Hole
+    "PURPLE",       # Rey Lane
+    "STATION",      # Hove Station
+    "ORANGE",       # Bishop Drive
+    "SPECIAL",      # Pot Luck
+    "ORANGE",       # Dunham Street
+    "ORANGE",       # Broyles Lane
+    "SPECIAL",      # FREE PARKING
+    "RED",          # Yue Fei Square
+    "SPECIAL",      # Opportunity Knocks
+    "RED",          # Mulan Rouge
+    "RED",          # Han Xin Gardens
+    "STATION",      # Falmer Station
+    "YELLOW",       # Shatner Close
+    "YELLOW",       # Picard Avenue
+    "UTILITY",      # Edison Water
+    "YELLOW",       # Crusher Creek
+    "SPECIAL",      # GO TO JAIL
+    "GREEN",        # Sirat Mews
+    "GREEN",        # Ghengis Crescent
+    "SPECIAL",      # Pot Luck
+    "GREEN",        # Ibis Close
+    "STATION",      # Portslade Station
+    "SPECIAL",      # Opportunity Knocks
+    "DEEP_BLUE",    # James Webb Way
+    "SPECIAL",      # Free Parking
+    "DEEP_BLUE"     # Turing Heights
 ]
 
 # Space colors for different board elements
