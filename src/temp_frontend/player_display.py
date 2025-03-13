@@ -10,7 +10,7 @@ from backend.enums.game_token import GameToken
 from temp_frontend.text_utils import draw_text
 
 class PlayerDisplay:
-    def __init__(self, x: int, y: int, width: int = 300, height: int = 400):
+    def __init__(self, x: int, y: int, width: int = 300, height: int = 420):
         """
         Initialize the player display component.
         
@@ -77,7 +77,7 @@ class PlayerDisplay:
             player_y = self.y + 55 + i * player_height
             
             # Player background with subtle gradient effect
-            player_rect = pygame.Rect(self.x + 10, player_y, self.width - 20, player_height - 5)
+            player_rect = pygame.Rect(self.x + 10, player_y, self.width - 20, player_height - 2)
             pygame.draw.rect(screen, self.PLAYER_BG_COLOR, player_rect, border_radius=8)
             
             # Add highlight effect to the top of each player card

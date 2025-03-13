@@ -17,9 +17,10 @@ from backend.non_ownables.jail import Jail
 from backend.non_ownables.game_card import GameCard
 from backend.ownables.ownable import Ownable
 from temp_frontend.current_player_display import CurrentPlayerDisplay
+from backend.property_owners.player import Player
 
 class MainGameDisplay:
-    def __init__(self, screen_width, screen_height, players, admin=None):
+    def __init__(self, screen_width, screen_height, players, admin=None, center_spaces=None):
         """
         Initialize the main game display that integrates the board and player info.
         
@@ -34,6 +35,7 @@ class MainGameDisplay:
         self.players_data = players
         self.admin = admin
         self.running = True
+        self.center_spaces = center_spaces
         
         # Initialize display components
         self.board = Board(screen_width, screen_height)
@@ -51,9 +53,40 @@ class MainGameDisplay:
         self.current_player_turn_finished = False
         self.players_objects = []
         
+        # Dice values (hardcoded to 2 for now)
+        self.dice1_value = 2
+        self.dice2_value = 2
+        
         # Game state data from Admin
         if admin:
             self.set_admin(admin)
+    
+    def draw_dice(self, screen, value, x, y):
+        """
+        Draw a dice with the given value at the specified position.
+        
+        Args:
+            screen: The pygame surface to draw on
+            value: The value to display on the dice (1-6)
+            x: X coordinate for the top-left corner of the dice
+            y: Y coordinate for the top-left corner of the dice
+        """
+        # Draw the dice square
+        pygame.draw.rect(screen, (255, 0, 0), (x, y, 50, 50))
+        
+        # Draw the dots based on the dice value
+        dots = {
+            1: [(x + 25, y + 25)],
+            2: [(x + 15, y + 15), (x + 35, y + 35)],
+            3: [(x + 15, y + 15), (x + 25, y + 25), (x + 35, y + 35)],
+            4: [(x + 15, y + 15), (x + 35, y + 15), (x + 15, y + 35), (x + 35, y + 35)],
+            5: [(x + 15, y + 15), (x + 35, y + 15), (x + 25, y + 25), (x + 15, y + 35), (x + 35, y + 35)],
+            6: [(x + 15, y + 12), (x + 35, y + 12), (x + 15, y + 25), (x + 35, y + 25), (x + 15, y + 38), (x + 35, y + 38)]
+        }
+        
+        # Draw the dots
+        for dot in dots[value]:
+            pygame.draw.circle(screen, (0, 0, 0), dot, 5)
             
     def draw(self, screen: pygame.Surface) -> None:
         """
@@ -68,12 +101,60 @@ class MainGameDisplay:
         # Draw the board
         self.board.draw(screen)
         
+        game_piece_pngs = ['boot.png', 'cat.png', 'iron.png', 'tophat.png', 'smartphone.png', 'boat.png']
+        for player in self.players_objects:
+            game_token = player.get_game_token()
+            match game_token:
+                case GameToken.BOOT:
+                    game_piece_png = game_piece_pngs[0]
+                    token_png = pygame.image.load(f'src/temp_frontend/game_pieces/{game_piece_png}').convert_alpha()
+                    token_png = pygame.transform.scale(token_png, (40, 40))
+                    screen.blit(token_png, (self.center_spaces[0][0] - 60, self.center_spaces[0][1] + 20))
+                case GameToken.CAT:
+                    game_piece_png = game_piece_pngs[1]
+                    token_png = pygame.image.load(f'src/temp_frontend/game_pieces/{game_piece_png}').convert_alpha()
+                    token_png = pygame.transform.scale(token_png, (40, 40))
+                    screen.blit(token_png, (self.center_spaces[0][0] - 60, self.center_spaces[0][1] - 60))
+                case GameToken.IRON:
+                    game_piece_png = game_piece_pngs[2]
+                    token_png = pygame.image.load(f'src/temp_frontend/game_pieces/{game_piece_png}').convert_alpha()
+                    token_png = pygame.transform.scale(token_png, (40, 40))
+                    screen.blit(token_png, (self.center_spaces[0][0] + 20, self.center_spaces[0][1] + 20))
+                case GameToken.HATSTAND:
+                    game_piece_png = game_piece_pngs[3]
+                    token_png = pygame.image.load(f'src/temp_frontend/game_pieces/{game_piece_png}').convert_alpha()
+                    token_png = pygame.transform.scale(token_png, (40, 40))
+                    screen.blit(token_png, (self.center_spaces[0][0] + 20, self.center_spaces[0][1] - 60))
+                case GameToken.SMARTPHONE:
+                    game_piece_png = game_piece_pngs[4]
+                    token_png = pygame.image.load(f'src/temp_frontend/game_pieces/{game_piece_png}').convert_alpha()
+                    token_png = pygame.transform.scale(token_png, (40, 40))
+                    screen.blit(token_png, (self.center_spaces[0][0] , self.center_spaces[0][1]))
+                case GameToken.BOAT:
+                    game_piece_png = game_piece_pngs[5]
+                    token_png = pygame.image.load(f'src/temp_frontend/game_pieces/{game_piece_png}').convert_alpha()
+                    token_png = pygame.transform.scale(token_png, (40, 40))
+                    screen.blit(token_png, (self.center_spaces[0][0] + 20, self.center_spaces[0][1] + 20))
+            
+        
         # Draw the player display
         self.player_display.draw(screen, self.players_data)
         
         # Draw current player display if we have player objects
         if self.players_objects and self.current_player:
             self.current_player_display.draw(screen, self.current_player)
+        
+        # Draw the dice in the center of the board
+        center_x = self.screen_width // 2
+        center_y = self.screen_height // 2
+        
+        
+        
+        # Draw the first dice
+        self.draw_dice(screen, self.dice1_value, center_x - 70, center_y - 25)
+        
+        # Draw the second dice
+        self.draw_dice(screen, self.dice2_value, center_x + 20, center_y - 25)
         
     def handle_events(self):
         """

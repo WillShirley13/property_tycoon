@@ -48,6 +48,7 @@ class Board:
         
         # Create the spaces
         self.spaces = self._create_spaces()
+        self.space_centers = self.get_space_centers()
     
     def _create_spaces(self):
         """
@@ -137,9 +138,9 @@ class Board:
         Returns:
             list: A list of (x, y) coordinate tuples
         """
-        centers = []
-        for space in self.spaces:
-            centers.append(space.center)
+        centers = {}
+        for i, space in enumerate(self.spaces):
+            centers[i] = space.center
         return centers
     
     def draw(self, screen):

@@ -2,6 +2,7 @@ import pygame
 import sys
 import os
 
+
 # Add parent directory to path
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
@@ -17,6 +18,7 @@ from backend.non_ownables.go import Go
 from backend.non_ownables.jail import Jail
 from backend.non_ownables.game_card import GameCard
 from backend.ownables.ownable import Ownable
+from temp_frontend.board import Board
 
 def main():
     """
@@ -48,6 +50,9 @@ def main():
     game_tokens = [GameToken.BOOT, GameToken.CAT, GameToken.HATSTAND, GameToken.IRON, GameToken.SHIP]
     # Frontend must pass names and tokens for each player
     player_data = [(player_names[i], game_tokens[i]) for i in range(len(player_names))]
+    
+    centre_spaces = Board(window_width, window_height).get_space_centers()
+    print(centre_spaces)
 
     # Initialize Admin with player data and time limit
     admin = Admin(player_data, time_limit)
@@ -57,7 +62,7 @@ def main():
     print(f"Time limit: {time_limit} minutes")
     
     # Create the main game display with the admin object
-    main_game_display = MainGameDisplay(window_width, window_height, player_data, admin)
+    main_game_display = MainGameDisplay(window_width, window_height, player_data, admin, centre_spaces)
     
     # Start the game timer if a time limit was set
     if time_limit > 0:
