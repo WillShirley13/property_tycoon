@@ -30,8 +30,8 @@ class MainGameDisplay:
             players (list): List of tuples containing (player_name, game_token)
             admin: Admin object containing game state
         """
-        self.screen_width = screen_width
-        self.screen_height = screen_height
+        self.screen_width: int = screen_width
+        self.screen_height: int = screen_height
         self.players_data = players
         self.admin = admin
         self.running = True
@@ -174,6 +174,7 @@ class MainGameDisplay:
         if keys[pygame.K_SPACE]:
             # Space key advances the turn
             self.current_player_turn_finished = True
+            
             
         # Check if the current player's turn is finished
         if self.current_player_turn_finished:
