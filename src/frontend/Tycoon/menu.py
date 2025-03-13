@@ -44,11 +44,12 @@ def draw_main_menu():
     start_button = Button('Play game', (470, 250))
     start_button.draw()
     enter_name = Button('Enter names', (470, 300))
+    print(enter_name)
     enter_name.draw()
     if enter_name.check_clicked():
         command = 4
     if start_button.check_clicked():
-         command = 5
+        command = 5
     return command
 
 
@@ -62,7 +63,7 @@ def draw_main_menu():
     #     menu = False
     # return menu 
 
-def draw_game():
+def draw_game(players):
     pygame.draw.rect(screen, black, (0, 30, 150, 20), 2)
     draw_text('List of Players', text_font, black, 22, 30)
     pygame.draw.rect(screen, black, (0, 50, 150, 70), 2)
