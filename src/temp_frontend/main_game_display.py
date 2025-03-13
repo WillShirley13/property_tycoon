@@ -106,31 +106,37 @@ class MainGameDisplay:
             game_token = player.get_game_token()
             match game_token:
                 case GameToken.BOOT:
+                    print('boot')
                     game_piece_png = game_piece_pngs[0]
                     token_png = pygame.image.load(f'src/temp_frontend/game_pieces/{game_piece_png}').convert_alpha()
                     token_png = pygame.transform.scale(token_png, (40, 40))
                     screen.blit(token_png, (self.center_spaces[0][0] - 60, self.center_spaces[0][1] + 20))
                 case GameToken.CAT:
+                    print('cat')
                     game_piece_png = game_piece_pngs[1]
                     token_png = pygame.image.load(f'src/temp_frontend/game_pieces/{game_piece_png}').convert_alpha()
                     token_png = pygame.transform.scale(token_png, (40, 40))
                     screen.blit(token_png, (self.center_spaces[0][0] - 60, self.center_spaces[0][1] - 60))
                 case GameToken.IRON:
+                    print('iron')
                     game_piece_png = game_piece_pngs[2]
                     token_png = pygame.image.load(f'src/temp_frontend/game_pieces/{game_piece_png}').convert_alpha()
                     token_png = pygame.transform.scale(token_png, (40, 40))
                     screen.blit(token_png, (self.center_spaces[0][0] + 20, self.center_spaces[0][1] + 20))
                 case GameToken.HATSTAND:
+                    print('hatstand')
                     game_piece_png = game_piece_pngs[3]
                     token_png = pygame.image.load(f'src/temp_frontend/game_pieces/{game_piece_png}').convert_alpha()
                     token_png = pygame.transform.scale(token_png, (40, 40))
                     screen.blit(token_png, (self.center_spaces[0][0] + 20, self.center_spaces[0][1] - 60))
                 case GameToken.SMARTPHONE:
+                    print('smartphone')
                     game_piece_png = game_piece_pngs[4]
                     token_png = pygame.image.load(f'src/temp_frontend/game_pieces/{game_piece_png}').convert_alpha()
                     token_png = pygame.transform.scale(token_png, (40, 40))
                     screen.blit(token_png, (self.center_spaces[0][0] , self.center_spaces[0][1]))
                 case GameToken.BOAT:
+                    print('boat')
                     game_piece_png = game_piece_pngs[5]
                     token_png = pygame.image.load(f'src/temp_frontend/game_pieces/{game_piece_png}').convert_alpha()
                     token_png = pygame.transform.scale(token_png, (40, 40))

@@ -47,7 +47,7 @@ def main():
     # Display the time limit dialog and get the time limit
     time_limit = display_time_limit_choice_display(screen, window_width, window_height)
     
-    game_tokens = [GameToken.BOOT, GameToken.CAT, GameToken.HATSTAND, GameToken.IRON, GameToken.SHIP]
+    game_tokens = [GameToken.BOOT, GameToken.CAT, GameToken.HATSTAND, GameToken.IRON, GameToken.SMARTPHONE, GameToken.BOAT]
     # Frontend must pass names and tokens for each player
     player_data = [(player_names[i], game_tokens[i]) for i in range(len(player_names))]
     

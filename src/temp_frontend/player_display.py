@@ -108,7 +108,8 @@ class PlayerDisplay:
                 "ship": (0, 128, 128),      # Teal
                 "hatstand": (128, 0, 128),  # Purple
                 "cat": (255, 165, 0),       # Orange
-                "iron": (169, 169, 169)     # Gray
+                "iron": (169, 169, 169),     # Gray
+                "boat": (0, 0, 0)           # Black
             }
             
             # Get token identifier for color lookup

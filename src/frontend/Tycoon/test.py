@@ -1,6 +1,6 @@
 import pygame
 import random
-import dice
+import src.temp_frontend.dice as dice
 import menu
 
 pygame.init()
