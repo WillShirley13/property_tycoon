@@ -6,7 +6,7 @@ import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from backend.property_owners.player import Player
-from temp_frontend.text_utils import draw_text
+from frontend.board_text_utils import draw_text
 
 class CurrentPlayerDisplay:
     def __init__(self, x, y, width=300, height=130):
@@ -107,26 +107,3 @@ class CurrentPlayerDisplay:
         money_rect = money_surface.get_rect(center=(self.x + self.width // 2, balance_y + 10))
         screen.blit(money_surface, money_rect)
         
-        # Add a small instruction at the bottom
-        instruction_y = self.y + self.height - 25
-        instruction_text = "Press SPACE to advance turn"
-        instruction_surface = self.instruction_font.render(instruction_text, True, (80, 80, 80))
-        instruction_rect = instruction_surface.get_rect(center=(self.x + self.width // 2, instruction_y))
-        screen.blit(instruction_surface, instruction_rect)
-
-
-# Keep the function for backward compatibility
-def draw_current_player_display(screen, current_player, x, y, width, height):
-    """
-    Draw a component displaying the current player's information and game controls.
-    
-    Args:
-        screen: The pygame surface to draw on
-        current_player: The current Player object
-        x: X position of the component
-        y: Y position of the component
-        width: Width of the component
-        height: Height of the component
-    """
-    display = CurrentPlayerDisplay(x, y, width, height)
-    display.draw(screen, current_player) 

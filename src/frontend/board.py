@@ -5,8 +5,8 @@ import os
 # Add parent directory to path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from temp_frontend.space_data import SPACE_NAMES, SPACE_COLORS, BOARD_CONFIG, PROPERTY_COLORS, SPACE_PROPERTY_GROUPS
-from temp_frontend.text_utils import render_text_for_space
+from frontend.space_data import SPACE_NAMES, SPACE_COLORS, BOARD_CONFIG, PROPERTY_COLORS, SPACE_PROPERTY_GROUPS
+from frontend.board_text_utils import render_text_for_space
 
 class Board:
     def __init__(self, screen_width, screen_height):

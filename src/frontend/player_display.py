@@ -7,7 +7,7 @@ import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from backend.enums.game_token import GameToken
-from temp_frontend.text_utils import draw_text
+from frontend.text_utils import draw_text
 
 class PlayerDisplay:
     def __init__(self, x: int, y: int, width: int = 300, height: int = 420):
@@ -33,6 +33,16 @@ class PlayerDisplay:
         self.BORDER_COLOR = (30, 100, 30)  # Dark green
         self.PLAYER_NAME_COLOR = (0, 0, 0)  # Black
         self.TOKEN_TEXT_COLOR = (80, 80, 80)  # Dark gray
+        
+        # Token colors
+        self.token_colors = {
+            GameToken.BOOT: (139, 69, 19),      # Brown
+            GameToken.SMARTPHONE: (0, 0, 255),  # Blue
+            GameToken.BOAT: (0, 128, 128),      # Teal
+            GameToken.HATSTAND: (128, 0, 128),  # Purple
+            GameToken.CAT: (255, 165, 0),       # Orange
+            GameToken.IRON: (169, 169, 169)     # Gray
+        }
         
         # Create rectangles for reuse
         self.panel_rect = pygame.Rect(x, y, width, height)
@@ -92,41 +102,13 @@ class PlayerDisplay:
                     color=self.PLAYER_NAME_COLOR, font_size=24, bold=True)
             
             # Draw token name - use name attribute for consistency
-            try:
-                token_text = f"Token: {token.name}"
-            except AttributeError:
-                # Fallback to value if name doesn't exist
-                token_text = f"Token: {token.value}"
-                
+            token_text = f"Token: {token.name}"
             draw_text(screen, token_text, (self.x + 20, player_y + player_height//2 + 15), 
                     color=self.TOKEN_TEXT_COLOR, font_size=16)
             
-            # Draw colored circle representing token (simple visual representation)
-            token_colors = {
-                "boot": (139, 69, 19),      # Brown
-                "smartphone": (0, 0, 255),  # Blue
-                "ship": (0, 128, 128),      # Teal
-                "hatstand": (128, 0, 128),  # Purple
-                "cat": (255, 165, 0),       # Orange
-                "iron": (169, 169, 169),     # Gray
-                "boat": (0, 0, 0)           # Black
-            }
-            
-            # Get token identifier for color lookup
-            try:
-                token_id = token.value
-            except AttributeError:
-                token_id = token.name
-                
-            color = token_colors.get(token_id, (0, 0, 0))
-            
-            # Create a glow effect for the token
-            for r in range(3, 0, -1):
-                glow_alpha = 100 - r * 30
-                glow_surface = pygame.Surface((40, 40), pygame.SRCALPHA)
-                pygame.draw.circle(glow_surface, (*color, glow_alpha), (20, 20), 15 + r)
-                screen.blit(glow_surface, (self.x + self.width - 50, player_y + player_height//2 - 20))
-            
-            # Draw token circle
-            pygame.draw.circle(screen, color, (self.x + self.width - 30, player_y + player_height//2), 15)
-            pygame.draw.circle(screen, (0, 0, 0), (self.x + self.width - 30, player_y + player_height//2), 15, 2)  # Border 
+            # Draw colored circle representing token
+            token_color = self.token_colors.get(token, (0, 0, 0))
+            circle_x = self.x + self.width - 35
+            circle_y = player_y + player_height//2
+            pygame.draw.circle(screen, token_color, (circle_x, circle_y), 15)
+            pygame.draw.circle(screen, (0, 0, 0), (circle_x, circle_y), 15, 1)  # Border

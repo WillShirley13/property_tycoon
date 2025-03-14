@@ -6,9 +6,9 @@ import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from backend.enums.game_token import GameToken
-from temp_frontend.board import Board
-from temp_frontend.player_display import PlayerDisplay
-from temp_frontend.space_data import SPACE_COLORS
+from frontend.board import Board
+from frontend.player_display import PlayerDisplay
+from frontend.space_data import SPACE_COLORS
 from backend.property_owners.player import Player
 from backend.property_owners.bank import Bank
 from backend.non_ownables.free_parking import FreeParking
@@ -16,8 +16,10 @@ from backend.non_ownables.go import Go
 from backend.non_ownables.jail import Jail
 from backend.non_ownables.game_card import GameCard
 from backend.ownables.ownable import Ownable
-from temp_frontend.current_player_display import CurrentPlayerDisplay
+from frontend.current_player_display import CurrentPlayerDisplay
 from backend.property_owners.player import Player
+from frontend.jail_popup import JailPopup
+from frontend.dice import DiceManager
 
 class MainGameDisplay:
     def __init__(self, screen_width, screen_height, players, admin=None, center_spaces=None):
@@ -39,13 +41,26 @@ class MainGameDisplay:
         
         # Initialize display components
         self.board = Board(screen_width, screen_height)
-        self.player_display = PlayerDisplay(20, 20)  # Position in the top left corner
-        self.current_player_display = CurrentPlayerDisplay(
-            20,                    # x position
-            screen_height - 150,   # y position
-            300,                   # width
-            130                    # height
+        self.player_display = PlayerDisplay(
+            15,
+            20, 
+            screen_width/5, # player_display width
+            85 * 5 # player_display height
         )
+        
+        # Calculate the y position for current_player_display based on player_display's position and height
+        player_display_bottom = self.player_display.y + self.player_display.height
+        current_player_display_y = player_display_bottom + 20  # Add a 20px gap between components
+        
+        self.current_player_display = CurrentPlayerDisplay(
+            15,                   
+            current_player_display_y, # Dynamic positioning based on player_display height
+            screen_width/5,                  
+            screen_height/4                    
+        )
+        
+        # Initialize dice manager
+        self.dice_manager = DiceManager(self.screen_width, self.screen_height)
         
         # Initialize game flow variables
         self.current_player = None
@@ -53,48 +68,11 @@ class MainGameDisplay:
         self.current_player_turn_finished = False
         self.players_objects = []
         
-        # Dice values (hardcoded to 2 for now)
-        self.dice1_value = 2
-        self.dice2_value = 2
-        
         # Game state data from Admin
         if admin:
             self.set_admin(admin)
     
-    def draw_dice(self, screen, value, x, y):
-        """
-        Draw a dice with the given value at the specified position.
-        
-        Args:
-            screen: The pygame surface to draw on
-            value: The value to display on the dice (1-6)
-            x: X coordinate for the top-left corner of the dice
-            y: Y coordinate for the top-left corner of the dice
-        """
-        # Draw the dice square
-        pygame.draw.rect(screen, (255, 0, 0), (x, y, 50, 50))
-        
-        # Draw the dots based on the dice value
-        dots = {
-            1: [(x + 25, y + 25)],
-            2: [(x + 15, y + 15), (x + 35, y + 35)],
-            3: [(x + 15, y + 15), (x + 25, y + 25), (x + 35, y + 35)],
-            4: [(x + 15, y + 15), (x + 35, y + 15), (x + 15, y + 35), (x + 35, y + 35)],
-            5: [(x + 15, y + 15), (x + 35, y + 15), (x + 25, y + 25), (x + 15, y + 35), (x + 35, y + 35)],
-            6: [(x + 15, y + 12), (x + 35, y + 12), (x + 15, y + 25), (x + 35, y + 25), (x + 15, y + 38), (x + 35, y + 38)]
-        }
-        
-        # Draw the dots
-        for dot in dots[value]:
-            pygame.draw.circle(screen, (0, 0, 0), dot, 5)
-            
     def draw(self, screen: pygame.Surface) -> None:
-        """
-        Draw the main game display including the board and player information.
-        
-        Args:
-            screen: The pygame surface to draw on
-        """
         # Fill the screen with the background color
         screen.fill((255, 255, 255))  # White background
         
@@ -106,39 +84,33 @@ class MainGameDisplay:
             game_token = player.get_game_token()
             match game_token:
                 case GameToken.BOOT:
-                    print('boot')
                     game_piece_png = game_piece_pngs[0]
-                    token_png = pygame.image.load(f'src/temp_frontend/game_pieces/{game_piece_png}').convert_alpha()
+                    token_png = pygame.image.load(f'src/frontend/game_pieces/{game_piece_png}').convert_alpha()
                     token_png = pygame.transform.scale(token_png, (40, 40))
                     screen.blit(token_png, (self.center_spaces[0][0] - 60, self.center_spaces[0][1] + 20))
                 case GameToken.CAT:
-                    print('cat')
                     game_piece_png = game_piece_pngs[1]
-                    token_png = pygame.image.load(f'src/temp_frontend/game_pieces/{game_piece_png}').convert_alpha()
+                    token_png = pygame.image.load(f'src/frontend/game_pieces/{game_piece_png}').convert_alpha()
                     token_png = pygame.transform.scale(token_png, (40, 40))
                     screen.blit(token_png, (self.center_spaces[0][0] - 60, self.center_spaces[0][1] - 60))
                 case GameToken.IRON:
-                    print('iron')
                     game_piece_png = game_piece_pngs[2]
-                    token_png = pygame.image.load(f'src/temp_frontend/game_pieces/{game_piece_png}').convert_alpha()
+                    token_png = pygame.image.load(f'src/frontend/game_pieces/{game_piece_png}').convert_alpha()
                     token_png = pygame.transform.scale(token_png, (40, 40))
                     screen.blit(token_png, (self.center_spaces[0][0] + 20, self.center_spaces[0][1] + 20))
                 case GameToken.HATSTAND:
-                    print('hatstand')
                     game_piece_png = game_piece_pngs[3]
-                    token_png = pygame.image.load(f'src/temp_frontend/game_pieces/{game_piece_png}').convert_alpha()
+                    token_png = pygame.image.load(f'src/frontend/game_pieces/{game_piece_png}').convert_alpha()
                     token_png = pygame.transform.scale(token_png, (40, 40))
                     screen.blit(token_png, (self.center_spaces[0][0] + 20, self.center_spaces[0][1] - 60))
                 case GameToken.SMARTPHONE:
-                    print('smartphone')
                     game_piece_png = game_piece_pngs[4]
-                    token_png = pygame.image.load(f'src/temp_frontend/game_pieces/{game_piece_png}').convert_alpha()
+                    token_png = pygame.image.load(f'src/frontend/game_pieces/{game_piece_png}').convert_alpha()
                     token_png = pygame.transform.scale(token_png, (40, 40))
                     screen.blit(token_png, (self.center_spaces[0][0] , self.center_spaces[0][1]))
                 case GameToken.BOAT:
-                    print('boat')
                     game_piece_png = game_piece_pngs[5]
-                    token_png = pygame.image.load(f'src/temp_frontend/game_pieces/{game_piece_png}').convert_alpha()
+                    token_png = pygame.image.load(f'src/frontend/game_pieces/{game_piece_png}').convert_alpha()
                     token_png = pygame.transform.scale(token_png, (40, 40))
                     screen.blit(token_png, (self.center_spaces[0][0] + 20, self.center_spaces[0][1] + 20))
             
@@ -150,19 +122,10 @@ class MainGameDisplay:
         if self.players_objects and self.current_player:
             self.current_player_display.draw(screen, self.current_player)
         
-        # Draw the dice in the center of the board
-        center_x = self.screen_width // 2
-        center_y = self.screen_height // 2
+        # Draw the dice
+        self.dice_manager.draw(screen)
         
-        
-        
-        # Draw the first dice
-        self.draw_dice(screen, self.dice1_value, center_x - 70, center_y - 25)
-        
-        # Draw the second dice
-        self.draw_dice(screen, self.dice2_value, center_x + 20, center_y - 25)
-        
-    def handle_events(self):
+    def handle_events(self, screen):
         """
         Handle game-specific events and game state changes.
         
@@ -171,10 +134,28 @@ class MainGameDisplay:
         """
         # Handle keyboard events for game control
         keys = pygame.key.get_pressed()
+        
+        # For testing purposes - uncomment to test jail popup
+        self.current_player.is_in_jail = True
+        
+        if self.current_player.get_is_in_jail():
+            # First draw the main game display to ensure it's visible
+            self.draw(screen)
+            
+            # Create and show the jail popup
+            jail_popup = JailPopup(
+                self.screen_width // 2 - 175,  # Center horizontally
+                self.screen_height // 2 - 150,   # Center vertically
+                350, 300  # Width and height adjusted for vertical buttons
+            )
+            
+            # Show the popup and get the result
+            result = jail_popup.show(screen, self.current_player)
+            
+        
         if keys[pygame.K_SPACE]:
             # Space key advances the turn
             self.current_player_turn_finished = True
-            
             
         # Check if the current player's turn is finished
         if self.current_player_turn_finished:

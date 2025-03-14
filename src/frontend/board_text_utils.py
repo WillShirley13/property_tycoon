@@ -41,8 +41,8 @@ def render_text_for_space(screen, space, text, font_size, space_type, space_widt
     Render text for a board space with appropriate orientation.
     """
     # Reduce font size
-    font_size_small = max(int(font_size * 0.6), 10)  # Smaller font for most text
-    font_size_title = max(int(font_size * 0.7), 12)  # Slightly larger for property names
+    font_size_small = max(int(font_size * 0.35), 8)  # Smaller font for most text
+    font_size_title = max(int(font_size * 0.45), 10)  # Slightly larger for property names
     
     try:
         # Try to use a nicer font if available
