@@ -7,7 +7,7 @@ if TYPE_CHECKING:
     from ..property_owners.bank import Bank
 
 class Ownable:
-    def __init__(self, cost: int, property_group: PropertyGroup, name: str, owner: "Bank"):
+    def __init__(self, cost: int, property_group: PropertyGroup, name: str, owner: "Bank" = None):
         self.name: str = name
         self.owned_by: Player | Bank = owner  # Will be Player or Bank
         self.cost_to_buy: int = cost

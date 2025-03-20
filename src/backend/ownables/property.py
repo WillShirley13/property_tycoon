@@ -8,7 +8,7 @@ if TYPE_CHECKING:
     from ..property_owners.bank import Bank
 
 class Property(Ownable):
-    def __init__(self, name: str, cost: int, property_group: PropertyGroup, owner: "Bank"):
+    def __init__(self, name: str, cost: int, property_group: PropertyGroup, owner: "Bank" = None):
         super().__init__(name=name, cost=cost, property_group=property_group, owner=owner)
         self.houses: int = 0
         self.hotel: int = 0

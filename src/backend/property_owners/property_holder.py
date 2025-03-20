@@ -40,12 +40,8 @@ class PropertyHolder:
         if property in self.owned_properties[property.property_group]:
             raise errors.PropertyAlreadyInPortfolioError
         
-        # Check if property group exists in portfolio
-        if property.property_group not in self.owned_properties:
-            self.owned_properties[property.property_group] = []
-        
-        # Add property to portfolio
         self.owned_properties[property.property_group].append(property)
+
     
     def remove_property_from_portfolio(self, property: 'Ownable') -> None:
         # Check if property group exists in portfolio

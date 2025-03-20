@@ -1,18 +1,6 @@
 import pygame
 
 def wrap_text(text, font, max_width):
-    """
-    Wrap text to fit within a given width.
-    Returns a list of lines.
-    
-    Args:
-        text (str): The text to wrap
-        font (pygame.font.Font): The font to use for measuring text width
-        max_width (int): The maximum width in pixels
-        
-    Returns:
-        list: A list of text lines
-    """
     words = text.split(' ')
     lines = []
     current_line = []
@@ -37,9 +25,6 @@ def wrap_text(text, font, max_width):
     return lines
 
 def render_text_for_space(screen, space, text, font_size, space_type, space_width, is_corner=False):
-    """
-    Render text for a board space with appropriate orientation.
-    """
     # Reduce font size
     font_size_small = max(int(font_size * 0.35), 8)  # Smaller font for most text
     font_size_title = max(int(font_size * 0.45), 10)  # Slightly larger for property names
@@ -198,18 +183,6 @@ def render_text_for_space(screen, space, text, font_size, space_type, space_widt
             y_start += text_surface.get_height() + 2
 
 def draw_text(screen, text, position, color=(0, 0, 0), font_size=20, center=False, bold=False):
-    """
-    Draw text on the screen.
-    
-    Args:
-        screen (pygame.Surface): The surface to draw on
-        text (str): The text to draw
-        position (tuple): The (x, y) position to draw at
-        color (tuple): The RGB color of the text
-        font_size (int): The font size
-        center (bool): Whether to center the text at the position
-        bold (bool): Whether to make the text bold
-    """
     try:
         font = pygame.font.SysFont('Arial', font_size, bold=bold)
     except:

@@ -56,28 +56,6 @@ class Player(PropertyHolder):
         
     def set_rounds_in_jail(self, rounds: int) -> None:
         self.rounds_in_jail = rounds
-    
-    # Position and movement methods
-    def get_current_position(self) -> int:
-        return self.current_position
-    
-    def get_is_first_circuit_complete(self) -> bool:
-        return self.is_first_circuit_complete
-    
-    def set_is_first_circuit_complete(self) -> None:
-        self.is_first_circuit_complete = True
-    
-    def get_has_passed_go_flag(self) -> bool:
-        if self.has_passed_go_flag:
-            self.has_passed_go_flag = False
-        return self.has_passed_go_flag
-    
-    def set_has_passed_go_flag(self, has_passed_go_flag: bool) -> None:
-        self.has_passed_go_flag = has_passed_go_flag
-    
-    # functionality has been moved above to get_has_passed_go_flag
-    # def reset_has_passed_go_flag(self) -> None:
-    #     self.has_passed_go_flag = False
 
     # Property transaction methods
     def purchase_property(self, property: 'Ownable', bank: 'Bank') -> None:      
@@ -107,6 +85,8 @@ class Player(PropertyHolder):
             bank.sub_cash_balance(property.get_cost())
         self._remove_property_from_portfolio(property)
         bank.add_property_to_portfolio(property)
+        
+        property.set_owner(bank)
     
     def mortgage_property(self, property: 'Ownable', bank: 'Bank') -> None:    
         property.set_is_mortgaged(True)
@@ -141,54 +121,55 @@ class Player(PropertyHolder):
     def _add_property_to_portfolio(self, property: 'Ownable') -> None:
         self.owned_properties[property.property_group].append(property)
 
+        # check if player has all properties in a group
         match property.get_property_group():
             case PropertyGroup.BROWN:
                 if len(self.owned_properties[PropertyGroup.BROWN]) == TOTAL_BROWN_PROPERTIES:
                     for prop in self.owned_properties[PropertyGroup.BROWN]:
                         prop.set_owner_owns_all_properties_in_group(True)
-                        prop.set_is_eligible_for_house_upgrade_or_downgrade(True)
+                        prop.set_is_eligible_for_upgrade(True)
             case PropertyGroup.BLUE:
                 if len(self.owned_properties[PropertyGroup.BLUE]) == TOTAL_BLUE_PROPERTIES:
                     for prop in self.owned_properties[PropertyGroup.BLUE]:
                         prop.set_owner_owns_all_properties_in_group(True)
-                        prop.set_is_eligible_for_house_upgrade_or_downgrade(True)
+                        prop.set_is_eligible_for_upgrade(True)
             case PropertyGroup.PURPLE:
                 if len(self.owned_properties[PropertyGroup.PURPLE]) == TOTAL_PURPLE_PROPERTIES:
                     for prop in self.owned_properties[PropertyGroup.PURPLE]:
                         prop.set_owner_owns_all_properties_in_group(True)
-                        prop.set_is_eligible_for_house_upgrade_or_downgrade(True)
+                        prop.set_is_eligible_for_upgrade(True)
             case PropertyGroup.ORANGE:
                 if len(self.owned_properties[PropertyGroup.ORANGE]) == TOTAL_ORANGE_PROPERTIES:
                     for prop in self.owned_properties[PropertyGroup.ORANGE]:
                         prop.set_owner_owns_all_properties_in_group(True)
-                        prop.set_is_eligible_for_house_upgrade_or_downgrade(True)
+                        prop.set_is_eligible_for_upgrade(True)
             case PropertyGroup.RED:
                 if len(self.owned_properties[PropertyGroup.RED]) == TOTAL_RED_PROPERTIES:
                     for prop in self.owned_properties[PropertyGroup.RED]:
                         prop.set_owner_owns_all_properties_in_group(True)
-                        prop.set_is_eligible_for_house_upgrade_or_downgrade(True)
+                        prop.set_is_eligible_for_upgrade(True)
             case PropertyGroup.YELLOW:
                 if len(self.owned_properties[PropertyGroup.YELLOW]) == TOTAL_YELLOW_PROPERTIES:
                     for prop in self.owned_properties[PropertyGroup.YELLOW]:
                         prop.set_owner_owns_all_properties_in_group(True)
-                        prop.set_is_eligible_for_house_upgrade_or_downgrade(True)
+                        prop.set_is_eligible_for_upgrade(True)
             case PropertyGroup.GREEN:
                 if len(self.owned_properties[PropertyGroup.GREEN]) == TOTAL_GREEN_PROPERTIES:
                     for prop in self.owned_properties[PropertyGroup.GREEN]:
                         prop.set_owner_owns_all_properties_in_group(True)
-                        prop.set_is_eligible_for_house_upgrade_or_downgrade(True)
+                        prop.set_is_eligible_for_upgrade(True)
             case PropertyGroup.DEEP_BLUE:
                 if len(self.owned_properties[PropertyGroup.DEEP_BLUE]) == TOTAL_DEEP_BLUE_PROPERTIES:
                     for prop in self.owned_properties[PropertyGroup.DEEP_BLUE]:
                         prop.set_owner_owns_all_properties_in_group(True)
-                        prop.set_is_eligible_for_house_upgrade_or_downgrade(True)
+                        prop.set_is_eligible_for_upgrade(True)
             case PropertyGroup.STATION:
-                property.num_of_stations_owned_by_owner += 1
+                property.set_num_of_stations_owned_by_owner(property.get_num_of_stations_owned_by_owner() + 1)
                 if len(self.owned_properties[PropertyGroup.STATION]) == TOTAL_STATIONS:
                     for prop in self.owned_properties[PropertyGroup.STATION]:
                         prop.set_owner_owns_all_stations(True)
             case PropertyGroup.UTILITY:
-                property.num_of_utilities_owned_by_owner += 1
+                property.set_num_of_utilities_owned_by_owner(property.get_num_of_utilities_owned_by_owner() + 1)
                 if len(self.owned_properties[PropertyGroup.UTILITY]) == TOTAL_UTILITIES:
                     for prop in self.owned_properties[PropertyGroup.UTILITY]:
                         prop.set_owner_owns_all_utilities(True)
@@ -196,12 +177,10 @@ class Player(PropertyHolder):
                 pass
 
     @override
-    def _remove_property_from_portfolio(self, property: 'Ownable') -> None:
-        if property not in self.owned_properties[property.property_group]:
-            raise errors.PropertyNotInPortfolioError
-        
+    def _remove_property_from_portfolio(self, property: 'Ownable') -> None:        
         self.owned_properties[property.property_group].remove(property)
 
+        # check if player no longer has all properties in a group
         match property.property_group:
             case PropertyGroup.BROWN:
                 if len(self.owned_properties[PropertyGroup.BROWN]) != TOTAL_BROWN_PROPERTIES:
@@ -211,51 +190,43 @@ class Player(PropertyHolder):
                 if len(self.owned_properties[PropertyGroup.BLUE]) != TOTAL_BLUE_PROPERTIES:
                     for prop in self.owned_properties[PropertyGroup.BLUE]:
                         prop.set_owner_owns_all_properties_in_group(False)
-                        prop.set_is_eligible_for_house_upgrade_or_downgrade(False)
-                        prop.set_is_eligible_for_hotel_upgrade_or_downgrade(False)
+                        prop.set_is_eligible_for_downgrade(False)
             case PropertyGroup.PURPLE:
                 if len(self.owned_properties[PropertyGroup.PURPLE]) != TOTAL_PURPLE_PROPERTIES:
                     for prop in self.owned_properties[PropertyGroup.PURPLE]:
                         prop.set_owner_owns_all_properties_in_group(False)
-                        prop.set_is_eligible_for_house_upgrade_or_downgrade(False)
-                        prop.set_is_eligible_for_hotel_upgrade_or_downgrade(False)
+                        prop.set_is_eligible_for_downgrade(False)
             case PropertyGroup.ORANGE:
                 if len(self.owned_properties[PropertyGroup.ORANGE]) != TOTAL_ORANGE_PROPERTIES:
                     for prop in self.owned_properties[PropertyGroup.ORANGE]:
-                        prop.set_owner_owns_all_properties_in_group(False)
-                        prop.set_is_eligible_for_house_upgrade_or_downgrade(False)
-                        prop.set_is_eligible_for_hotel_upgrade_or_downgrade(False)
+                        prop.set_is_eligible_for_downgrade(False)
             case PropertyGroup.RED:
                 if len(self.owned_properties[PropertyGroup.RED]) != TOTAL_RED_PROPERTIES:
                     for prop in self.owned_properties[PropertyGroup.RED]:
                         prop.set_owner_owns_all_properties_in_group(False)
-                        prop.set_is_eligible_for_house_upgrade_or_downgrade(False)
-                        prop.set_is_eligible_for_hotel_upgrade_or_downgrade(False)
+                        prop.set_is_eligible_for_downgrade(False)
             case PropertyGroup.YELLOW:
                 if len(self.owned_properties[PropertyGroup.YELLOW]) != TOTAL_YELLOW_PROPERTIES:
                     for prop in self.owned_properties[PropertyGroup.YELLOW]:
                         prop.set_owner_owns_all_properties_in_group(False)
-                        prop.set_is_eligible_for_house_upgrade_or_downgrade(False)
-                        prop.set_is_eligible_for_hotel_upgrade_or_downgrade(False)
+                        prop.set_is_eligible_for_downgrade(False)
             case PropertyGroup.GREEN:
                 if len(self.owned_properties[PropertyGroup.GREEN]) != TOTAL_GREEN_PROPERTIES:
                     for prop in self.owned_properties[PropertyGroup.GREEN]:
                         prop.set_owner_owns_all_properties_in_group(False)
-                        prop.set_is_eligible_for_house_upgrade_or_downgrade(False)
-                        prop.set_is_eligible_for_hotel_upgrade_or_downgrade(False)
+                        prop.set_is_eligible_for_downgrade(False)
             case PropertyGroup.DEEP_BLUE:
                 if len(self.owned_properties[PropertyGroup.DEEP_BLUE]) != TOTAL_DEEP_BLUE_PROPERTIES:
                     for prop in self.owned_properties[PropertyGroup.DEEP_BLUE]:
                         prop.set_owner_owns_all_properties_in_group(False)
-                        prop.set_is_eligible_for_house_upgrade_or_downgrade(False)
-                        prop.set_is_eligible_for_hotel_upgrade_or_downgrade(False)
+                        prop.set_is_eligible_for_downgrade(False)
             case PropertyGroup.STATION:
-                property.num_of_stations_owned_by_owner -= 1
+                property.set_num_of_stations_owned_by_owner(property.get_num_of_stations_owned_by_owner() - 1)
                 if len(self.owned_properties[PropertyGroup.STATION]) != TOTAL_STATIONS:
                     for prop in self.owned_properties[PropertyGroup.STATION]:
                         prop.set_owner_owns_all_stations(False)
             case PropertyGroup.UTILITY:
-                property.num_of_utilities_owned_by_owner -= 1
+                property.set_num_of_utilities_owned_by_owner(property.get_num_of_utilities_owned_by_owner() - 1)
                 if len(self.owned_properties[PropertyGroup.UTILITY]) != TOTAL_UTILITIES:
                     for prop in self.owned_properties[PropertyGroup.UTILITY]:
                         prop.set_owner_owns_all_utilities(False)
@@ -263,8 +234,7 @@ class Player(PropertyHolder):
                 pass
 
     # Movement methods
-    ### CURRENTLY MOVING PLAYER METHODS DO NOT PAY PLAYER FOR PASSING GO ###
-    # Updates current_position and is_first_circuit_complete and returns new position
+    
     # Returns a list of dice rolls and the new position
     def move_player(self) -> list[list[int], int] | None:
         dice_rolls: list[int] = [random.randint(1, 6) for _ in range(2)]
@@ -297,6 +267,23 @@ class Player(PropertyHolder):
     
     def set_recent_dice_rolls(self, recent_dice_rolls: list[int]) -> None:
         self.recent_dice_rolls = recent_dice_rolls
+
+    def get_current_position(self) -> int:
+        return self.current_position
+    
+    def get_is_first_circuit_complete(self) -> bool:
+        return self.is_first_circuit_complete
+    
+    def set_is_first_circuit_complete(self) -> None:
+        self.is_first_circuit_complete = True
+    
+    def get_has_passed_go_flag(self) -> bool:
+        if self.has_passed_go_flag:
+            self.has_passed_go_flag = False
+        return self.has_passed_go_flag
+    
+    def set_has_passed_go_flag(self, has_passed_go_flag: bool) -> None:
+        self.has_passed_go_flag = has_passed_go_flag
     
     # Doubles methods
     def get_doubles_rolled(self) -> int:

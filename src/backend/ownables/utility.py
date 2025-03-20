@@ -7,7 +7,7 @@ if TYPE_CHECKING:
     from ..property_owners.bank import Bank
 
 class Utility(Ownable):
-    def __init__(self, name: str, cost: int, property_group: PropertyGroup, owner: "Bank"):
+    def __init__(self, name: str, cost: int, property_group: PropertyGroup, owner: "Bank" = None):
         super().__init__(name=name, cost=cost, property_group=property_group, owner=owner)
         self.owner_owns_all_utilities: bool = False
         self.num_of_utilities_owned_by_owner: int = 0

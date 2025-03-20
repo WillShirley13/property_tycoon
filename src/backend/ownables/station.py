@@ -7,7 +7,7 @@ if TYPE_CHECKING:
     from ..property_owners.bank import Bank
 
 class Station(Ownable):
-    def __init__(self, cost: int, property_group: PropertyGroup, name: str, owner: "Bank"):
+    def __init__(self, cost: int, property_group: PropertyGroup, name: str, owner: "Bank" = None):
         super().__init__(cost=cost, property_group=property_group, name=name, owner=owner)
         self.owner_owns_all_stations: bool = False
         self.num_of_stations_owned_by_owner: int = 0
