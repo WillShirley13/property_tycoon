@@ -1,9 +1,10 @@
 from enum import Enum
 
+
 class GameToken(Enum):
     BOOT = "boot"
     SMARTPHONE = "smartphone"
-    HATSTAND = "hatstand"
+    TOPHAT = "tophat"
     CAT = "cat"
-    IRON = "iron" 
+    IRON = "iron"
     BOAT = "boat"

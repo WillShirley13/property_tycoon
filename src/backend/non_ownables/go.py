@@ -4,11 +4,12 @@ if TYPE_CHECKING:
     from ..property_owners.player import Player
     from ..property_owners.bank import Bank
 
+
 class Go:
     def __init__(self):
         self.pass_go_payout: int = 200
 
-    def pay_player(self, player: 'Player', bank: 'Bank') -> None:
+    def pay_player(self, player: "Player", bank: "Bank") -> None:
         player.add_cash_balance(self.pass_go_payout)
         bank.sub_cash_balance(self.pass_go_payout)
 
