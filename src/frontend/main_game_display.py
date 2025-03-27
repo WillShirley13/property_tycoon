@@ -30,6 +30,7 @@ from frontend.main_game_display_components.popups.jail_visit_popup import JailVi
 from frontend.main_game_display_components.popups.free_parking_popup import (
     FreeParkingPopup,
 )
+from frontend.main_game_display_components.popups.buy_property_popup import BuyPropertyPopup
 
 
 # Temporary helper method to populate player with assets for testing the sell/mortgage popup
@@ -77,6 +78,14 @@ class MainGameDisplay:
         self.player_data: List[Tuple[str, Any]] = player_data
         self.admin: Optional[Any] = admin
         self.running: bool = True
+
+        # Load and scale the background image
+        self.background = pygame.image.load(
+            "src/frontend/art_assets/game_rules.png"
+        ).convert()
+        self.background = pygame.transform.scale(
+            self.background, (screen_width, screen_height)
+        )
 
         # Initialize the game board component
         self.board: Board = Board(screen_width, screen_height, screen)
@@ -148,7 +157,15 @@ class MainGameDisplay:
             600,  # Height
             self.screen,
         )
-
+        
+        # Initialize buy property popup for when players land on buy property spaces
+        self.buy_property_popup: BuyPropertyPopup = BuyPropertyPopup(
+            screen_width // 2 - 225,  # Centered horizontally
+            screen_height // 2 - 150,  # Centered vertically
+            450,  # Width 
+            300,  # Height - reduced height
+            self.screen,  # Screen comes last in the constructor
+        )
         # Initialize game card popup for when players land on game card spaces
         self.game_card_popup: GameCardPopup = GameCardPopup(
             screen_width // 2 - 175,  # Centered horizontally
@@ -260,8 +277,8 @@ class MainGameDisplay:
 
     # Draw all game components to the screen
     def draw(self) -> None:
-        # Clear the screen with a white background
-        self.screen.fill((255, 255, 255))
+        # Draw the background image
+        self.screen.blit(self.background, (0, 0))
 
         # Draw the game board
         self.board.draw()
@@ -381,6 +398,7 @@ class MainGameDisplay:
                     print(
                         f"{self.current_player[0].get_name()} landed on a property that is owned by the bank, {space_on_board.get_name()}. Offer to purchase the property."
                     )
+                    self.buy_property_popup.show(self.current_player[0], [player for player, _ in self.players_objects if player != self.current_player[0]], space_on_board, self.bank)
                     # OR AUCTION
                     return
                 # Player landed on an ownable property that is owned by another player
