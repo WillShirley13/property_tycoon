@@ -58,35 +58,21 @@ class PlayerDisplay:
     # Draw the player list with all players and their tokens
     def draw(self, players: List[Tuple[str, GameToken]]) -> None:
         # Draw shadow effect for depth perception
-        pygame.draw.rect(
-            self.screen, (200, 200, 200, 150), self.shadow_rect, border_radius=12
-        )
+        pygame.draw.rect(self.screen, (200, 200, 200, 150), self.shadow_rect, border_radius=12)
 
         # Draw main panel background
-        pygame.draw.rect(
-            self.screen, self.PANEL_BG_COLOR, self.panel_rect, border_radius=10
-        )
-        pygame.draw.rect(
-            self.screen, self.BORDER_COLOR, self.panel_rect, 3, border_radius=10
-        )
+        pygame.draw.rect(self.screen, self.PANEL_BG_COLOR, self.panel_rect, border_radius=10)
+        pygame.draw.rect(self.screen, self.BORDER_COLOR, self.panel_rect, 3, border_radius=10)
 
         # Draw header section with title
-        pygame.draw.rect(
-            self.screen, self.HEADER_BG_COLOR, self.header_rect, border_radius=10
-        )
+        pygame.draw.rect(self.screen, self.HEADER_BG_COLOR, self.header_rect, border_radius=10)
         pygame.draw.rect(self.screen, self.HEADER_BG_COLOR, self.header_bottom_rect)
-        pygame.draw.rect(
-            self.screen, self.BORDER_COLOR, self.header_rect, 2, border_radius=10
-        )
+        pygame.draw.rect(self.screen, self.BORDER_COLOR, self.header_rect, 2, border_radius=10)
 
         # Draw header text
         header_text: str = "Players"
-        header_surface: pygame.Surface = self.header_font.render(
-            header_text, True, self.HEADER_TEXT_COLOR
-        )
-        header_text_rect: pygame.Rect = header_surface.get_rect(
-            center=(self.x + self.width // 2, self.y + 22)
-        )
+        header_surface: pygame.Surface = self.header_font.render(header_text, True, self.HEADER_TEXT_COLOR)
+        header_text_rect: pygame.Rect = header_surface.get_rect(center=(self.x + self.width // 2, self.y + 22))
         self.screen.blit(header_surface, header_text_rect)
 
         # Draw each player card
@@ -95,25 +81,15 @@ class PlayerDisplay:
             player_y: int = self.y + 55 + i * player_height
 
             # Player background with subtle gradient effect
-            player_rect: pygame.Rect = pygame.Rect(
-                self.x + 10, player_y, self.width - 20, player_height - 2
-            )
-            pygame.draw.rect(
-                self.screen, self.PLAYER_BG_COLOR, player_rect, border_radius=8
-            )
+            player_rect: pygame.Rect = pygame.Rect(self.x + 10, player_y, self.width - 20, player_height - 2)
+            pygame.draw.rect(self.screen, self.PLAYER_BG_COLOR, player_rect, border_radius=8)
 
             # Add highlight effect to the top of each player card
-            highlight_rect: pygame.Rect = pygame.Rect(
-                self.x + 10, player_y, self.width - 20, 5
-            )
-            pygame.draw.rect(
-                self.screen, (255, 255, 255), highlight_rect, border_radius=8
-            )
+            highlight_rect: pygame.Rect = pygame.Rect(self.x + 10, player_y, self.width - 20, 5)
+            pygame.draw.rect(self.screen, (255, 255, 255), highlight_rect, border_radius=8)
 
             # Draw player card border
-            pygame.draw.rect(
-                self.screen, self.BORDER_COLOR, player_rect, 2, border_radius=8
-            )
+            pygame.draw.rect(self.screen, self.BORDER_COLOR, player_rect, 2, border_radius=8)
 
             # Draw player name - bold and same size as header (24)
             draw_text(

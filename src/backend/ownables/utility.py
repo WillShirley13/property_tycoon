@@ -12,12 +12,8 @@ if TYPE_CHECKING:
 
 
 class Utility(Ownable):
-    def __init__(
-        self, name: str, cost: int, property_group: PropertyGroup, owner: "Bank" = None
-    ):
-        super().__init__(
-            name=name, cost=cost, property_group=property_group, owner=owner
-        )
+    def __init__(self, name: str, cost: int, property_group: PropertyGroup, owner: "Bank" = None):
+        super().__init__(name=name, cost=cost, property_group=property_group, owner=owner)
         self.owner_owns_all_utilities: bool = False
         self.num_of_utilities_owned_by_owner: int = 0
 
@@ -28,13 +24,9 @@ class Utility(Ownable):
             return 0
         # Calculate rent due
         if self.num_of_utilities_owned_by_owner == 1:
-            rent = (
-                sum(player.get_recent_dice_rolls()) * ONE_UTILITY_RENT_DICE_MULTIPLIER
-            )
+            rent = sum(player.get_recent_dice_rolls()) * ONE_UTILITY_RENT_DICE_MULTIPLIER
         elif self.num_of_utilities_owned_by_owner == 2:
-            rent = (
-                sum(player.get_recent_dice_rolls()) * TWO_UTILITY_RENT_DICE_MULTIPLIER
-            )
+            rent = sum(player.get_recent_dice_rolls()) * TWO_UTILITY_RENT_DICE_MULTIPLIER
         else:
             rent = 0
         player.sub_cash_balance(rent)
@@ -50,7 +42,5 @@ class Utility(Ownable):
     def get_num_of_utilities_owned_by_owner(self) -> int:
         return self.num_of_utilities_owned_by_owner
 
-    def set_num_of_utilities_owned_by_owner(
-        self, num_of_utilities_owned_by_owner: int
-    ) -> None:
+    def set_num_of_utilities_owned_by_owner(self, num_of_utilities_owned_by_owner: int) -> None:
         self.num_of_utilities_owned_by_owner = num_of_utilities_owned_by_owner

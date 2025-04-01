@@ -57,21 +57,25 @@ class Player(PropertyHolder):
         self.rounds_in_jail = rounds
 
     # Property transaction methods
-    def purchase_property(self, property: "Ownable", bank: "Bank") -> None:
-        property_cost = property.get_cost()
-        if self.cash_balance < property_cost:
-            raise errors.InsufficientFundsError
+    def purchase_property(self, property: "Ownable", bank: "Bank", auction_amount: int = 0) -> None:
+        # If auctioned, use auction amount, otherwise use property cost
+        purchase_price = auction_amount if auction_amount > 0 else property.get_cost()
 
-        # Pay for property
-        self.sub_cash_balance(property_cost)
-        bank.add_cash_balance(property_cost)
+        # Check if player has sufficient funds
+        if self.cash_balance < purchase_price:
+            raise errors.InsufficientFundsError(f"Player {self.name} needs £{purchase_price} but only has £{self.cash_balance}.")
 
-        # update property portfolios
+        # Pay for property using the determined purchase price
+        self.sub_cash_balance(purchase_price)
+        bank.add_cash_balance(purchase_price)
+
+        # Update property portfolios
         self._add_property_to_portfolio(property)
-        bank.remove_property_from_portfolio(property)
+        bank.remove_property_from_portfolio(property)  # Assuming bank initially owns it
 
-        # update ownership
+        # Update ownership
         property.set_owner(self)
+        print(f"{self.name} purchased {property.get_name()} for £{purchase_price}.")  # Optional: Log purchase
 
     def sell_property(self, property: "Ownable", bank: "Bank") -> None:
         if property.is_mortgaged:
@@ -96,14 +100,8 @@ class Player(PropertyHolder):
         total_value = property.get_total_value()
 
         if type(property) == Property:
-            total_value += (
-                property.get_houses()
-                * PROPERTY_BUILD_COSTS[property.get_property_group().value]["house"]
-            )
-            total_value += (
-                property.get_hotel()
-                * PROPERTY_BUILD_COSTS[property.get_property_group().value]["hotel"]
-            )
+            total_value += property.get_houses() * PROPERTY_BUILD_COSTS[property.get_property_group().value]["house"]
+            total_value += property.get_hotel() * PROPERTY_BUILD_COSTS[property.get_property_group().value]["hotel"]
 
         self.sub_cash_balance(total_value / 2)
         bank.add_cash_balance(total_value / 2)
@@ -131,80 +129,52 @@ class Player(PropertyHolder):
         # check if player has all properties in a group
         match property.get_property_group():
             case PropertyGroup.BROWN:
-                if (
-                    len(self.owned_properties[PropertyGroup.BROWN])
-                    == TOTAL_BROWN_PROPERTIES
-                ):
+                if len(self.owned_properties[PropertyGroup.BROWN]) == TOTAL_BROWN_PROPERTIES:
                     for prop in self.owned_properties[PropertyGroup.BROWN]:
                         prop.set_owner_owns_all_properties_in_group(True)
                         prop.set_is_eligible_for_upgrade(True)
             case PropertyGroup.BLUE:
-                if (
-                    len(self.owned_properties[PropertyGroup.BLUE])
-                    == TOTAL_BLUE_PROPERTIES
-                ):
+                if len(self.owned_properties[PropertyGroup.BLUE]) == TOTAL_BLUE_PROPERTIES:
                     for prop in self.owned_properties[PropertyGroup.BLUE]:
                         prop.set_owner_owns_all_properties_in_group(True)
                         prop.set_is_eligible_for_upgrade(True)
             case PropertyGroup.PURPLE:
-                if (
-                    len(self.owned_properties[PropertyGroup.PURPLE])
-                    == TOTAL_PURPLE_PROPERTIES
-                ):
+                if len(self.owned_properties[PropertyGroup.PURPLE]) == TOTAL_PURPLE_PROPERTIES:
                     for prop in self.owned_properties[PropertyGroup.PURPLE]:
                         prop.set_owner_owns_all_properties_in_group(True)
                         prop.set_is_eligible_for_upgrade(True)
             case PropertyGroup.ORANGE:
-                if (
-                    len(self.owned_properties[PropertyGroup.ORANGE])
-                    == TOTAL_ORANGE_PROPERTIES
-                ):
+                if len(self.owned_properties[PropertyGroup.ORANGE]) == TOTAL_ORANGE_PROPERTIES:
                     for prop in self.owned_properties[PropertyGroup.ORANGE]:
                         prop.set_owner_owns_all_properties_in_group(True)
                         prop.set_is_eligible_for_upgrade(True)
             case PropertyGroup.RED:
-                if (
-                    len(self.owned_properties[PropertyGroup.RED])
-                    == TOTAL_RED_PROPERTIES
-                ):
+                if len(self.owned_properties[PropertyGroup.RED]) == TOTAL_RED_PROPERTIES:
                     for prop in self.owned_properties[PropertyGroup.RED]:
                         prop.set_owner_owns_all_properties_in_group(True)
                         prop.set_is_eligible_for_upgrade(True)
             case PropertyGroup.YELLOW:
-                if (
-                    len(self.owned_properties[PropertyGroup.YELLOW])
-                    == TOTAL_YELLOW_PROPERTIES
-                ):
+                if len(self.owned_properties[PropertyGroup.YELLOW]) == TOTAL_YELLOW_PROPERTIES:
                     for prop in self.owned_properties[PropertyGroup.YELLOW]:
                         prop.set_owner_owns_all_properties_in_group(True)
                         prop.set_is_eligible_for_upgrade(True)
             case PropertyGroup.GREEN:
-                if (
-                    len(self.owned_properties[PropertyGroup.GREEN])
-                    == TOTAL_GREEN_PROPERTIES
-                ):
+                if len(self.owned_properties[PropertyGroup.GREEN]) == TOTAL_GREEN_PROPERTIES:
                     for prop in self.owned_properties[PropertyGroup.GREEN]:
                         prop.set_owner_owns_all_properties_in_group(True)
                         prop.set_is_eligible_for_upgrade(True)
             case PropertyGroup.DEEP_BLUE:
-                if (
-                    len(self.owned_properties[PropertyGroup.DEEP_BLUE])
-                    == TOTAL_DEEP_BLUE_PROPERTIES
-                ):
+                if len(self.owned_properties[PropertyGroup.DEEP_BLUE]) == TOTAL_DEEP_BLUE_PROPERTIES:
                     for prop in self.owned_properties[PropertyGroup.DEEP_BLUE]:
                         prop.set_owner_owns_all_properties_in_group(True)
                         prop.set_is_eligible_for_upgrade(True)
             case PropertyGroup.STATION:
-                property.set_num_of_stations_owned_by_owner(
-                    property.get_num_of_stations_owned_by_owner() + 1
-                )
+                property.set_num_of_stations_owned_by_owner(property.get_num_of_stations_owned_by_owner() + 1)
                 if len(self.owned_properties[PropertyGroup.STATION]) == TOTAL_STATIONS:
                     for prop in self.owned_properties[PropertyGroup.STATION]:
                         prop.set_owner_owns_all_stations(True)
             case PropertyGroup.UTILITY:
-                property.set_num_of_utilities_owned_by_owner(
-                    property.get_num_of_utilities_owned_by_owner() + 1
-                )
+                property.set_num_of_utilities_owned_by_owner(property.get_num_of_utilities_owned_by_owner() + 1)
                 if len(self.owned_properties[PropertyGroup.UTILITY]) == TOTAL_UTILITIES:
                     for prop in self.owned_properties[PropertyGroup.UTILITY]:
                         prop.set_owner_owns_all_utilities(True)
@@ -218,78 +188,50 @@ class Player(PropertyHolder):
         # check if player no longer has all properties in a group
         match property.property_group:
             case PropertyGroup.BROWN:
-                if (
-                    len(self.owned_properties[PropertyGroup.BROWN])
-                    != TOTAL_BROWN_PROPERTIES
-                ):
+                if len(self.owned_properties[PropertyGroup.BROWN]) != TOTAL_BROWN_PROPERTIES:
                     for prop in self.owned_properties[PropertyGroup.BROWN]:
                         prop.set_owner_owns_all_properties_in_group(False)
             case PropertyGroup.BLUE:
-                if (
-                    len(self.owned_properties[PropertyGroup.BLUE])
-                    != TOTAL_BLUE_PROPERTIES
-                ):
+                if len(self.owned_properties[PropertyGroup.BLUE]) != TOTAL_BLUE_PROPERTIES:
                     for prop in self.owned_properties[PropertyGroup.BLUE]:
                         prop.set_owner_owns_all_properties_in_group(False)
                         prop.set_is_eligible_for_downgrade(False)
             case PropertyGroup.PURPLE:
-                if (
-                    len(self.owned_properties[PropertyGroup.PURPLE])
-                    != TOTAL_PURPLE_PROPERTIES
-                ):
+                if len(self.owned_properties[PropertyGroup.PURPLE]) != TOTAL_PURPLE_PROPERTIES:
                     for prop in self.owned_properties[PropertyGroup.PURPLE]:
                         prop.set_owner_owns_all_properties_in_group(False)
                         prop.set_is_eligible_for_downgrade(False)
             case PropertyGroup.ORANGE:
-                if (
-                    len(self.owned_properties[PropertyGroup.ORANGE])
-                    != TOTAL_ORANGE_PROPERTIES
-                ):
+                if len(self.owned_properties[PropertyGroup.ORANGE]) != TOTAL_ORANGE_PROPERTIES:
                     for prop in self.owned_properties[PropertyGroup.ORANGE]:
                         prop.set_is_eligible_for_downgrade(False)
             case PropertyGroup.RED:
-                if (
-                    len(self.owned_properties[PropertyGroup.RED])
-                    != TOTAL_RED_PROPERTIES
-                ):
+                if len(self.owned_properties[PropertyGroup.RED]) != TOTAL_RED_PROPERTIES:
                     for prop in self.owned_properties[PropertyGroup.RED]:
                         prop.set_owner_owns_all_properties_in_group(False)
                         prop.set_is_eligible_for_downgrade(False)
             case PropertyGroup.YELLOW:
-                if (
-                    len(self.owned_properties[PropertyGroup.YELLOW])
-                    != TOTAL_YELLOW_PROPERTIES
-                ):
+                if len(self.owned_properties[PropertyGroup.YELLOW]) != TOTAL_YELLOW_PROPERTIES:
                     for prop in self.owned_properties[PropertyGroup.YELLOW]:
                         prop.set_owner_owns_all_properties_in_group(False)
                         prop.set_is_eligible_for_downgrade(False)
             case PropertyGroup.GREEN:
-                if (
-                    len(self.owned_properties[PropertyGroup.GREEN])
-                    != TOTAL_GREEN_PROPERTIES
-                ):
+                if len(self.owned_properties[PropertyGroup.GREEN]) != TOTAL_GREEN_PROPERTIES:
                     for prop in self.owned_properties[PropertyGroup.GREEN]:
                         prop.set_owner_owns_all_properties_in_group(False)
                         prop.set_is_eligible_for_downgrade(False)
             case PropertyGroup.DEEP_BLUE:
-                if (
-                    len(self.owned_properties[PropertyGroup.DEEP_BLUE])
-                    != TOTAL_DEEP_BLUE_PROPERTIES
-                ):
+                if len(self.owned_properties[PropertyGroup.DEEP_BLUE]) != TOTAL_DEEP_BLUE_PROPERTIES:
                     for prop in self.owned_properties[PropertyGroup.DEEP_BLUE]:
                         prop.set_owner_owns_all_properties_in_group(False)
                         prop.set_is_eligible_for_downgrade(False)
             case PropertyGroup.STATION:
-                property.set_num_of_stations_owned_by_owner(
-                    property.get_num_of_stations_owned_by_owner() - 1
-                )
+                property.set_num_of_stations_owned_by_owner(property.get_num_of_stations_owned_by_owner() - 1)
                 if len(self.owned_properties[PropertyGroup.STATION]) != TOTAL_STATIONS:
                     for prop in self.owned_properties[PropertyGroup.STATION]:
                         prop.set_owner_owns_all_stations(False)
             case PropertyGroup.UTILITY:
-                property.set_num_of_utilities_owned_by_owner(
-                    property.get_num_of_utilities_owned_by_owner() - 1
-                )
+                property.set_num_of_utilities_owned_by_owner(property.get_num_of_utilities_owned_by_owner() - 1)
                 if len(self.owned_properties[PropertyGroup.UTILITY]) != TOTAL_UTILITIES:
                     for prop in self.owned_properties[PropertyGroup.UTILITY]:
                         prop.set_owner_owns_all_utilities(False)
@@ -323,7 +265,9 @@ class Player(PropertyHolder):
         return [dice_rolls, self.current_position]
 
     # Updates current_position to a specified position
-    def move_player_to_position(self, position: int) -> None:
+    def move_player_to_position(self, position: int, go: "Go", bank: "Bank") -> None:
+        if self.current_position > position:
+            self.passed_go_payout(go, bank)
         self.current_position = position
 
     def get_recent_dice_rolls(self) -> list[int]:
@@ -340,11 +284,6 @@ class Player(PropertyHolder):
 
     def set_is_first_circuit_complete(self) -> None:
         self.is_first_circuit_complete = True
-
-    # def get_has_passed_go_flag(self) -> bool:
-    #     if self.has_passed_go_flag:
-    #         self.has_passed_go_flag = False
-    #     return self.has_passed_go_flag
 
     def passed_go_payout(self, go: "Go", bank: "Bank") -> None:
         go.pay_player(self, bank)
@@ -372,9 +311,9 @@ class Player(PropertyHolder):
         for property_group in self.owned_properties.values():
             for property in property_group:
                 if property.is_mortgaged:
-                    net_worth += property.value / 2
+                    net_worth += property.get_total_value() / 2
                 else:
-                    net_worth += property.value
+                    net_worth += property.get_total_value()
         return net_worth
 
     # Bankruptcy methods

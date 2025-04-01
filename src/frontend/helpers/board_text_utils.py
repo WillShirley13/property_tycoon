@@ -33,9 +33,7 @@ def wrap_text(text: str, font: pygame.font.Font, max_width: int) -> List[str]:
 
 
 # Render text for a board space with appropriate orientation based on space position
-def render_text_for_space(
-    screen, space, text, font_size, space_type, space_width, is_corner=False
-):
+def render_text_for_space(screen, space, text, font_size, space_type, space_width, is_corner=False):
     # Reduce font size
     font_size_small = max(int(font_size * 0.52), 8)  # Smaller font for most text
 
@@ -94,10 +92,7 @@ def render_text_for_space(
         x_offset = space.centerx
 
         # Calculate vertical positions
-        total_name_height = (
-            sum(bold_font.size(line)[1] for line in name_lines)
-            + (len(name_lines) - 1) * 2
-        )
+        total_name_height = sum(bold_font.size(line)[1] for line in name_lines) + (len(name_lines) - 1) * 2
 
         # Start from center for name
         y_start = space.centery - total_name_height // 2
@@ -129,10 +124,7 @@ def render_text_for_space(
         y_offset = space.centery
 
         # Calculate horizontal positions for rotated text
-        total_name_height = (
-            sum(bold_font.size(line)[1] for line in name_lines)
-            + (len(name_lines) - 1) * 2
-        )
+        total_name_height = sum(bold_font.size(line)[1] for line in name_lines) + (len(name_lines) - 1) * 2
 
         # Start from center for name
         x_start = space.centerx - total_name_height // 2
@@ -168,10 +160,7 @@ def render_text_for_space(
         y_offset = space.centery + font_size_small // 2
 
         # Calculate vertical positions
-        total_name_height = (
-            sum(bold_font.size(line)[1] for line in name_lines)
-            + (len(name_lines) - 1) * 2
-        )
+        total_name_height = sum(bold_font.size(line)[1] for line in name_lines) + (len(name_lines) - 1) * 2
 
         # Start from center for name
         y_start = y_offset - total_name_height // 2
@@ -203,10 +192,7 @@ def render_text_for_space(
         y_offset = space.centery
 
         # Calculate horizontal positions for rotated text
-        total_name_height = (
-            sum(bold_font.size(line)[1] for line in name_lines)
-            + (len(name_lines) - 1) * 2
-        )
+        total_name_height = sum(bold_font.size(line)[1] for line in name_lines) + (len(name_lines) - 1) * 2
 
         # Start from center for name
         x_start = space.centerx + total_name_height // 2
@@ -235,9 +221,7 @@ def render_text_for_space(
 
 
 # Draw text to the screen with various formatting options
-def draw_text(
-    screen, text, position, color=(0, 0, 0), font_size=20, center=False, bold=False
-):
+def draw_text(screen, text, position, color=(0, 0, 0), font_size=20, center=False, bold=False):
     try:
         font = pygame.font.SysFont("Arial", font_size, bold=bold)
     except:

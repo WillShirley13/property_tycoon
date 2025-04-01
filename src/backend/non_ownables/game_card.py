@@ -1,15 +1,19 @@
 import random
 from typing import TYPE_CHECKING, Dict, List, Tuple
+
+from backend.non_ownables.go import Go
 from ..enums.property_group import PropertyGroup
 from ..constants import POT_LUCK_CARDS, OPPORTUNITY_KNOCKS_CARDS
 from .. import errors
+from ..ownables.property import Property
 
 if TYPE_CHECKING:
     from ..non_ownables.free_parking import FreeParking
     from ..non_ownables.jail import Jail
-    from ..ownables.property import Property
     from ..property_owners.player import Player
     from ..property_owners.bank import Bank
+
+from ..ownables.property import Property
 
 
 class GameCard:
@@ -33,6 +37,7 @@ class GameCard:
         free_parking: "FreeParking",
         jail: "Jail",
         other_players: List["Player"],
+        go: "Go",
     ) -> None:
         match card_id:
             # Pot Luck Cards (1-17)
@@ -43,9 +48,8 @@ class GameCard:
             case 2:  # "You have won 2nd prize in a beauty contest"
                 player.add_cash_balance(50)
                 bank.sub_cash_balance(50)
-
             case 3:  # "Go back to the Old Creek"
-                player.move_player_to_position(2)
+                player.move_player_to_position(1, go, bank)
 
             case 4:  # "Student loan refund"
                 player.add_cash_balance(20)
@@ -70,7 +74,7 @@ class GameCard:
                     raise errors.InsufficientFundsError
 
             case 8:  # "Advance to go"
-                player.move_player_to_position(0)
+                player.move_player_to_position(0, go, bank)
 
             case 9:  # "From sale of Bitcoin"
                 player.add_cash_balance(50)
@@ -113,7 +117,7 @@ class GameCard:
                         raise errors.InsufficientFundsError
 
             case 17:  # "Get out of jail free"
-                player.add_get_out_of_jail_card()
+                player.set_get_out_of_jail_card(player.get_get_out_of_jail_cards() + 1)
 
             # Opportunity Knocks Cards (18-33)
             case 18:  # "Bank pays you dividend"
@@ -125,10 +129,10 @@ class GameCard:
                 bank.sub_cash_balance(100)
 
             case 20:  # "Advance to Turing Heights"
-                player.move_player_to_position(40)
+                player.move_player_to_position(39, go, bank)
 
             case 21:  # "Advance to Han Xin Gardens"
-                player.move_player_to_position(25)
+                player.move_player_to_position(24, go, bank)
 
             case 22:  # "Fined for speeding"
                 try:
@@ -144,7 +148,7 @@ class GameCard:
                     raise errors.InsufficientFundsError
 
             case 24:  # "Take a trip to Hove station"
-                player.move_player_to_position(16)
+                player.move_player_to_position(16, go, bank)
 
             case 25:  # "Loan matures"
                 player.add_cash_balance(150)
@@ -155,27 +159,27 @@ class GameCard:
                 for property_group in player.get_owned_properties().values():
                     for property in property_group:
                         if isinstance(property, Property):
-                            total += (property.houses * 40) + (property.hotels * 115)
+                            total += (property.get_houses() * 40) + (property.get_hotel() * 115)
                 player.sub_cash_balance(total)
                 bank.add_cash_balance(total)
 
             case 27:  # "Advance to GO"
-                player.move_player_to_position(0)
+                player.move_player_to_position(0, go, bank)
 
             case 28:  # "Repairs £25/house, £100/hotel"
                 total = 0
                 for property_group in player.get_owned_properties().values():
                     for property in property_group:
                         if isinstance(property, Property):
-                            total += (property.houses * 25) + (property.hotels * 100)
+                            total += (property.get_houses() * 25) + (property.get_hotel() * 100)
                 player.sub_cash_balance(total)
                 bank.add_cash_balance(total)
 
             case 29:  # "Go back 3 spaces"
-                player.move_player_to_position(player.current_position - 3)
+                player.move_player_to_position(player.current_position - 3, go, bank)
 
             case 30:  # "Advance to Skywalker Drive"
-                player.move_player_to_position(12)
+                player.move_player_to_position(11, go, bank)
 
             case 31:  # "Go to jail"
                 jail.put_in_jail(player)
@@ -184,7 +188,7 @@ class GameCard:
                 free_parking.add_fine(30, player)
 
             case 33:  # "Get out of jail free"
-                player.add_get_out_of_jail_card()
+                player.set_get_out_of_jail_card(player.get_get_out_of_jail_cards() + 1)
 
     def shuffle_pack(self) -> None:
         random.shuffle(self.card_pack)

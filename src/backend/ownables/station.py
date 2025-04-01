@@ -9,12 +9,8 @@ if TYPE_CHECKING:
 
 
 class Station(Ownable):
-    def __init__(
-        self, cost: int, property_group: PropertyGroup, name: str, owner: "Bank" = None
-    ):
-        super().__init__(
-            cost=cost, property_group=property_group, name=name, owner=owner
-        )
+    def __init__(self, cost: int, property_group: PropertyGroup, name: str, owner: "Bank" = None):
+        super().__init__(cost=cost, property_group=property_group, name=name, owner=owner)
         self.owner_owns_all_stations: bool = False
         self.num_of_stations_owned_by_owner: int = 0
         self.rent_values: List[int] = STATION_RENT_VALUES
@@ -44,9 +40,7 @@ class Station(Ownable):
     def get_num_of_stations_owned_by_owner(self) -> int:
         return self.num_of_stations_owned_by_owner
 
-    def set_num_of_stations_owned_by_owner(
-        self, num_of_stations_owned_by_owner: int
-    ) -> None:
+    def set_num_of_stations_owned_by_owner(self, num_of_stations_owned_by_owner: int) -> None:
         self.num_of_stations_owned_by_owner = num_of_stations_owned_by_owner
 
     def get_rent_values(self) -> List[int]:

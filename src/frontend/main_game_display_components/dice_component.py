@@ -4,7 +4,6 @@ from typing import Tuple, Optional, List
 
 
 class Dice:
-    # Initialize a single dice with visual properties
     def __init__(
         self,
         x: int,
@@ -13,13 +12,13 @@ class Dice:
         color: Tuple[int, int, int] = (255, 0, 0),
         surface: pygame.Surface = None,
     ):
-        # Store dice position and appearance properties
+        # store dice position and appearance properties
         self.x: int = x
         self.y: int = y
         self.size: int = size
         self.color: Tuple[int, int, int] = color
         self.surface: pygame.Surface = surface
-        self.value: int = 1  # Default starting value
+        self.value: int = 1  # default starting value
         self.dot_color: Tuple[int, int, int] = (0, 0, 0)  # Black dots
         self.dot_radius: int = size // 10  # Scale dot size based on dice size
 
@@ -33,9 +32,7 @@ class Dice:
             self.value = value
 
         # Draw the dice square with rounded corners
-        pygame.draw.rect(
-            self.surface, self.color, (self.x, self.y, self.size, self.size), 0, 10
-        )
+        pygame.draw.rect(self.surface, self.color, (self.x, self.y, self.size, self.size), 0, 10)
 
         # Define dot positions for each possible dice value (1-6)
         dots: dict[int, List[Tuple[int, int]]] = {
@@ -90,82 +87,93 @@ class Dice:
 
 
 class DiceManager:
-    # Initialize the dice manager which handles two dice and the roll button
     def __init__(
         self,
         screen_width: int,
         screen_height: int,
-        surface: pygame.Surface,
-        dice_size: int = 50,
+        screen: pygame.Surface,
+        dice_size: int = 60,
         dice_spacing: int = 20,
-        color: Tuple[int, int, int] = (255, 0, 0),
     ):
-        # Store the surface
-        self.surface: pygame.Surface = surface
+        self.screen_width = screen_width
+        self.screen_height = screen_height
+        self.screen = screen
+        self.dice_size = dice_size
+        self.dice_spacing = dice_spacing
 
-        # Calculate center position of the screen
-        center_x: int = screen_width // 2
-        center_y: int = screen_height // 2
-
-        # Position the dice centered on the screen with spacing between them
-        dice1_x: int = center_x - dice_size - dice_spacing // 2
-        dice2_x: int = center_x + dice_spacing // 2
-        dice_y: int = center_y - dice_size // 2
-
-        # Create two dice objects
-        self.dice1: Dice = Dice(dice1_x, dice_y, dice_size, color, surface)
-        self.dice2: Dice = Dice(dice2_x, dice_y, dice_size, color, surface)
-
-        # Create a button area that covers both dice plus some padding
-        button_width = (dice_size * 2) + dice_spacing
-        button_height = dice_size
-        padding = dice_spacing * 2
+        # A button rectangle that the user can click to "roll" dice
         self.button_rect = pygame.Rect(
-            dice1_x, dice_y, button_width, button_height + 20
+            self.screen_width // 2 - 40,  # center horizontally
+            self.screen_height // 2 + 60,  # near bottom
+            80,  # button width
+            40,  # button height
         )
 
-        # Button appearance settings
-        self.button_color = (0, 0, 0, 0)  # Transparent
-        self.hover_color = (200, 200, 200, 100)  # Semi-transparent gray when hovering
-        self.is_hovering = False
-        self.font = pygame.font.Font(None, 24)  # Initialize font for button text
+        # Pre-load the six dice-face images (1–6).
+        self.dice_faces = {
+            1: pygame.transform.scale(
+                pygame.image.load("src/frontend/art_assets/dice_numbers/1.png"),
+                (dice_size, dice_size),
+            ),
+            2: pygame.transform.scale(
+                pygame.image.load("src/frontend/art_assets/dice_numbers/2.png"),
+                (dice_size, dice_size),
+            ),
+            3: pygame.transform.scale(
+                pygame.image.load("src/frontend/art_assets/dice_numbers/3.png"),
+                (dice_size, dice_size),
+            ),
+            4: pygame.transform.scale(
+                pygame.image.load("src/frontend/art_assets/dice_numbers/4.png"),
+                (dice_size, dice_size),
+            ),
+            5: pygame.transform.scale(
+                pygame.image.load("src/frontend/art_assets/dice_numbers/5.png"),
+                (dice_size, dice_size),
+            ),
+            6: pygame.transform.scale(
+                pygame.image.load("src/frontend/art_assets/dice_numbers/6.png"),
+                (dice_size, dice_size),
+            ),
+        }
 
-    # Draw both dice and the roll button with optional hover effect
-    def draw(
-        self, dice1_value: Optional[int] = None, dice2_value: Optional[int] = None
-    ) -> None:
-        # Draw both dice with specified values (or keep current values if None)
-        self.dice1.draw(dice1_value)
-        self.dice2.draw(dice2_value)
+        # Store the most recent dice values so we can re-draw them every frame
+        self.last_value1: Optional[int] = None
+        self.last_value2: Optional[int] = None
 
-        # Draw the transparent button over the dice
-        mouse_pos = pygame.mouse.get_pos()
-        if self.button_rect.collidepoint(mouse_pos):
-            self.is_hovering = True
-            # Create a transparent surface for the hover effect
-            button_surface = pygame.Surface(
-                (self.button_rect.width, self.button_rect.height), pygame.SRCALPHA
-            )
-            pygame.draw.rect(
-                button_surface,
-                self.hover_color,
-                (0, 0, self.button_rect.width, self.button_rect.height),
-                0,
-                10,
-            )
-            self.surface.blit(button_surface, (self.button_rect.x, self.button_rect.y))
+    def draw(self, value1: Optional[int] = None, value2: Optional[int] = None):
 
-            # For debugging - uncomment to see the clickable area
-            # pygame.draw.rect(self.surface, (255, 0, 0), self.button_rect, 2)
-        else:
-            self.is_hovering = False
+        # If the caller gave new dice values, store them
+        if value1 is not None:
+            self.last_value1 = value1
+        if value2 is not None:
+            self.last_value2 = value2
 
-        # Render and blit the button text
-        text_surface = self.font.render("Click me to roll!", True, (0, 0, 0))
-        text_rect = text_surface.get_rect(
-            center=(self.button_rect.centerx, self.button_rect.bottom - 10)
-        )
-        self.surface.blit(text_surface, text_rect)
+        # Draw a simple "Roll Dice" button
+        pygame.draw.rect(self.screen, (0, 0, 0), self.button_rect, 2)
+        font = pygame.font.SysFont(None, 24)
+        text_surface = font.render("Roll Dice", True, (0, 0, 0))
+        text_rect = text_surface.get_rect(center=self.button_rect.center)
+        self.screen.blit(text_surface, text_rect)
+
+        # If we don't have valid dice values yet, stop
+        if not self.last_value1 or not self.last_value2:
+            return
+
+        # Retrieve the images for the stored face values
+        dice_img1 = self.dice_faces.get(self.last_value1)
+        dice_img2 = self.dice_faces.get(self.last_value2)
+
+        dice1_x = self.screen_width // 2 - self.dice_size - self.dice_spacing
+        dice1_y = self.screen_height // 2 - 40
+        dice2_x = self.screen_width // 2 + self.dice_spacing
+        dice2_y = self.screen_height // 2 - 40
+
+        # Blit  the dice images
+        if dice_img1:
+            self.screen.blit(dice_img1, (dice1_x, dice1_y))
+        if dice_img2:
+            self.screen.blit(dice_img2, (dice2_x, dice2_y))
 
     # Return the current values of both dice
     def get_dice_values(self) -> Tuple[int, int]:

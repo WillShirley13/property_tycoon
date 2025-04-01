@@ -1,9 +1,16 @@
 import pygame
 from typing import Tuple, Optional
 
+
 class InsufficientFundsPopup:
     def __init__(
-        self, x: int, y: int, width: int, height: int, screen: pygame.Surface, player_name: str
+        self,
+        x: int,
+        y: int,
+        width: int,
+        height: int,
+        screen: pygame.Surface,
+        player_name: str,
     ):
         """
         Initialize the insufficient funds popup.
@@ -61,9 +68,7 @@ class InsufficientFundsPopup:
 
         # --- Title ---
         title_text: str = "Insufficient Funds"
-        title_surface: pygame.Surface = self.title_font.render(
-            title_text, True, self.POPUP_TEXT_COLOR
-        )
+        title_surface: pygame.Surface = self.title_font.render(title_text, True, self.POPUP_TEXT_COLOR)
         title_rect: pygame.Rect = title_surface.get_rect(center=(self.width // 2, 30))
         self.popup_surface.blit(title_surface, title_rect)
 
@@ -71,19 +76,20 @@ class InsufficientFundsPopup:
         # Split message at the full stop
         message_lines = [
             f"{self.player_name} does not have enough money to purchase this property.",
-            "Moving to auction!"
+            "Moving to auction!",
         ]
-        
+
         # Render and position each line
         line_spacing = 5  # Space between lines
         start_y = self.height // 2 - (self.detail_font.get_height() + line_spacing)
-        
+
         for i, line in enumerate(message_lines):
-            message_surface = self.detail_font.render(
-                line, True, self.POPUP_TEXT_COLOR
-            )
+            message_surface = self.detail_font.render(line, True, self.POPUP_TEXT_COLOR)
             message_rect = message_surface.get_rect(
-                center=(self.width // 2, start_y + i * (self.detail_font.get_height() + line_spacing))
+                center=(
+                    self.width // 2,
+                    start_y + i * (self.detail_font.get_height() + line_spacing),
+                )
             )
             self.popup_surface.blit(message_surface, message_rect)
 
@@ -114,4 +120,4 @@ class InsufficientFundsPopup:
             running = False
 
             # Cap the frame rate
-            clock.tick(60) 
+            clock.tick(60)

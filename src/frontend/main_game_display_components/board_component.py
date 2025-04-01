@@ -20,18 +20,14 @@ class Board:
         self.screen: pygame.Surface = screen
 
         # Board should occupy the specified percentage of the screen width
-        self.board_width: int = int(
-            screen_width * BOARD_CONFIG["board_width_percentage"]
-        )
+        self.board_width: int = int(screen_width * BOARD_CONFIG["board_width_percentage"])
 
         # Board height will be the same as width to make a square
         self.board_height: int = self.board_width
 
         # If the board height is too large for the screen, adjust it
         if self.board_height > screen_height * BOARD_CONFIG["max_height_percentage"]:
-            self.board_height = int(
-                screen_height * BOARD_CONFIG["max_height_percentage"]
-            )
+            self.board_height = int(screen_height * BOARD_CONFIG["max_height_percentage"])
             self.board_width = self.board_height
 
         # Calculate the position to center the board
@@ -42,15 +38,11 @@ class Board:
         self.spaces_per_side: int = BOARD_CONFIG["spaces_per_side"]
 
         # Calculate space dimensions
-        self.corner_size: int = int(
-            self.board_width / BOARD_CONFIG["corner_size_divisor"]
-        )
+        self.corner_size: int = int(self.board_width / BOARD_CONFIG["corner_size_divisor"])
 
         # Calculate the width of regular spaces
         # Each side has 9 regular spaces, and we need to fit them between the corners
-        self.space_width: int = int(
-            (self.board_width - 2 * self.corner_size) / self.spaces_per_side
-        )
+        self.space_width: int = int((self.board_width - 2 * self.corner_size) / self.spaces_per_side)
 
         # Create the spaces
         self.spaces: List[pygame.Rect] = self._create_spaces()
@@ -75,19 +67,14 @@ class Board:
             spaces.append(
                 pygame.Rect(
                     self.board_x,
-                    self.board_y
-                    + self.board_height
-                    - self.corner_size
-                    - (i + 1) * self.space_width,
+                    self.board_y + self.board_height - self.corner_size - (i + 1) * self.space_width,
                     self.corner_size,
                     self.space_width,
                 )
             )
 
         # Top-left corner (JAIL) - Space 10
-        spaces.append(
-            pygame.Rect(self.board_x, self.board_y, self.corner_size, self.corner_size)
-        )
+        spaces.append(pygame.Rect(self.board_x, self.board_y, self.corner_size, self.corner_size))
 
         # Top row spaces (11-19) - from left to right
         for i in range(self.spaces_per_side):
@@ -135,10 +122,7 @@ class Board:
         for i in range(self.spaces_per_side):
             spaces.append(
                 pygame.Rect(
-                    self.board_x
-                    + self.board_width
-                    - self.corner_size
-                    - (i + 1) * self.space_width,
+                    self.board_x + self.board_width - self.corner_size - (i + 1) * self.space_width,
                     self.board_y + self.board_height - self.corner_size,
                     self.space_width,
                     self.corner_size,
@@ -195,17 +179,11 @@ class Board:
                     # No color strip for corner spaces
                     pass
                 elif i >= 1 and i <= 9:  # Left side
-                    strip_width: int = int(
-                        self.corner_size * BOARD_CONFIG["color_strip_height"]
-                    )
-                    color_rect: pygame.Rect = pygame.Rect(
-                        space.right - strip_width, space.top, strip_width, space.height
-                    )
+                    strip_width: int = int(self.corner_size * BOARD_CONFIG["color_strip_height"])
+                    color_rect: pygame.Rect = pygame.Rect(space.right - strip_width, space.top, strip_width, space.height)
                     pygame.draw.rect(self.screen, color, color_rect)
                 elif i >= 11 and i <= 19:  # Top row
-                    strip_height: int = int(
-                        self.corner_size * BOARD_CONFIG["color_strip_height"]
-                    )
+                    strip_height: int = int(self.corner_size * BOARD_CONFIG["color_strip_height"])
                     color_rect = pygame.Rect(
                         space.left,
                         space.bottom - strip_height,
@@ -214,20 +192,12 @@ class Board:
                     )
                     pygame.draw.rect(self.screen, color, color_rect)
                 elif i >= 21 and i <= 29:  # Right side
-                    strip_width = int(
-                        self.corner_size * BOARD_CONFIG["color_strip_height"]
-                    )
-                    color_rect = pygame.Rect(
-                        space.left, space.top, strip_width, space.height
-                    )
+                    strip_width = int(self.corner_size * BOARD_CONFIG["color_strip_height"])
+                    color_rect = pygame.Rect(space.left, space.top, strip_width, space.height)
                     pygame.draw.rect(self.screen, color, color_rect)
                 elif i >= 31 and i <= 39:  # Bottom row
-                    strip_height = int(
-                        self.corner_size * BOARD_CONFIG["color_strip_height"]
-                    )
-                    color_rect = pygame.Rect(
-                        space.left, space.top, space.width, strip_height
-                    )
+                    strip_height = int(self.corner_size * BOARD_CONFIG["color_strip_height"])
+                    color_rect = pygame.Rect(space.left, space.top, space.width, strip_height)
                     pygame.draw.rect(self.screen, color, color_rect)
 
             # Draw the border
@@ -237,11 +207,7 @@ class Board:
             name: str = SPACE_NAMES[i]
 
             # Choose font size based on space type
-            font_size: int = (
-                BOARD_CONFIG["corner_font_size"]
-                if i in [0, 10, 20, 30]
-                else BOARD_CONFIG["regular_font_size"]
-            )
+            font_size: int = BOARD_CONFIG["corner_font_size"] if i in [0, 10, 20, 30] else BOARD_CONFIG["regular_font_size"]
 
             # Determine space type for text rendering
             space_type: str = ""
@@ -257,6 +223,4 @@ class Board:
                 space_type = "bottom"
 
             # Render the text
-            render_text_for_space(
-                self.screen, space, name, font_size, space_type, self.space_width
-            )
+            render_text_for_space(self.screen, space, name, font_size, space_type, self.space_width)

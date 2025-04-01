@@ -10,9 +10,7 @@ if TYPE_CHECKING:
 
 
 class Ownable:
-    def __init__(
-        self, cost: int, property_group: PropertyGroup, name: str, owner: "Bank" = None
-    ):
+    def __init__(self, cost: int, property_group: PropertyGroup, name: str, owner: "Bank" = None):
         self.name: str = name
         self.png_name: str = PROPERTY_DATA[self.name]["png_name"]
         self.owned_by: Player | Bank = owner  # Will be Player or Bank

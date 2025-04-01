@@ -19,7 +19,7 @@ from frontend.main_game_display_components.board_component import Board
 
 
 def main() -> None:
-    # Initialize pygame
+    # Initialise pygame
     pygame.init()
 
     # Get the screen info to set up a dynamic display
@@ -36,15 +36,11 @@ def main() -> None:
     pygame.display.set_caption("Property Tycoon")
 
     # Display the start screen and get player names
-    start_screen: StartScreenDisplay = StartScreenDisplay(
-        window_width, window_height, screen
-    )
+    start_screen: StartScreenDisplay = StartScreenDisplay(window_width, window_height, screen)
     player_names: List[str] = start_screen.display()
 
     # Display the time limit dialog and get the time limit
-    time_limit_screen: TimeLimitChoiceDisplay = TimeLimitChoiceDisplay(
-        window_width, window_height, screen
-    )
+    time_limit_screen: TimeLimitChoiceDisplay = TimeLimitChoiceDisplay(window_width, window_height, screen)
     time_limit: int = time_limit_screen.display()
 
     game_tokens: List[GameToken] = [
@@ -55,18 +51,15 @@ def main() -> None:
         GameToken.SMARTPHONE,
         GameToken.BOAT,
     ]
-    # Frontend must pass names and tokens for each player
-    player_data: List[Tuple[str, GameToken]] = [
-        (player_names[i], game_tokens[i]) for i in range(len(player_names))
-    ]
 
-    # Initialize Admin with player data and time limit
+    # Assign game tokens to players
+    player_data: List[Tuple[str, GameToken]] = [(player_names[i], game_tokens[i]) for i in range(len(player_names))]
+
+    # Create the admin object with player data and time limit
     admin: Admin = Admin(player_data, time_limit)
 
     # Create and run the main game display
-    game_display: MainGameDisplay = MainGameDisplay(
-        window_width, window_height, screen, player_data, admin
-    )
+    game_display: MainGameDisplay = MainGameDisplay(window_width, window_height, screen, player_data, admin)
     game_display.run()
 
 
