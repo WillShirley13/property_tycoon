@@ -9,6 +9,12 @@ from frontend.helpers.space_data import (
     SPACE_PROPERTY_GROUPS,
 )
 from frontend.helpers.board_text_utils import render_text_for_space
+from backend.non_ownables.free_parking import FreeParking
+from backend.non_ownables.game_card import GameCard
+from backend.non_ownables.go import Go
+from backend.non_ownables.jail import Jail
+from backend.ownables.ownable import Ownable
+from backend.ownables.property import Property
 
 
 class Board:
@@ -139,7 +145,7 @@ class Board:
         return centers
 
     # Draw the complete game board with all spaces and properties
-    def draw(self) -> None:
+    def draw(self, game_board: List[Ownable | FreeParking | Jail | Go | GameCard]) -> None:
         # Draw the board background (center area)
         center_x: int = self.board_x + self.corner_size
         center_y: int = self.board_y + self.corner_size
@@ -153,10 +159,12 @@ class Board:
         )
 
         # Draw each space
-        for i, space in enumerate(self.spaces):
+        for i, space_info in enumerate(self.spaces):
+            space = space_info  # This is the rect
+            
             # Get the property group for this space
             property_group: str = SPACE_PROPERTY_GROUPS[i]
-
+            
             # Get the base color for this space
             if property_group == "SPECIAL":
                 if i in [0, 10, 20, 30]:  # Corner spaces
@@ -199,6 +207,108 @@ class Board:
                     strip_height = int(self.corner_size * BOARD_CONFIG["color_strip_height"])
                     color_rect = pygame.Rect(space.left, space.top, space.width, strip_height)
                     pygame.draw.rect(self.screen, color, color_rect)
+                
+                # Draw houses and hotels after drawing the color strip
+                if isinstance(game_board[i], Property):
+                    # Get number of houses and hotel for this property
+                    houses = game_board[i].get_houses()
+                    hotel = game_board[i].get_hotel()
+                    
+                    if i >= 1 and i <= 9:  # Left side
+                        strip_width = int(self.corner_size * BOARD_CONFIG["color_strip_height"])
+                        color_rect = pygame.Rect(space.right - strip_width, space.top, strip_width, space.height)
+                        
+                        # Draw houses/hotel in the color strip
+                        house_size = min(strip_width // 2, space.height // 5)
+                        if hotel == 1:
+                            # Draw a black square for hotel
+                            hotel_rect = pygame.Rect(
+                                color_rect.centerx - house_size // 2,
+                                color_rect.centery - house_size // 2,
+                                house_size, house_size
+                            )
+                            pygame.draw.rect(self.screen, (0, 0, 0), hotel_rect)
+                        else:
+                            # Draw green squares for houses
+                            for h in range(houses):
+                                house_rect = pygame.Rect(
+                                    color_rect.centerx - house_size // 2,
+                                    color_rect.top + (h + 1) * color_rect.height // (houses + 1) - house_size // 2,
+                                    house_size, house_size
+                                )
+                                pygame.draw.rect(self.screen, (0, 150, 0), house_rect)
+                    
+                    elif i >= 11 and i <= 19:  # Top row
+                        strip_height = int(self.corner_size * BOARD_CONFIG["color_strip_height"])
+                        color_rect = pygame.Rect(space.left, space.bottom - strip_height, space.width, strip_height)
+                        
+                        # Draw houses/hotel in the color strip
+                        house_size = min(strip_height // 2, space.width // 5)
+                        if hotel == 1:
+                            # Draw a black square for hotel
+                            hotel_rect = pygame.Rect(
+                                color_rect.centerx - house_size // 2,
+                                color_rect.centery - house_size // 2,
+                                house_size, house_size
+                            )
+                            pygame.draw.rect(self.screen, (0, 0, 0), hotel_rect)
+                        else:
+                            # Draw green squares for houses
+                            for h in range(houses):
+                                house_rect = pygame.Rect(
+                                    color_rect.left + (h + 1) * color_rect.width // (houses + 1) - house_size // 2,
+                                    color_rect.centery - house_size // 2,
+                                    house_size, house_size
+                                )
+                                pygame.draw.rect(self.screen, (0, 150, 0), house_rect)
+                    
+                    elif i >= 21 and i <= 29:  # Right side
+                        strip_width = int(self.corner_size * BOARD_CONFIG["color_strip_height"])
+                        color_rect = pygame.Rect(space.left, space.top, strip_width, space.height)
+                        
+                        # Draw houses/hotel in the color strip
+                        house_size = min(strip_width // 2, space.height // 5)
+                        if hotel == 1:
+                            # Draw a black square for hotel
+                            hotel_rect = pygame.Rect(
+                                color_rect.centerx - house_size // 2,
+                                color_rect.centery - house_size // 2,
+                                house_size, house_size
+                            )
+                            pygame.draw.rect(self.screen, (0, 0, 0), hotel_rect)
+                        else:
+                            # Draw green squares for houses
+                            for h in range(houses):
+                                house_rect = pygame.Rect(
+                                    color_rect.centerx - house_size // 2,
+                                    color_rect.top + (h + 1) * color_rect.height // (houses + 1) - house_size // 2,
+                                    house_size, house_size
+                                )
+                                pygame.draw.rect(self.screen, (0, 150, 0), house_rect)
+                    
+                    elif i >= 31 and i <= 39:  # Bottom row
+                        strip_height = int(self.corner_size * BOARD_CONFIG["color_strip_height"])
+                        color_rect = pygame.Rect(space.left, space.top, space.width, strip_height)
+                        
+                        # Draw houses/hotel in the color strip
+                        house_size = min(strip_height // 2, space.width // 5)
+                        if hotel == 1:
+                            # Draw a black square for hotel
+                            hotel_rect = pygame.Rect(
+                                color_rect.centerx - house_size // 2,
+                                color_rect.centery - house_size // 2,
+                                house_size, house_size
+                            )
+                            pygame.draw.rect(self.screen, (0, 0, 0), hotel_rect)
+                        else:
+                            # Draw green squares for houses
+                            for h in range(houses):
+                                house_rect = pygame.Rect(
+                                    color_rect.left + (h + 1) * color_rect.width // (houses + 1) - house_size // 2,
+                                    color_rect.centery - house_size // 2,
+                                    house_size, house_size
+                                )
+                                pygame.draw.rect(self.screen, (0, 150, 0), house_rect)
 
             # Draw the border
             pygame.draw.rect(self.screen, SPACE_COLORS["border"], space, 1)

@@ -287,7 +287,7 @@ class MainGameDisplay:
         self.screen.blit(self.background, (0, 0))
 
         # Draw the game board
-        self.board.draw()
+        self.board.draw(self.game_board)
 
         # Draw player game pieces on the board
         for player, token_png in self.players_objects:
@@ -385,7 +385,6 @@ class MainGameDisplay:
     # Process events based on player's new position on the board
     def handle_players_new_position(self) -> None:
         space_on_board: Ownable | FreeParking | Jail | Go | GameCard = self.game_board[self.current_player[0].get_current_position()]
-
         match space_on_board:
             case Ownable():
                 # Draw the property image
@@ -404,14 +403,15 @@ class MainGameDisplay:
                         f"{self.current_player[0].get_name()} landed on a property that is owned by the bank, {space_on_board.get_name()}. Offer to purchase the property."
                     )
                     # buy_property_popup.show() returns True if the player buys the property, False if they don't
-                    move_to_auction = self.buy_property_popup.show(space_on_board, self.current_player[0], self.bank)
-                    if not move_to_auction:
-                        self.auction_popup.show(
-                            self.current_player[0],
-                            [player[0] for player in self.players_objects if player[0] != self.current_player[0]],
-                            space_on_board,
-                            self.bank,
-                        )
+                    if self.current_player[0].get_is_first_circuit_complete():
+                        move_to_auction = self.buy_property_popup.show(space_on_board, self.current_player[0], self.bank)
+                        if not move_to_auction:
+                            self.auction_popup.show(
+                                self.current_player[0],
+                                [player[0] for player in self.players_objects if player[0] != self.current_player[0]],
+                                space_on_board,
+                                self.bank,
+                            )
                     return
                 # Player landed on an ownable property that is owned by another player
                 else:
@@ -419,7 +419,8 @@ class MainGameDisplay:
                         print(
                             f"{self.current_player[0].get_name()} landed on {space_on_board.get_name()} and is being charged rent of £{space_on_board.get_rent_cost()}."
                         )
-                        self.rent_paid_popup.show(self.current_player[0], space_on_board, self.bank)
+                        if not space_on_board.is_mortgaged() and not space_on_board.get_owner().get_is_in_jail():
+                            self.rent_paid_popup.show(self.current_player[0], space_on_board, self.bank)
                     except Exception as e:
                         print(f"Error processing rent: {e}")
                     return
