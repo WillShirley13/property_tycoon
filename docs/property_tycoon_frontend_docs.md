@@ -617,7 +617,6 @@ The frontend includes various graphical assets used to enhance the visual presen
 - Dice faces
 - Background images
 - Property cards
-- UI elements and buttons
 
 These assets are stored in the `art_assets` directory.
 
