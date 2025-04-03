@@ -1,16 +1,18 @@
 from ast import List
 from typing import TYPE_CHECKING, Union
-from ..enums.property_group import PropertyGroup
+
 from .. import errors
 from ..constants import PROPERTY_DATA
+from ..enums.property_group import PropertyGroup
 
 if TYPE_CHECKING:
-    from ..property_owners.player import Player
     from ..property_owners.bank import Bank
+    from ..property_owners.player import Player
 
 
 class Ownable:
-    def __init__(self, cost: int, property_group: PropertyGroup, name: str, owner: "Bank" = None):
+    def __init__(self, cost: int, property_group: PropertyGroup,
+                 name: str, owner: "Bank" = None):
         self.name: str = name
         self.png_name: str = PROPERTY_DATA[self.name]["png_name"]
         self.owned_by: Player | Bank = owner  # Will be Player or Bank
@@ -33,13 +35,15 @@ class Ownable:
     def get_total_value(self) -> int:
         return self.total_value
 
-    def set_total_value(self, value_change: int, increase: bool = False) -> None:
+    def set_total_value(self, value_change: int,
+                        increase: bool = False) -> None:
         if increase:
             self.total_value += value_change
         else:
             self.total_value -= value_change
 
-    # Note: current_sell_value returns the cash the player would get if they downgraded/sold. It is NOT the total value of the property.
+    # Note: current_sell_value returns the cash the player would get if they
+    # downgraded/sold. It is NOT the total value of the property.
     def get_current_sell_value(self) -> int:
         return self.current_sell_value[-1]
 

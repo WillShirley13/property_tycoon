@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING, Dict, List
-from ..enums.property_group import PropertyGroup
+
 from .. import errors
+from ..enums.property_group import PropertyGroup
 
 if TYPE_CHECKING:
     from ..ownables.ownable import Ownable

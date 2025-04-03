@@ -102,21 +102,30 @@ SPACE_PROPERTY_GROUPS = [
 
 # Space colors for different board elements
 SPACE_COLORS = {
-    "default": [(200, 200, 200), (180, 180, 180)],  # Alternating light gray colors
+    # Alternating light gray colors
+    "default": [(200, 200, 200), (180, 180, 180)],
     "corner": (220, 220, 220),  # Slightly lighter gray for corners
-    "board_bg": (240, 240, 240),  # Background color for the center of the board
+    # Background color for the center of the board
+    "board_bg": (240, 240, 240),
     "screen_bg": (255, 255, 255),  # Background color for the screen
     "border": (0, 0, 0),  # Border color
 }
 
 # Board configuration constants
 BOARD_CONFIG = {
-    "screen_size_percentage": 0.9,  # Percentage of screen size to use for the window
-    "board_width_percentage": 0.75,  # Percentage of window width to use for the board
-    "max_height_percentage": 0.95,  # Maximum percentage of window height for the board
-    "corner_size_divisor": 6,  # Divisor to determine corner size from board width
+    # Percentage of screen size to use for the window
+    "screen_size_percentage": 0.9,
+    # Percentage of window width to use for the board
+    "board_width_percentage": 0.75,
+    # Maximum percentage of window height for the board
+    "max_height_percentage": 0.95,
+    # Divisor to determine corner size from board width
+    "corner_size_divisor": 6,
     "spaces_per_side": 9,  # Number of non-corner spaces per side
-    "regular_font_size": 20,  # Font size for regular spaces (increased from 16)
-    "corner_font_size": 28,  # Font size for corner spaces (increased from 22)
-    "color_strip_height": 0.25,  # Height of the color strip as a percentage of space height
+    # Font size for regular spaces (increased from 16)
+    "regular_font_size": 20,
+    # Font size for corner spaces (increased from 22)
+    "corner_font_size": 28,
+    # Height of the color strip as a percentage of space height
+    "color_strip_height": 0.25,
 }

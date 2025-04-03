@@ -2,9 +2,10 @@ import random
 from typing import TYPE_CHECKING, Dict, List, Tuple
 
 from backend.non_ownables.go import Go
-from ..enums.property_group import PropertyGroup
-from ..constants import POT_LUCK_CARDS, OPPORTUNITY_KNOCKS_CARDS
+
 from .. import errors
+from ..constants import OPPORTUNITY_KNOCKS_CARDS, POT_LUCK_CARDS
+from ..enums.property_group import PropertyGroup
 from ..ownables.property import Property
 
 if TYPE_CHECKING:
@@ -28,7 +29,8 @@ class GameCard:
         self.card_pack.append(self.card_pack.pop(0))
         return (card, self.card_ids[card])
 
-    # Facilitates actions of card id passed. Function may raise errror if player does not have enough funds
+    # Facilitates actions of card id passed. Function may raise errror if
+    # player does not have enough funds
     def process_card(
         self,
         player: "Player",
@@ -117,7 +119,8 @@ class GameCard:
                         raise errors.InsufficientFundsError
 
             case 17:  # "Get out of jail free"
-                player.set_get_out_of_jail_card(player.get_get_out_of_jail_cards() + 1)
+                player.set_get_out_of_jail_card(
+                    player.get_get_out_of_jail_cards() + 1)
 
             # Opportunity Knocks Cards (18-33)
             case 18:  # "Bank pays you dividend"
@@ -159,7 +162,8 @@ class GameCard:
                 for property_group in player.get_owned_properties().values():
                     for property in property_group:
                         if isinstance(property, Property):
-                            total += (property.get_houses() * 40) + (property.get_hotel() * 115)
+                            total += (property.get_houses() * 40) + \
+                                (property.get_hotel() * 115)
                 player.sub_cash_balance(total)
                 bank.add_cash_balance(total)
 
@@ -171,12 +175,14 @@ class GameCard:
                 for property_group in player.get_owned_properties().values():
                     for property in property_group:
                         if isinstance(property, Property):
-                            total += (property.get_houses() * 25) + (property.get_hotel() * 100)
+                            total += (property.get_houses() * 25) + \
+                                (property.get_hotel() * 100)
                 player.sub_cash_balance(total)
                 bank.add_cash_balance(total)
 
             case 29:  # "Go back 3 spaces"
-                player.move_player_to_position(player.current_position - 3, go, bank)
+                player.move_player_to_position(
+                    player.current_position - 3, go, bank)
 
             case 30:  # "Advance to Skywalker Drive"
                 player.move_player_to_position(11, go, bank)
@@ -188,7 +194,8 @@ class GameCard:
                 free_parking.add_fine(30, player)
 
             case 33:  # "Get out of jail free"
-                player.set_get_out_of_jail_card(player.get_get_out_of_jail_cards() + 1)
+                player.set_get_out_of_jail_card(
+                    player.get_get_out_of_jail_cards() + 1)
 
     def shuffle_pack(self) -> None:
         random.shuffle(self.card_pack)

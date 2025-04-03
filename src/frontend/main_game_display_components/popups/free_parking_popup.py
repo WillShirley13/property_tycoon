@@ -1,11 +1,13 @@
+from typing import Any, Optional, Tuple
+
 import pygame
-from typing import Optional, Tuple, Any
 
 from backend.property_owners.player import Player
 
 
 class FreeParkingPopup:
-    def __init__(self, x: int, y: int, width: int, height: int, screen: pygame.Surface):
+    def __init__(self, x: int, y: int, width: int,
+                 height: int, screen: pygame.Surface):
         self.x: int = x
         self.y: int = y
         self.width: int = width
@@ -18,9 +20,12 @@ class FreeParkingPopup:
             240,
             240,
         )  # Light gray background
-        self.POPUP_BORDER_COLOR: Tuple[int, int, int] = (0, 0, 0)  # Black border
-        self.POPUP_TEXT_COLOR: Tuple[int, int, int] = (0, 0, 0)  # Black text
-        self.BUTTON_COLOR: Tuple[int, int, int] = (144, 238, 144)  # Light green buttons
+        self.POPUP_BORDER_COLOR: Tuple[int, int, int] = (
+            0, 0, 0)  # Black border
+        self.POPUP_TEXT_COLOR: Tuple[int, int, int] = (
+            0, 0, 0)  # Black text
+        self.BUTTON_COLOR: Tuple[int, int, int] = (
+            144, 238, 144)  # Light green buttons
         self.BUTTON_HOVER_COLOR: Tuple[int, int, int] = (
             180,
             180,
@@ -33,14 +38,19 @@ class FreeParkingPopup:
 
         # Set fonts
         try:
-            self.title_font: pygame.font.Font = pygame.font.SysFont("Arial", title_size, bold=True)
-            self.button_font: pygame.font.Font = pygame.font.SysFont("Arial", button_size, bold=True)
-        except:
-            self.title_font = pygame.font.SysFont(None, title_size, bold=True)
-            self.button_font = pygame.font.SysFont(None, button_size, bold=True)
+            self.title_font: pygame.font.Font = pygame.font.SysFont(
+                "Arial", title_size, bold=True)
+            self.button_font: pygame.font.Font = pygame.font.SysFont(
+                "Arial", button_size, bold=True)
+        except BaseException:
+            self.title_font = pygame.font.SysFont(
+                None, title_size, bold=True)
+            self.button_font = pygame.font.SysFont(
+                None, button_size, bold=True)
 
         # Create a surface for the popup
-        self.popup_surface: pygame.Surface = pygame.Surface((width, height))
+        self.popup_surface: pygame.Surface = pygame.Surface(
+            (width, height))
 
         # Configure button layout
         self.button_width: int = width - 40
@@ -55,7 +65,7 @@ class FreeParkingPopup:
             self.button_height,
         )
 
-        # Initialize hover state for continue button
+        # Initialise hover state for continue button
         self.continue_hover: bool = False
 
     # Draw the Free Parking popup
@@ -72,35 +82,56 @@ class FreeParkingPopup:
         )
 
         # Draw the title
-        title_text: str = f"{player.get_name()} landed on Free Parking!"
-        title_surface: pygame.Surface = self.title_font.render(title_text, True, self.POPUP_TEXT_COLOR)
-        title_rect: pygame.Rect = title_surface.get_rect(center=(self.width // 2, 40))
+        title_text: str = f"{
+            player.get_name()} landed on Free Parking!"
+        title_surface: pygame.Surface = self.title_font.render(
+            title_text, True, self.POPUP_TEXT_COLOR)
+        title_rect: pygame.Rect = title_surface.get_rect(
+            center=(self.width // 2, 40))
         self.popup_surface.blit(title_surface, title_rect)
 
         # Draw explanation text
         info_text: str = f"Collect £{amount} in fines from Free Parking!"
-        info_surface: pygame.Surface = self.button_font.render(info_text, True, self.POPUP_TEXT_COLOR)
-        info_rect: pygame.Rect = info_surface.get_rect(center=(self.width // 2, 80))
+        info_surface: pygame.Surface = self.button_font.render(
+            info_text, True, self.POPUP_TEXT_COLOR)
+        info_rect: pygame.Rect = info_surface.get_rect(
+            center=(self.width // 2, 80))
         self.popup_surface.blit(info_surface, info_rect)
 
         # Calculate mouse position for hover effects
         mouse_pos = pygame.mouse.get_pos()
         # get mouse position relative to the popup
-        relative_mouse_pos = (mouse_pos[0] - self.x, mouse_pos[1] - self.y)
+        relative_mouse_pos = (
+            mouse_pos[0] - self.x,
+            mouse_pos[1] - self.y)
 
-        continue_button_local = pygame.Rect(20, self.button_y, self.button_width, self.button_height)
-        self.continue_hover = continue_button_local.collidepoint(relative_mouse_pos)
+        continue_button_local = pygame.Rect(
+            20, self.button_y, self.button_width, self.button_height)
+        self.continue_hover = continue_button_local.collidepoint(
+            relative_mouse_pos)
 
         # Choose the button color based on hover state
         button_color = self.BUTTON_HOVER_COLOR if self.continue_hover else self.BUTTON_COLOR
 
         # Draw the button with rounded corners
-        pygame.draw.rect(self.popup_surface, button_color, continue_button_local, 0, 5)
-        pygame.draw.rect(self.popup_surface, self.POPUP_BORDER_COLOR, continue_button_local, 1, 5)
+        pygame.draw.rect(
+            self.popup_surface,
+            button_color,
+            continue_button_local,
+            0,
+            5)
+        pygame.draw.rect(
+            self.popup_surface,
+            self.POPUP_BORDER_COLOR,
+            continue_button_local,
+            1,
+            5)
 
         # Add text to the button
-        text_surface: pygame.Surface = self.button_font.render("Continue", True, self.POPUP_TEXT_COLOR)
-        text_rect: pygame.Rect = text_surface.get_rect(center=continue_button_local.center)
+        text_surface: pygame.Surface = self.button_font.render(
+            "Continue", True, self.POPUP_TEXT_COLOR)
+        text_rect: pygame.Rect = text_surface.get_rect(
+            center=continue_button_local.center)
         self.popup_surface.blit(text_surface, text_rect)
 
         # Display the popup on the screen
@@ -111,8 +142,11 @@ class FreeParkingPopup:
         # Handle user interaction events
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:  # Left click
             mouse_pos = pygame.mouse.get_pos()
-            relative_mouse_pos = (mouse_pos[0] - self.x, mouse_pos[1] - self.y)
-            continue_button_local = pygame.Rect(20, self.button_y, self.button_width, self.button_height)
+            relative_mouse_pos = (
+                mouse_pos[0] - self.x,
+                mouse_pos[1] - self.y)
+            continue_button_local = pygame.Rect(
+                20, self.button_y, self.button_width, self.button_height)
 
             if continue_button_local.collidepoint(relative_mouse_pos):
                 return True  # Return True to indicate the popup is done

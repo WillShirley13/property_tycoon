@@ -1,8 +1,8 @@
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from ..property_owners.player import Player
     from ..property_owners.bank import Bank
+    from ..property_owners.player import Player
 
 
 class Go:

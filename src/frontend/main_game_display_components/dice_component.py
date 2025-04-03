@@ -1,6 +1,7 @@
-import pygame
 import random
-from typing import Tuple, Optional, List
+from typing import List, Optional, Tuple
+
+import pygame
 
 
 class Dice:
@@ -32,17 +33,27 @@ class Dice:
             self.value = value
 
         # Draw the dice square with rounded corners
-        pygame.draw.rect(self.surface, self.color, (self.x, self.y, self.size, self.size), 0, 10)
+        pygame.draw.rect(
+            self.surface,
+            self.color,
+            (self.x,
+             self.y,
+             self.size,
+             self.size),
+            0,
+            10)
 
         # Define dot positions for each possible dice value (1-6)
         dots: dict[int, List[Tuple[int, int]]] = {
-            1: [(self.x + self.size // 2, self.y + self.size // 2)],  # Center
+            # Center
+            1: [(self.x + self.size // 2, self.y + self.size // 2)],
             2: [
                 (
                     self.x + self.size // 3,
                     self.y + self.size // 3,
                 ),  # Top-left to bottom-right diagonal
-                (self.x + 2 * self.size // 3, self.y + 2 * self.size // 3),
+                (self.x + 2 * self.size // 3,
+                 self.y + 2 * self.size // 3),
             ],
             3: [
                 (
@@ -50,13 +61,16 @@ class Dice:
                     self.y + self.size // 3,
                 ),  # Same as 2 plus center
                 (self.x + self.size // 2, self.y + self.size // 2),
-                (self.x + 2 * self.size // 3, self.y + 2 * self.size // 3),
+                (self.x + 2 * self.size // 3,
+                 self.y + 2 * self.size // 3),
             ],
             4: [
-                (self.x + self.size // 3, self.y + self.size // 3),  # Four corners
+                (self.x + self.size // 3, self.y
+                 + self.size // 3),  # Four corners
                 (self.x + 2 * self.size // 3, self.y + self.size // 3),
                 (self.x + self.size // 3, self.y + 2 * self.size // 3),
-                (self.x + 2 * self.size // 3, self.y + 2 * self.size // 3),
+                (self.x + 2 * self.size // 3,
+                 self.y + 2 * self.size // 3),
             ],
             5: [
                 (
@@ -66,7 +80,8 @@ class Dice:
                 (self.x + 2 * self.size // 3, self.y + self.size // 3),
                 (self.x + self.size // 2, self.y + self.size // 2),
                 (self.x + self.size // 3, self.y + 2 * self.size // 3),
-                (self.x + 2 * self.size // 3, self.y + 2 * self.size // 3),
+                (self.x + 2 * self.size // 3,
+                 self.y + 2 * self.size // 3),
             ],
             6: [
                 (
@@ -77,13 +92,18 @@ class Dice:
                 (self.x + self.size // 3, self.y + self.size // 2),
                 (self.x + 2 * self.size // 3, self.y + self.size // 2),
                 (self.x + self.size // 3, self.y + 3 * self.size // 4),
-                (self.x + 2 * self.size // 3, self.y + 3 * self.size // 4),
+                (self.x + 2 * self.size // 3,
+                 self.y + 3 * self.size // 4),
             ],
         }
 
         # Draw each dot for the current dice value
         for dot in dots[self.value]:
-            pygame.draw.circle(self.surface, self.dot_color, dot, self.dot_radius)
+            pygame.draw.circle(
+                self.surface,
+                self.dot_color,
+                dot,
+                self.dot_radius)
 
 
 class DiceManager:
@@ -109,41 +129,49 @@ class DiceManager:
             40,  # button height
         )
 
-        # Pre-load the six dice-face images (1–6).
+        # Pre-load the six dice-face images
         self.dice_faces = {
             1: pygame.transform.scale(
-                pygame.image.load("src/frontend/art_assets/dice_numbers/1.png"),
+                pygame.image.load(
+                    "src/frontend/art_assets/dice_numbers/1.png"),
                 (dice_size, dice_size),
             ),
             2: pygame.transform.scale(
-                pygame.image.load("src/frontend/art_assets/dice_numbers/2.png"),
+                pygame.image.load(
+                    "src/frontend/art_assets/dice_numbers/2.png"),
                 (dice_size, dice_size),
             ),
             3: pygame.transform.scale(
-                pygame.image.load("src/frontend/art_assets/dice_numbers/3.png"),
+                pygame.image.load(
+                    "src/frontend/art_assets/dice_numbers/3.png"),
                 (dice_size, dice_size),
             ),
             4: pygame.transform.scale(
-                pygame.image.load("src/frontend/art_assets/dice_numbers/4.png"),
+                pygame.image.load(
+                    "src/frontend/art_assets/dice_numbers/4.png"),
                 (dice_size, dice_size),
             ),
             5: pygame.transform.scale(
-                pygame.image.load("src/frontend/art_assets/dice_numbers/5.png"),
+                pygame.image.load(
+                    "src/frontend/art_assets/dice_numbers/5.png"),
                 (dice_size, dice_size),
             ),
             6: pygame.transform.scale(
-                pygame.image.load("src/frontend/art_assets/dice_numbers/6.png"),
+                pygame.image.load(
+                    "src/frontend/art_assets/dice_numbers/6.png"),
                 (dice_size, dice_size),
             ),
         }
 
-        # Store the most recent dice values so we can re-draw them every frame
+        # Store the most recent dice values so we can re-draw them
+        # every frame
         self.last_value1: Optional[int] = None
         self.last_value2: Optional[int] = None
 
-    def draw(self, value1: Optional[int] = None, value2: Optional[int] = None):
+    def draw(self, value1: Optional[int]
+             = None, value2: Optional[int] = None):
 
-        # If the caller gave new dice values, store them
+        # If the player rolled new dice values, store them
         if value1 is not None:
             self.last_value1 = value1
         if value2 is not None:
@@ -153,10 +181,11 @@ class DiceManager:
         pygame.draw.rect(self.screen, (0, 0, 0), self.button_rect, 2)
         font = pygame.font.SysFont(None, 24)
         text_surface = font.render("Roll Dice", True, (0, 0, 0))
-        text_rect = text_surface.get_rect(center=self.button_rect.center)
+        text_rect = text_surface.get_rect(
+            center=self.button_rect.center)
         self.screen.blit(text_surface, text_rect)
 
-        # If we don't have valid dice values yet, stop
+        # If no valid dice values yet, stop
         if not self.last_value1 or not self.last_value2:
             return
 

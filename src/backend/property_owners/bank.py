@@ -1,9 +1,9 @@
 from typing import Dict, List
 
-from ..ownables.ownable import Ownable
 from ..constants import BANK_STARTING_CASH
-from ..property_owners.property_holder import PropertyHolder
 from ..enums.property_group import PropertyGroup
+from ..ownables.ownable import Ownable
+from ..property_owners.property_holder import PropertyHolder
 
 
 class Bank(PropertyHolder):

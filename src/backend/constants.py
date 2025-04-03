@@ -33,7 +33,8 @@ PROPERTY_BUILD_COSTS = {
 }
 
 # Property data structure
-# Format: {property_name: {"cost": purchase_cost, "rents": [base_rent, 1_house, 2_houses, 3_houses, 4_houses, hotel]}}
+# Format: {property_name: {"cost": purchase_cost, "rents": [base_rent,
+# 1_house, 2_houses, 3_houses, 4_houses, hotel]}}
 PROPERTY_DATA = {
     # Brown Properties
     "The Old Creek": {

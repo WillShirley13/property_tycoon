@@ -1,17 +1,18 @@
-import pygame
-from typing import Tuple, Optional, List
+from typing import List, Optional, Tuple
 
-from backend.property_owners.player import Player
+import pygame
+
+from backend.errors import InsufficientFundsError
 from backend.ownables.property import Property
 from backend.property_owners.bank import Bank
-from backend.errors import InsufficientFundsError
-from frontend.main_game_display_components.popups.insufficient_funds_popup import (
-    InsufficientFundsPopup,
-)
+from backend.property_owners.player import Player
+from frontend.main_game_display_components.popups.insufficient_funds_popup import \
+    InsufficientFundsPopup
 
 
 class BuyPropertyPopup:
-    def __init__(self, x: int, y: int, width: int, height: int, screen: pygame.Surface = None):
+    def __init__(self, x: int, y: int, width: int, height: int,
+                 screen: pygame.Surface = None):
         self.screen = screen
         self.width = width
         self.height = height
@@ -20,45 +21,59 @@ class BuyPropertyPopup:
         self.x = (screen.get_width() - width) // 2
         self.y = (screen.get_height() - height) // 2
 
-        # Define color scheme
-        self.POPUP_BG_COLOR: Tuple[int, int, int] = (240, 240, 240)
-        self.POPUP_BORDER_COLOR: Tuple[int, int, int] = (0, 0, 0)
-        self.POPUP_TEXT_COLOR: Tuple[int, int, int] = (0, 0, 0)
-        self.BUY_BUTTON_COLOR: Tuple[int, int, int] = (144, 238, 144)  # Light green
+        # Define color scheme for the popup
+        self.POPUP_BG_COLOR: Tuple[int, int, int] = (
+            240, 240, 240)  # Light grey
+        self.POPUP_BORDER_COLOR: Tuple[int, int, int] = (
+            0, 0, 0)  # Black
+        self.POPUP_TEXT_COLOR: Tuple[int,
+                                     int, int] = (0, 0, 0)  # Black
+        self.BUY_BUTTON_COLOR: Tuple[int, int, int] = (
+            144, 238, 144)  # Light green
         self.NO_THANKS_BUTTON_COLOR: Tuple[int, int, int] = (
             220,
             100,
             100,
         )  # Light red
-        self.BUTTON_HOVER_COLOR: Tuple[int, int, int] = (180, 180, 180)
+        self.BUTTON_HOVER_COLOR: Tuple[int, int, int] = (
+            180, 180, 180)  # Grey
 
         # Define font sizes
         title_size: int = 20
         detail_size: int = 16
         button_size: int = 14
 
-        # Initialize fonts
+        # Set fonts
         try:
-            self.title_font: pygame.font.Font = pygame.font.SysFont("Arial", title_size, bold=True)
-            self.detail_font: pygame.font.Font = pygame.font.SysFont("Arial", detail_size)
-            self.button_font: pygame.font.Font = pygame.font.SysFont("Arial", button_size, bold=True)
-        except:
-            self.title_font = pygame.font.SysFont(None, title_size + 4, bold=True)  # Adjust size slightly for default
-            self.detail_font = pygame.font.SysFont(None, detail_size + 2)
-            self.button_font = pygame.font.SysFont(None, button_size + 2, bold=True)
+            self.title_font: pygame.font.Font = pygame.font.SysFont(
+                "Arial", title_size, bold=True)
+            self.detail_font: pygame.font.Font = pygame.font.SysFont(
+                "Arial", detail_size)
+            self.button_font: pygame.font.Font = pygame.font.SysFont(
+                "Arial", button_size, bold=True)
+        except BaseException:
+            self.title_font = pygame.font.SysFont(
+                None, title_size + 4, bold=True)  # Adjust size slightly for default
+            self.detail_font = pygame.font.SysFont(
+                None, detail_size + 2)
+            self.button_font = pygame.font.SysFont(
+                None, button_size + 2, bold=True)
 
         # Create a surface for the popup
-        self.popup_surface: pygame.Surface = pygame.Surface((self.width, self.height))
+        self.popup_surface: pygame.Surface = pygame.Surface(
+            (self.width, self.height))
 
         # Button rects
         self.buy_button_rect: Optional[pygame.Rect] = None
         self.no_thanks_button_rect: Optional[pygame.Rect] = None
 
-        # Hover states
+        # Initialise hover states
         self.buy_hover: bool = False
         self.no_thanks_hover: bool = False
 
-        # Will be set to True if the player clicks the buy button, False if they click the no thanks button or they have insufficient funds
+        # Will be set to True if the player clicks the buy button, False if
+        # they click the no thanks button or they have insufficient
+        # funds
         self.made_purchase: Optional[bool] = None
 
     # Draw the buy property popup
@@ -75,26 +90,31 @@ class BuyPropertyPopup:
         )
 
         # Title
-        title_text: str = f"Would {player.get_name()} like to purchase {property_obj.get_name()}?"
-        title_surface: pygame.Surface = self.title_font.render(title_text, True, self.POPUP_TEXT_COLOR)
+        title_text: str = f"Would {
+            player.get_name()} like to purchase {
+            property_obj.get_name()}?"
+        title_surface: pygame.Surface = self.title_font.render(
+            title_text, True, self.POPUP_TEXT_COLOR)
         # Adjust title position if text is too wide
-        title_rect: pygame.Rect = title_surface.get_rect(center=(self.width // 2, 30))
-        # if title_rect.width > self.width - 20:  # Add padding
-        #     # If too wide, maybe wrap text or shrink font (simple centering for now)
-        #     title_rect.centerx = self.width // 2
+        title_rect: pygame.Rect = title_surface.get_rect(
+            center=(self.width // 2, 30))
+
         self.popup_surface.blit(title_surface, title_rect)
 
         # Property details
         details = [
-            f"Property Group: {property_obj.get_property_group().value.capitalize()}",
+            f"Property Group: {
+                property_obj.get_property_group().value.capitalize()}",
             f"Purchase Price: £{property_obj.get_cost()}",
             f"Rent: £{property_obj.get_rent_cost()}",
         ]
 
         y_position = 70  # Start property details below title
         for detail in details:
-            detail_surface = self.detail_font.render(detail, True, self.POPUP_TEXT_COLOR)
-            detail_rect = detail_surface.get_rect(left=20, top=y_position)
+            detail_surface = self.detail_font.render(
+                detail, True, self.POPUP_TEXT_COLOR)
+            detail_rect = detail_surface.get_rect(
+                left=20, top=y_position)
             self.popup_surface.blit(detail_surface, detail_rect)
             y_position += 25  # Spacing between detail lines
 
@@ -103,7 +123,14 @@ class BuyPropertyPopup:
         button_height = 40
         button_y = self.height - button_height - 20  # Position near bottom
 
-        self.buy_button_rect = pygame.Rect(self.width // 4 - button_width // 2, button_y, button_width, button_height)
+        self.buy_button_rect = pygame.Rect(
+            self.width
+            // 4
+            - button_width
+            // 2,
+            button_y,
+            button_width,
+            button_height)
         self.no_thanks_button_rect = pygame.Rect(
             3 * self.width // 4 - button_width // 2,
             button_y,
@@ -119,8 +146,10 @@ class BuyPropertyPopup:
         )
 
         # Check if mouse is hovering over buttons
-        self.buy_hover = self.buy_button_rect.collidepoint(adjusted_mouse_pos)
-        self.no_thanks_hover = self.no_thanks_button_rect.collidepoint(adjusted_mouse_pos)
+        self.buy_hover = self.buy_button_rect.collidepoint(
+            adjusted_mouse_pos)
+        self.no_thanks_hover = self.no_thanks_button_rect.collidepoint(
+            adjusted_mouse_pos)
 
         # Draw buttons
         self.draw_button(
@@ -161,7 +190,8 @@ class BuyPropertyPopup:
             if self.buy_button_rect.collidepoint(adjusted_pos):
                 # Try to purchase the property
                 try:
-                    current_player.purchase_property(property_obj, bank)
+                    current_player.purchase_property(
+                        property_obj, bank)
                     self.made_purchase = True
                     return
                 except InsufficientFundsError:
@@ -185,7 +215,8 @@ class BuyPropertyPopup:
         return
 
     # Show the buy property popup and wait for user interaction
-    def show(self, property_obj: Property, player: Player, bank: Bank) -> bool:
+    def show(self, property_obj: Property,
+             player: Player, bank: Bank) -> bool:
         # Reset made_purchase at the start of each show
         self.made_purchase = None
 
@@ -210,7 +241,8 @@ class BuyPropertyPopup:
             # Cap the frame rate
             clock.tick(60)
 
-        # If the player fails to make a purchase, automatically return False
+        # If the player fails to make a purchase, automatically return
+        # False
         return False
 
     # Helper method to draw buttons
@@ -224,11 +256,18 @@ class BuyPropertyPopup:
     ) -> None:
         current_color = self.BUTTON_HOVER_COLOR if hover else color
 
-        # Draw button with rounded corners
+        # Draw button
         pygame.draw.rect(surface, current_color, button_rect, 0, 5)
-        pygame.draw.rect(surface, self.POPUP_BORDER_COLOR, button_rect, 1, 5)
+        pygame.draw.rect(
+            surface,
+            self.POPUP_BORDER_COLOR,
+            button_rect,
+            1,
+            5)
 
         # Render and center text on button
-        text_surface: pygame.Surface = self.button_font.render(text, True, self.POPUP_TEXT_COLOR)
-        text_rect: pygame.Rect = text_surface.get_rect(center=button_rect.center)
+        text_surface: pygame.Surface = self.button_font.render(
+            text, True, self.POPUP_TEXT_COLOR)
+        text_rect: pygame.Rect = text_surface.get_rect(
+            center=button_rect.center)
         surface.blit(text_surface, text_rect)

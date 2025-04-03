@@ -2,11 +2,12 @@ from typing import TYPE_CHECKING, List, Tuple
 
 from backend.non_ownables.go import Go
 from backend.property_owners.bank import Bank
+
 from .. import errors
 
 if TYPE_CHECKING:
-    from ..property_owners.player import Player
     from ..non_ownables.free_parking import FreeParking
+    from ..property_owners.player import Player
 
 
 class Jail:
@@ -33,11 +34,12 @@ class Jail:
     def get_currently_in_jail(self) -> List[Tuple["Player", int]]:
         return self.currently_in_jail
 
-    def pay_fine_for_release(self, player: "Player", free_parking: "FreeParking", go: Go, bank: Bank) -> None:
+    def pay_fine_for_release(
+            self, player: "Player", free_parking: "FreeParking", go: Go, bank: Bank) -> None:
         try:
             free_parking.add_fine(self.release_cost, player)
             self.release_from_jail(player, go, bank)
-        except:
+        except BaseException:
             raise errors.InsufficientFundsError
 
     def player_used_get_out_of_jail_card(self, player: "Player") -> None:
