@@ -28,10 +28,10 @@ class SellOrMortgagePopup:
         self.POPUP_TEXT_COLOR: Tuple[int, int, int] = (
             0, 0, 0)  # black text
         self.BUTTON_COLOR: Tuple[int, int, int] = (
-            144,
-            238,
-            144,
-        )  # Light green for buttons
+            0,
+            100,
+            0,
+        )  # Dark green for buttons
         self.BUTTON_HOVER_COLOR: Tuple[int, int, int] = (
             180,
             180,

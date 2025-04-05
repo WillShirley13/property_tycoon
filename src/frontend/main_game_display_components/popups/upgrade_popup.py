@@ -32,9 +32,9 @@ class UpgradePropertyPopup:
         self.POPUP_TEXT_COLOR: Tuple[int, int, int] = (
             0, 0, 0)  # black text
         self.BUTTON_COLOR: Tuple[int, int, int] = (
-            144,
-            238,
-            144,
+            0,
+            100,
+            0,
         )  # Light green for buttons
         self.BUTTON_HOVER_COLOR: Tuple[int, int, int] = (
             180,

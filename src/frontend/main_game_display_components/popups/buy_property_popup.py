@@ -29,7 +29,7 @@ class BuyPropertyPopup:
         self.POPUP_TEXT_COLOR: Tuple[int,
                                      int, int] = (0, 0, 0)  # Black
         self.BUY_BUTTON_COLOR: Tuple[int, int, int] = (
-            144, 238, 144)  # Light green
+            0, 100, 0)  # Dark green
         self.NO_THANKS_BUTTON_COLOR: Tuple[int, int, int] = (
             220,
             100,

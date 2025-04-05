@@ -36,7 +36,7 @@ class GameCardPopup:
         self.POPUP_TEXT_COLOR: Tuple[int, int, int] = (
             0, 0, 0)  # Black text
         self.BUTTON_COLOR: Tuple[int, int, int] = (
-            144, 238, 144)  # Light green buttons
+            0, 100, 0)  # Dark green buttons
         self.BUTTON_HOVER_COLOR: Tuple[int, int, int] = (
             180,
             180,

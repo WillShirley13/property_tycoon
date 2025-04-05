@@ -22,12 +22,10 @@ class Admin:
             str, GameToken)], time_limit: int = 0):
         # game board - each index corresponds to a space on the board (in order
         # provided in docs from company)
-        self.game_board: list[Ownable
-                              | FreeParking | Jail | Go | GameCard] = []
+        self.game_board: list[Ownable | FreeParking | Jail | Go | GameCard] = []
         # helper dictionary to quickly look up the index of a space on the
         # board
-        self.game_space_helper: dict[Ownable
-                                     | FreeParking | Jail | Go | GameCard, int] = {}
+        self.game_space_helper: dict[Ownable | FreeParking | Jail | Go | GameCard, int] = {}
         self.players: list[Player] = []
         self.player_names: list[(str, GameToken)] = player_names
         self.bank: Bank = Bank()
@@ -95,8 +93,7 @@ class Admin:
     def get_opportunity_knocks(self) -> GameCard:
         return self.opportunity_knocks
 
-    def get_game_board(self) -> list[Ownable
-                                     | FreeParking | Jail | Go | GameCard]:
+    def get_game_board(self) -> list[Ownable | FreeParking | Jail | Go | GameCard]:
         return self.game_board
 
     def get_game_space_helper(

@@ -50,7 +50,7 @@ PROPERTY_COLORS = {
     "ORANGE": (255, 165, 0),  # Orange
     "RED": (255, 0, 0),  # Red
     "YELLOW": (255, 255, 0),  # Yellow
-    "GREEN": (0, 255, 0),  # Green
+    "GREEN": (0, 100, 0),  # Green
     "DEEP_BLUE": (0, 0, 139),  # Deep Blue
     "STATION": (128, 128, 128),  # Gray for stations
     "UTILITY": (192, 192, 192),  # Light gray for utilities

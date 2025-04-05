@@ -19,7 +19,7 @@ class EndOfGamePopup:
         self.BORDER_COLOR = (0, 0, 0)  # Black
         self.TEXT_COLOR = (0, 0, 0)  # Black
         self.TITLE_COLOR = (50, 120, 50)  # Dark green
-        self.BUTTON_COLOR = (144, 238, 144)  # Light green
+        self.BUTTON_COLOR = (0, 100, 0) # Dark green
         self.BUTTON_HOVER_COLOR = (100, 200, 100)  # Darker green
         self.BUTTON_TEXT_COLOR = (0, 0, 0)  # Black
 
