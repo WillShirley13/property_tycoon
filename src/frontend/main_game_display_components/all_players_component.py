@@ -21,25 +21,22 @@ class PlayerDisplay:
         self.width: int = width
         self.height: int = height
         self.screen: pygame.Surface = screen
-
-        # Colors for styling the player panel
+        
+        # Colors for styling the menu
         self.PANEL_BG_COLOR: Tuple[int, int, int] = (
             240, 240, 240)  # Light gray
         self.HEADER_BG_COLOR: Tuple[int, int, int] = (
-            70,
-            130,
-            70,
-        )  # Green to match buttons
+            3, 26, 158)  # Royal blue
         self.HEADER_TEXT_COLOR: Tuple[int, int, int] = (
             255, 255, 255)  # White
         self.PLAYER_BG_COLOR: Tuple[int, int, int] = (
             252, 252, 252)  # Almost white
         self.BORDER_COLOR: Tuple[int, int, int] = (
-            30, 100, 30)  # Dark green
+            3, 26, 158)  # Royal blue
         self.PLAYER_NAME_COLOR: Tuple[int, int, int] = (
-            0, 0, 0)  # Black
+            153, 204, 255)  # Light blue
         self.TOKEN_TEXT_COLOR: Tuple[int, int, int] = (
-            80, 80, 80)  # Dark gray
+            153, 204, 255)  # Dark blue
 
         # Color mapping for different game tokens
         self.token_colors: Dict[GameToken, Tuple[int, int, int]] = {
@@ -67,6 +64,8 @@ class PlayerDisplay:
             "Arial", 18)
         self.token_font: pygame.font.Font = pygame.font.SysFont(
             "Arial", 14)
+        
+        self.player_rects: List[Tuple[pygame.Rect, Tuple[str, GameToken]]] = []
 
     # Draw the player list with all players and their tokens
     def draw(self, players: List[Tuple[str, GameToken]]) -> None:
@@ -111,6 +110,8 @@ class PlayerDisplay:
         header_text_rect: pygame.Rect = header_surface.get_rect(
             center=(self.x + self.width // 2, self.y + 22))
         self.screen.blit(header_surface, header_text_rect)
+        
+        self.player_rects.clear()
 
         # Draw each player card
         player_height: int = 70  # Height of each player card
@@ -125,6 +126,8 @@ class PlayerDisplay:
                 self.PLAYER_BG_COLOR,
                 player_rect,
                 border_radius=8)
+            
+            self.player_rects.append((player_rect, (player_name.split(" (")[0], token)))
 
             # Add highlight effect to the top of each player card
             highlight_rect: pygame.Rect = pygame.Rect(
@@ -159,3 +162,9 @@ class PlayerDisplay:
                 color=self.TOKEN_TEXT_COLOR,
                 font_size=16,
             )
+
+    def get_player_at_pos(self, pos: Tuple[int, int]) ->Tuple[str, GameToken]:
+        for rect, player_data in self.player_rects:
+            if rect.collidepoint(pos):
+                return player_data
+        return None

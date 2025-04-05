@@ -59,10 +59,10 @@ class Player(PropertyHolder):
 
     # Property transaction methods
     def purchase_property(self, property: "Ownable",
-                          bank: "Bank", auction_amount: int = 0) -> None:
+                        bank: "Bank", auction_amount: int = 0) -> bool:
         if not self.get_is_first_circuit_complete():
             print(f"{self.name} is still on the first circuit.")
-            return
+            return False
         # If auctioned, use auction amount, otherwise use property cost
         purchase_price = auction_amount if auction_amount > 0 else property.get_cost()
 
@@ -86,8 +86,9 @@ class Player(PropertyHolder):
         property.set_owner(self)
         # Optional: Log purchase
         print(f"{self.name} purchased {property.get_name()} for £{purchase_price}.")
+        return True
 
-    def sell_property(self, property: "Ownable", bank: "Bank") -> None:
+    def sell_property(self, property: "Ownable", bank: "Bank") -> bool:
         if property.is_mortgaged:
             # update property portfolios
             self.add_cash_balance(property.get_cost() / 2)
@@ -102,6 +103,7 @@ class Player(PropertyHolder):
         bank.add_property_to_portfolio(property)
 
         property.set_owner(bank)
+        return True
 
     def mortgage_property(self, property: "Ownable", bank: "Bank") -> None:
         property.set_is_mortgaged(True)

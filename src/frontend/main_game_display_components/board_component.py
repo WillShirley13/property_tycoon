@@ -58,9 +58,15 @@ class Board:
 
         # Create the spaces
         self.spaces: List[pygame.Rect] = self._create_spaces()
-        self.space_centers: Dict[int, Tuple[int, int]
-                                 ] = self.get_space_centers()
+        self.space_centers: Dict[int, Tuple[int, int]] = self.get_space_centers()
+        
+        self.opportunity_image = pygame.image.load("src/frontend/art_assets/special_cards/opportunity_knocks.png").convert_alpha()       
+        self.pot_luck_image = pygame.image.load("src/frontend/art_assets/special_cards/pot_luck.png").convert_alpha()
 
+        new_size = (int(self.corner_size * 1), int(self.corner_size * 1))
+        self.opportunity_image = pygame.transform.scale(self.opportunity_image, new_size)
+        self.pot_luck_image = pygame.transform.scale(self.pot_luck_image, new_size)
+        
     # Create all board space rectangles with proper positioning
     def _create_spaces(self) -> List[pygame.Rect]:
         spaces: List[pygame.Rect] = []
@@ -404,3 +410,14 @@ class Board:
                 font_size,
                 space_type,
                 self.space_width)
+    
+        opp_img_rect = self.opportunity_image.get_rect()
+        pot_img_rect = self.pot_luck_image.get_rect()
+
+        # Position them in the center area with some offset
+        opp_img_rect.center = (self.screen.get_width() // 2 + self.opportunity_image.get_width() + 30, center_y + center_height // 2 - 150)
+        pot_img_rect.center = (self.screen.get_width() // 2 - self.pot_luck_image.get_width() - 30, center_y + center_height // 2 + 150)
+
+        # Blit the images to the screen
+        self.screen.blit(self.opportunity_image, opp_img_rect)
+        self.screen.blit(self.pot_luck_image, pot_img_rect)

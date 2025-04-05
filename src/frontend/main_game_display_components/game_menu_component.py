@@ -31,7 +31,7 @@ class GameMenuDisplay:
         self.TIME_BG_COLOR: Tuple[int, int, int] = (
             240, 240, 240)  # Light gray
         self.TIME_BORDER_COLOR: Tuple[int, int, int] = (
-            30, 100, 30)  # Dark green
+            3, 26, 158)  # Dark green
         self.TIME_TEXT_COLOR: Tuple[int,
                                     int, int] = (0, 0, 0)  # Black
         self.TIME_WARNING_COLOR: Tuple[int, int, int] = (
@@ -46,20 +46,17 @@ class GameMenuDisplay:
         self.PANEL_BG_COLOR: Tuple[int, int, int] = (
             240, 240, 240)  # Light gray
         self.HEADER_BG_COLOR: Tuple[int, int, int] = (
-            70,
-            130,
-            70,
-        )  # Green to match buttons
+            3, 26, 158)  # Royal blue
         self.HEADER_TEXT_COLOR: Tuple[int, int, int] = (
             255, 255, 255)  # White
         self.BORDER_COLOR: Tuple[int, int, int] = (
-            30, 100, 30)  # Dark green
+            3, 26, 158)  # Royal blue
         self.BUTTON_BG_COLOR: Tuple[int, int, int] = (
-            70, 130, 70)  # Green
+            153, 204, 255)  # Light blue
         self.BUTTON_TEXT_COLOR: Tuple[int, int, int] = (
             255, 255, 255)  # White
         self.BUTTON_HOVER_COLOR: Tuple[int, int, int] = (
-            90, 150, 90)  # Lighter green
+            110, 10, 61)  # Dark blue
 
         # create rectangles for reuse in rendering
         self.panel_rect: pygame.Rect = pygame.Rect(
@@ -123,11 +120,11 @@ class GameMenuDisplay:
         # Rules display state and image
         self.showing_rules: bool = False
         self.rules_image = pygame.image.load(
-            "src/frontend/art_assets/background.png").convert_alpha()
+            "src/frontend/art_assets/game_rules.png").convert_alpha()
         self.rules_image = pygame.transform.scale(
             self.rules_image,
-            (self.screen.get_width() * 0.6,
-             self.screen.get_height() * 0.6),
+            (self.screen.get_width() * 0.7,
+             self.screen.get_height() * 0.7),
         )
 
     # Start the game timer if a time limit is set

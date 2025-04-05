@@ -23,20 +23,20 @@ class CurrentPlayerDisplay:
         self.width: int = width
         self.height: int = height
         self.screen: pygame.Surface = screen
-
-        # Color schem
+        
+        # Colors for styling the menu
         self.PANEL_BG_COLOR: Tuple[int, int, int] = (
-            220, 240, 220)  # Light green
+            240, 240, 240)  # Light gray
         self.HEADER_BG_COLOR: Tuple[int, int, int] = (
-            50, 120, 50)  # Darker green for header
+            3, 26, 158)  # Royal blue
         self.HEADER_TEXT_COLOR: Tuple[int, int, int] = (
-            255, 255, 255)  # White
+            153, 204, 255)  # Light blue
         self.BORDER_COLOR: Tuple[int, int, int] = (
-            30, 100, 30)  # Dark green
+            3, 26, 158)  # Royal blue
         self.MONEY_COLOR: Tuple[int, int, int] = (
-            0, 100, 0)  # Dark green for money
+            153, 204, 255)  # Light blue
         self.HIGHLIGHT_COLOR: Tuple[int, int, int] = (
-            255, 215, 0)  # Gold for highlighting
+            255, 255, 255)  # White
 
         self.panel_rect: pygame.Rect = pygame.Rect(
             x, y, width, height)
@@ -99,17 +99,7 @@ class CurrentPlayerDisplay:
         header_text_rect: pygame.Rect = header_surface.get_rect(
             center=(self.x + self.width // 2, self.y + 20))
         self.screen.blit(header_surface, header_text_rect)
-
-        # If there's no current player, show a waiting message
-        if not current_player:
-            waiting_text: str = "Waiting for game to start..."
-            waiting_surface: pygame.Surface = self.instruction_font.render(
-                waiting_text, True, (100, 100, 100))
-            waiting_rect: pygame.Rect = waiting_surface.get_rect(
-                center=(self.x + self.width // 2, self.y + self.height // 2))
-            self.screen.blit(waiting_surface, waiting_rect)
-            return
-
+        
         # Draw player name with decorative background
         name_y: int = self.y + 60
         name: str = current_player.get_name()
@@ -117,18 +107,18 @@ class CurrentPlayerDisplay:
         # Create background for the player name
         name_bg_rect: pygame.Rect = pygame.Rect(
             self.x + 10, name_y - 10, self.width - 20, 40)
-        pygame.draw.rect(self.screen, (240, 255, 240),
+        pygame.draw.rect(self.screen, (255, 255, 255),
                          name_bg_rect, border_radius=8)
         pygame.draw.rect(
             self.screen,
-            self.HIGHLIGHT_COLOR,
+            self.BORDER_COLOR,
             name_bg_rect,
             2,
             border_radius=8)
 
         # Render player name centered in its background
         name_surface: pygame.Surface = self.name_font.render(
-            name, True, (0, 0, 0))
+            name, True, self.HEADER_TEXT_COLOR)
         name_rect: pygame.Rect = name_surface.get_rect(
             center=(self.x + self.width // 2, name_y + 10))
         self.screen.blit(name_surface, name_rect)
@@ -141,9 +131,9 @@ class CurrentPlayerDisplay:
         # Create background for the cash balance
         balance_bg_rect: pygame.Rect = pygame.Rect(
             self.x + 30, balance_y - 5, self.width - 60, 30)
-        pygame.draw.rect(self.screen, (235, 250, 235),
+        pygame.draw.rect(self.screen, (255, 255, 255),
                          balance_bg_rect, border_radius=5)
-        pygame.draw.rect(self.screen, (200, 230, 200),
+        pygame.draw.rect(self.screen, self.BORDER_COLOR,
                          balance_bg_rect, 1, border_radius=5)
 
         # Render cash balance centered in its background

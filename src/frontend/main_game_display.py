@@ -43,7 +43,8 @@ from frontend.main_game_display_components.popups.sell_asset_popup import \
     SellOrMortgagePopup
 from frontend.main_game_display_components.popups.upgrade_popup import \
     UpgradePropertyPopup
-
+from frontend.main_game_display_components.popups.player_properties_popup import \
+    PlayerPropertiesPopup
 
 class MainGameDisplay:
     # Set up the main game display with all necessary components and
@@ -202,8 +203,8 @@ class MainGameDisplay:
         self.game_card_popup: GameCardPopup = GameCardPopup(
             screen_width // 2 - 175,  # X position
             screen_height // 2 + 60,  # Y position
-            350,  # Width
-            175,  # Height
+            450,  # Width
+            350,  # Height
             self.screen,
         )
 
@@ -320,7 +321,7 @@ class MainGameDisplay:
         for player, token_png in self.players_objects:
             if not player.get_is_bankrupt():
                 self.player_data.append(
-                    (player.get_name(), player.get_game_token()))
+                    (f'{player.get_name()} (£{player.get_cash_balance()})', player.get_game_token()))
             else:
                 self.player_data.append(
                     (f"{player.get_name()} (Bankrupt)", player.get_game_token()))
@@ -649,6 +650,22 @@ class MainGameDisplay:
                         if has_property_to_upgrade:
                             self.upgrade_property_popup.show(
                                 self.current_player[0], self.bank)
+                            
+                    clicked_player = self.player_display.get_player_at_pos(mouse_pos)
+                    if clicked_player is not None:
+                        player_name, token = clicked_player
+                        selected_player_obj = next((p for p, _ in self.players_objects if p.get_name() == player_name), None)
+                        if selected_player_obj:
+                            print(f"Player {player_name} was clicked!")
+                            player_properties_popup = PlayerPropertiesPopup(
+                                self.screen_width // 2 - 225,
+                                self.screen_height // 2 - 300,
+                                450,
+                                600,
+                                self.screen,
+                                selected_player_obj  # THIS IS THE REQUIRED PLAYER ARGUMENT
+                            )
+                            player_properties_popup.show()
 
                     # Check if game menu button was clicked
                     self.game_menu.handle_click(

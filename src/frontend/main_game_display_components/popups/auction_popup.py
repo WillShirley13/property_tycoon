@@ -167,8 +167,9 @@ class AuctionPopup:
                     5)
 
                 # Draw input text
+                masked_text = "*" * len(self.input_texts[player.get_name()])
                 text_surface = self.text_font.render(
-                    self.input_texts[player.get_name()], True, self.POPUP_TEXT_COLOR)
+                    masked_text, True, self.POPUP_TEXT_COLOR)
                 text_rect = text_surface.get_rect(
                     left=input_rect.left + 5, top=input_rect.top + 5)
                 self.popup_surface.blit(text_surface, text_rect)
@@ -232,12 +233,13 @@ class AuctionPopup:
             if self.submit_button.collidepoint(relative_mouse_pos):
                 # Validate all bids
                 valid_bids = {}
+                invalid_bids = False
                 for player_name, bid_text in self.input_texts.items():
                     try:
                         # If bid is not an integer, players bid is
                         # void
                         bid = int(bid_text)
-                        if bid > 0:
+                        if bid > 0 and bid <= players[0].get_cash_balance():
                             # set player bid
                             for player in players:
                                 if player.get_name() == player_name:

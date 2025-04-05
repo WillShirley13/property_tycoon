@@ -6,6 +6,7 @@ from backend.enums.property_group import PropertyGroup
 from backend.ownables.property import Property
 from backend.property_owners.bank import Bank
 from backend.property_owners.player import Player
+from frontend.helpers.space_data import PROPERTY_COLORS
 
 
 class SellOrMortgagePopup:
@@ -242,6 +243,30 @@ class SellOrMortgagePopup:
 
                 # Draw the property button with property name and
                 # group
+                match property_group_name:
+                    case "brown":
+                        self.BUTTON_COLOR = PROPERTY_COLORS["BROWN"]
+                    case "blue":
+                        self.BUTTON_COLOR = PROPERTY_COLORS["BLUE"]
+                    case "purple":
+                        self.BUTTON_COLOR = PROPERTY_COLORS["PURPLE"]
+                    case "orange":
+                        self.BUTTON_COLOR = PROPERTY_COLORS["ORANGE"]
+                    case "red":
+                        self.BUTTON_COLOR = PROPERTY_COLORS["RED"]
+                    case "yellow":
+                        self.BUTTON_COLOR = PROPERTY_COLORS["YELLOW"]
+                    case "green":
+                        self.BUTTON_COLOR = PROPERTY_COLORS["GREEN"]
+                    case "deep_blue":
+                        self.BUTTON_COLOR = PROPERTY_COLORS["DEEP_BLUE"]
+                    case "utility":
+                        self.BUTTON_COLOR = PROPERTY_COLORS["UTILITY"]
+                    case "station":
+                        self.BUTTON_COLOR = PROPERTY_COLORS["STATION"]
+                    case _:
+                        self.BUTTON_COLOR = self.BUTTON_COLOR
+                
                 self.draw_button(
                     self.popup_surface,
                     property_rect,

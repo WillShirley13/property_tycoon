@@ -1,7 +1,7 @@
 import random
 from typing import TYPE_CHECKING, Dict, List, Tuple
 
-from backend.non_ownables.go import Go
+from ..non_ownables.go import Go
 
 from .. import errors
 from ..constants import OPPORTUNITY_KNOCKS_CARDS, POT_LUCK_CARDS
