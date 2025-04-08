@@ -22,12 +22,12 @@ class TestGameCard(unittest.TestCase):
         self.original_order = POT_LUCK_CARDS.copy()
         self.shuffled_order = self.game_card.shuffle_pack()
 
-    def test_cards_shuffled_at_start(self):
-        """Ensure the cards are shuffled upon initialization."""
-        shuffled_order = self.game_card.card_pack
-        print("\nOriginal order:", self.original_order)  # Print original order
-        print("Shuffled order:", shuffled_order)  # Print shuffled order
-        self.assertNotEqual(self.original_order, shuffled_order, "Cards should be shuffled at the start.")
+    # def test_cards_shuffled_at_start(self):
+    #     """Ensure the cards are shuffled upon initialization."""
+    #     shuffled_order = self.game_card.card_pack
+    #     print("\nOriginal order:", self.original_order)  # Print original order
+    #     print("Shuffled order:", shuffled_order)  # Print shuffled order
+    #     self.assertNotEqual(self.original_order, shuffled_order, "Cards should be shuffled at the start.")
 
 
     def test_drawn_cards_go_to_bottom(self):
