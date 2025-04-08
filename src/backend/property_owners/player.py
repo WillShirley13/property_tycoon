@@ -89,6 +89,8 @@ class Player(PropertyHolder):
         return True
 
     def sell_property(self, property: "Ownable", bank: "Bank") -> bool:
+        if property.get_owner() != self:
+            raise errors.PropertyNotInPortfolioError
         if property.is_mortgaged:
             # update property portfolios
             self.add_cash_balance(property.get_cost() / 2)
@@ -106,36 +108,46 @@ class Player(PropertyHolder):
         return True
 
     def mortgage_property(self, property: "Ownable", bank: "Bank") -> None:
+        # Set property as mortgaged
         property.set_is_mortgaged(True)
-        property.set_owner(bank)
-
+        
+        # Calculate mortgage value (half of total property value)
         total_value = property.get_total_value()
-
-        if isinstance(property, Property):
-            total_value += property.get_houses() * \
-                PROPERTY_BUILD_COSTS[property.get_property_group(
-                ).value]["house"]
-            total_value += property.get_hotel() * \
-                PROPERTY_BUILD_COSTS[property.get_property_group(
-                ).value]["hotel"]
-
-        self.sub_cash_balance(total_value / 2)
-        bank.add_cash_balance(total_value / 2)
-        property.set_total_value(total_value / 2, increase=False)
-        property.set_current_sell_value(total_value / 2, upgrade=True)
+        mortgage_value = total_value / 2
+        
+        # Transfer money from bank to player
+        self.add_cash_balance(mortgage_value)
+        bank.sub_cash_balance(mortgage_value)
+        
+        property.set_owner(bank)
+        
+        # Update property value records
+        property.set_current_sell_value(mortgage_value, upgrade=True)
 
     def pay_off_mortgage(self, property: "Ownable", bank: "Bank") -> None:
         try:
-            property.set_is_mortgaged(False)
-            property.set_owner(self)
-
             total_value = property.get_total_value()
-
-            self.sub_cash_balance(total_value)
-            bank.add_cash_balance(total_value)
-            property.set_total_value(total_value, increase=False)
+            mortgage_value = total_value / 2
+            
+            # Check if player has sufficient funds
+            if self.cash_balance < mortgage_value:
+                raise errors.InsufficientFundsError(
+                    f"Player {self.name} needs £{mortgage_value} but only has £{self.cash_balance}.")
+                
+            # Transfer money from player to bank
+            self.sub_cash_balance(mortgage_value)
+            bank.add_cash_balance(mortgage_value)
+            
+            # Set property as unmortgaged
+            property.set_is_mortgaged(False)
+            
+            # Update property value records
             property.set_current_sell_value(downgrade=True)
-        except BaseException:
+            
+            property.set_owner(self)
+            
+            return True
+        except errors.InsufficientFundsError:
             raise errors.InsufficientFundsError
 
     @override

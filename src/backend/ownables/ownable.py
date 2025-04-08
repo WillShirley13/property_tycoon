@@ -55,7 +55,7 @@ class Ownable:
 
     def get_rent_due_from_player(self, player: "Player") -> int:
         # If property is mortgaged or owner in jail, no rent is due
-        if self.is_mortgaged or self.owned_by.is_in_jail:
+        if self.is_mortgaged or self.owned_by.get_is_in_jail():
             return 0
         try:
             player.sub_cash_balance(self.rent_cost)
