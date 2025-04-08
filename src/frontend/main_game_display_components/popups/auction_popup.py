@@ -78,6 +78,15 @@ class AuctionPopup:
         self.submit_button: Optional[pygame.Rect] = None
         self.submit_hover: bool = False
 
+    # Reset input fields and texts for a new auction
+    def reset_inputs(self) -> None:
+        self.input_fields = {}
+        self.input_texts = {}
+        self.input_active = {}
+        self.submit_button = None
+        self.submit_hover = False
+        self.auction_result = None
+
     def draw(self, property_obj: Property,
              players: List[Player], current_player: Player) -> None:
         self.popup_surface.fill(self.POPUP_BG_COLOR)
@@ -140,13 +149,21 @@ class AuctionPopup:
         y_position = 180
         for player in players:
             if player != current_player:
-                # Player name
+                # Player name and cash balance
                 player_text = f"{player.get_name()}'s bid:"
                 player_surface = self.text_font.render(
                     player_text, True, self.POPUP_TEXT_COLOR)
                 player_rect = player_surface.get_rect(
                     left=20, top=y_position)
                 self.popup_surface.blit(player_surface, player_rect)
+                
+                # Display player's cash balance
+                balance_text = f"£{player.get_cash_balance()}"
+                balance_surface = self.text_font.render(
+                    balance_text, True, self.POPUP_TEXT_COLOR)
+                balance_rect = balance_surface.get_rect(
+                    left=20, top=y_position + 20)
+                self.popup_surface.blit(balance_surface, balance_rect)
 
                 # Get the input field
                 input_rect = self.input_fields[player.get_name()]
@@ -167,9 +184,14 @@ class AuctionPopup:
                     5)
 
                 # Draw input text
-                masked_text = "*" * len(self.input_texts[player.get_name()])
+                if self.input_texts[player.get_name()]:
+                    # Mask the actual bid with asterisks
+                    text_to_display = "*" * len(self.input_texts[player.get_name()])
+                else:
+                    text_to_display = "Enter bid..." if self.input_active[player.get_name()] else ""
+                
                 text_surface = self.text_font.render(
-                    masked_text, True, self.POPUP_TEXT_COLOR)
+                    text_to_display, True, self.POPUP_TEXT_COLOR)
                 text_rect = text_surface.get_rect(
                     left=input_rect.left + 5, top=input_rect.top + 5)
                 self.popup_surface.blit(text_surface, text_rect)
@@ -233,18 +255,27 @@ class AuctionPopup:
             if self.submit_button.collidepoint(relative_mouse_pos):
                 # Validate all bids
                 valid_bids = {}
-                invalid_bids = False
                 for player_name, bid_text in self.input_texts.items():
                     try:
-                        # If bid is not an integer, players bid is
-                        # void
+                        # If bid is empty or non-numeric, skip it
+                        if not bid_text.strip():
+                            continue
+                            
                         bid = int(bid_text)
-                        if bid > 0 and bid <= players[0].get_cash_balance():
-                            # set player bid
-                            for player in players:
-                                if player.get_name() == player_name:
-                                    valid_bids[player] = bid
-                                    break
+                        
+                        # Find the player object
+                        current_player = None
+                        for player in players:
+                            if player.get_name() == player_name:
+                                current_player = player
+                                break
+                        
+                        # Check if player has valid bid
+                        if current_player and bid > 0:
+                            # If bid exceeds cash balance, use all cash
+                            if bid > current_player.get_cash_balance():
+                                bid = current_player.get_cash_balance()
+                            valid_bids[current_player] = bid
                     except ValueError:
                         continue
 
@@ -281,14 +312,31 @@ class AuctionPopup:
                     # if enter key is pressed, deactivate input field
                     if event.key == pygame.K_RETURN:
                         self.input_active[player_name] = False
-                    # if backspace key is pressed, remove last
-                    # character
+                    # if backspace key is pressed, remove last character
                     elif event.key == pygame.K_BACKSPACE:
                         self.input_texts[player_name] = self.input_texts[player_name][:-1]
-                    # if character is numeric or empty string, add to input
-                    # text
-                    elif event.unicode.isnumeric() or event.unicode == "":
-                        self.input_texts[player_name] += event.unicode
+                    # Only accept numeric characters
+                    elif event.unicode.isdigit():
+                        # Find the current player to check their balance
+                        current_player = None
+                        for player in players:
+                            if player.get_name() == player_name:
+                                current_player = player
+                                break
+                        
+                        # Allow input, and if it exceeds cash balance, just use all cash
+                        if current_player:
+                            # Add the digit
+                            self.input_texts[player_name] += event.unicode
+                            
+                            # Check if the bid exceeds player's cash balance
+                            try:
+                                bid_amount = int(self.input_texts[player_name])
+                                if bid_amount > current_player.get_cash_balance():
+                                    # Set the bid to the player's total cash
+                                    self.input_texts[player_name] = str(current_player.get_cash_balance())
+                            except ValueError:
+                                pass
 
         return False
 
@@ -300,9 +348,11 @@ class AuctionPopup:
         property_obj: Property,
         bank: Bank,
     ) -> Optional[Dict[str, any]]:
+        # Reset input fields for a new auction
+        self.reset_inputs()
+        
         clock = pygame.time.Clock()
         running = True
-        self.auction_result = None
 
         while running:
             # Draw the popup

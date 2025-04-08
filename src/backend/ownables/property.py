@@ -68,29 +68,32 @@ class Property(Ownable):
     # Property Management
     def upgrade_property(self, bank) -> None:
         try:
+            # Check if property is eligible for upgrade
+            if not self.get_is_eligible_for_upgrade():
+                return False
+
             # If we have 4 houses, upgrade to a hotel
-            if self.get_houses() == 4 and self.get_is_eligible_upgrade():
-                # Check if upgrading to a hotel would violate the max
-                # difference rule
-                if not self.check_max_difference_between_houses_owned_is_1_within_property_group(
-                        5):
-                    return
+            if self.get_houses() == 4:
+                # Check if upgrading to a hotel would violate the max difference rule
+                if not self.check_max_difference_between_houses_owned_is_1_within_property_group(5):
+                    return False
 
                 hotel_cost = PROPERTY_BUILD_COSTS[self.property_group.value]["hotel"]
                 self.get_owner().sub_cash_balance(hotel_cost)
                 bank.add_cash_balance(hotel_cost)
                 self.set_hotel(1)
+                self.set_houses(0)  # Reset houses when upgrading to hotel
                 self.set_total_value(hotel_cost, increase=True)
                 self.set_current_sell_value(hotel_cost, upgrade=True)
                 self.set_is_eligible_for_upgrade(False)
                 self.set_is_eligible_for_downgrade(True)
 
             # Otherwise, add a house if eligible
-            elif self.get_houses() < 4 and self.get_is_eligible_for_upgrade():
+            elif self.get_houses() < 4:
                 # Check if adding a house would violate the max difference rule
                 if not self.check_max_difference_between_houses_owned_is_1_within_property_group(
                         self.get_houses() + 1):
-                    return
+                    return False
 
                 house_cost = PROPERTY_BUILD_COSTS[self.property_group.value]["house"]
                 self.get_owner().sub_cash_balance(house_cost)
@@ -98,62 +101,170 @@ class Property(Ownable):
                 self.set_houses(self.get_houses() + 1)
                 self.set_total_value(house_cost, increase=True)
                 self.set_current_sell_value(house_cost, upgrade=True)
-                self.set_is_eligible_for_upgrade(True)
-                self.set_is_eligible_for_downgrade(True)
-
+                
                 # Update eligibility flags
                 if self.houses == 4:
-                    self.is_eligible_for_hotel_upgrade_or_downgrade = True
-                    self.is_eligible_for_house_upgrade_or_downgrade = False
+                    self.set_is_eligible_for_upgrade(True)  # Can upgrade to hotel
+                else:
+                    self.set_is_eligible_for_upgrade(True)  # Can add more houses
+                self.set_is_eligible_for_downgrade(True)  # Can always downgrade after upgrade
 
             # Update rent cost after upgrade
             self.set_rent_cost()
+            
+            # Update eligibility for all properties in the same group after upgrade
+            self.update_eligibility_for_all_properties_in_group()
+            
+            return True
 
         except errors.InsufficientFundsError:
             raise errors.InsufficientFundsError
         except Exception as e:
             raise e
 
+    def update_eligibility_for_all_properties_in_group(self) -> None:
+        """Update eligibility flags for all properties in the same group after an upgrade/downgrade."""
+        if not hasattr(self, 'owned_by') or self.owned_by is None:
+            return
+            
+        properties_in_group = self.owned_by.owned_properties[self.property_group]
+        
+        # First, update the current property's eligibility based on all other properties
+        current_houses = self.get_houses()
+        has_hotel = self.get_hotel() == 1
+        
+        # Check current property's upgrade eligibility
+        self_can_upgrade = True
+        if has_hotel:
+            # If it has a hotel, it can't be upgraded further
+            self_can_upgrade = False
+        elif current_houses < 4:
+            # For each other property in the group
+            for other_prop in properties_in_group:
+                if other_prop == self:
+                    continue
+                    
+                other_houses = other_prop.get_houses()
+                other_hotel = other_prop.get_hotel()
+                
+                # If upgrading would create a difference > 1
+                if (current_houses + 1) - other_houses > 1:
+                    self_can_upgrade = False
+                    break
+                    
+        self.set_is_eligible_for_upgrade(self_can_upgrade)
+        
+        # Then update all other properties
+        for prop in properties_in_group:
+            if prop == self:
+                continue  # Skip the current property as we've already updated it
+                
+            current_houses = prop.get_houses()
+            has_hotel = prop.get_hotel() == 1
+            
+            # Check if this property can be upgraded (won't violate max difference rule)
+            can_upgrade = True
+            if has_hotel:
+                # If it has a hotel, it can't be upgraded further
+                can_upgrade = False
+            elif current_houses < 4:
+                # Check if adding a house would violate max difference with ANY other property
+                for other_prop in properties_in_group:
+                    if other_prop == prop:
+                        continue
+                    
+                    other_houses = other_prop.get_houses()
+                    other_hotel = other_prop.get_hotel()
+                    
+                    # Convert hotel to equivalent houses (5) for comparison
+                    other_level = 5 if other_hotel == 1 else other_houses
+                    
+                    # Check both directions of difference:
+                    # 1. If upgrading would put this property too far ahead of others
+                    if (current_houses + 1) - other_level > 1:
+                        can_upgrade = False
+                        break
+                    # 2. If this property is too far behind others to be upgraded just once
+                    if other_level - (current_houses + 1) > 1:
+                        can_upgrade = False
+                        break
+            
+            # Update the property's eligibility flags
+            prop.set_is_eligible_for_upgrade(can_upgrade)
+            
+            # Also update downgrade eligibility
+            can_downgrade = (has_hotel or current_houses > 0)
+            if can_downgrade:
+                # Check if downgrading would violate max difference
+                downgrade_level = 4 if has_hotel else current_houses - 1
+                for other_prop in properties_in_group:
+                    if other_prop == prop:
+                        continue
+                    
+                    other_houses = other_prop.get_houses()
+                    other_hotel = other_prop.get_hotel()
+                    
+                    # Convert hotel to equivalent houses (5)
+                    other_level = 5 if other_hotel == 1 else other_houses
+                    
+                    # Check if downgrading would create a difference > 1
+                    if other_level - downgrade_level > 1:
+                        can_downgrade = False
+                        break
+            
+            prop.set_is_eligible_for_downgrade(can_downgrade)
+
     def downgrade_property(self, bank) -> None:
         try:
+            # Check if property is eligible for downgrade
+            if not self.get_is_eligible_for_downgrade():
+                return False
+
             # If we have a hotel, downgrade to 4 houses
             if self.hotel == 1:
-                hotel_cost = PROPERTY_BUILD_COSTS[self.property_group.get_value(
-                )]["hotel"]
+                # Check if downgrading to 4 houses would violate the max difference rule
+                if not self.check_max_difference_between_houses_owned_is_1_within_property_group(4):
+                    return False
+
+                hotel_cost = PROPERTY_BUILD_COSTS[self.property_group.value]["hotel"]
                 self.get_owner().add_cash_balance(hotel_cost)
                 bank.sub_cash_balance(hotel_cost)
                 self.set_hotel(0)
                 self.set_houses(4)
                 self.set_total_value(hotel_cost, increase=False)
                 self.set_current_sell_value(downgrade=True)
-                # Check if downgrading to 4 houses would violate the max
-                # difference rule
-                self.check_max_difference_between_houses_owned_is_1_within_property_group(
-                    4)
+                self.set_is_eligible_for_upgrade(True)  # Can upgrade back to hotel
+                self.set_is_eligible_for_downgrade(True)  # Can downgrade houses
 
             # Otherwise, remove a house if we have any
             elif self.houses > 0:
-                # Check if removing a house would violate the max difference
-                # rule
-                house_cost = PROPERTY_BUILD_COSTS[self.property_group.get_value(
-                )]["house"]
+                # Check if removing a house would violate the max difference rule
+                if not self.check_max_difference_between_houses_owned_is_1_within_property_group(
+                        self.get_houses() - 1):
+                    return False
+
+                house_cost = PROPERTY_BUILD_COSTS[self.property_group.value]["house"]
                 self.get_owner().add_cash_balance(house_cost)
                 bank.sub_cash_balance(house_cost)
                 self.set_houses(self.get_houses() - 1)
                 self.set_total_value(house_cost, increase=False)
                 self.set_current_sell_value(downgrade=True)
-                self.check_max_difference_between_houses_owned_is_1_within_property_group(
-                    self.get_houses() - 1)
 
-                if self.houses < 4:
-                    self.is_eligible_for_hotel_upgrade_or_downgrade = False
-            else:
-                self.set_is_eligible_for_house_upgrade_or_downgrade(False)
-                self.set_is_eligible_for_hotel_upgrade_or_downgrade(False)
-                raise errors.NoHousesOrHotelsToSellError
+                # Update eligibility flags
+                if self.houses == 0:
+                    self.set_is_eligible_for_upgrade(True)  # Can add houses
+                    self.set_is_eligible_for_downgrade(False)  # No more houses to remove
+                else:
+                    self.set_is_eligible_for_upgrade(True)  # Can add more houses
+                    self.set_is_eligible_for_downgrade(True)  # Can remove more houses
 
             # Update rent cost after downgrade
             self.set_rent_cost()
+            
+            # Update eligibility for all properties in the same group after downgrade
+            self.update_eligibility_for_all_properties_in_group()
+            
+            return True
 
         except Exception as e:
             raise e

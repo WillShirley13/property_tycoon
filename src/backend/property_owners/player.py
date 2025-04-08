@@ -216,63 +216,63 @@ class Player(PropertyHolder):
         # check if player no longer has all properties in a group
         match property.property_group:
             case PropertyGroup.BROWN:
-                if len(
-                        self.owned_properties[PropertyGroup.BROWN]) != TOTAL_BROWN_PROPERTIES:
+                if len(self.owned_properties[PropertyGroup.BROWN]) != TOTAL_BROWN_PROPERTIES:
                     for prop in self.owned_properties[PropertyGroup.BROWN]:
                         prop.set_owner_owns_all_properties_in_group(False)
+                        prop.set_is_eligible_for_upgrade(False)
+                        prop.set_is_eligible_for_downgrade(False)
             case PropertyGroup.BLUE:
-                if len(
-                        self.owned_properties[PropertyGroup.BLUE]) != TOTAL_BLUE_PROPERTIES:
+                if len(self.owned_properties[PropertyGroup.BLUE]) != TOTAL_BLUE_PROPERTIES:
                     for prop in self.owned_properties[PropertyGroup.BLUE]:
                         prop.set_owner_owns_all_properties_in_group(False)
+                        prop.set_is_eligible_for_upgrade(False)
                         prop.set_is_eligible_for_downgrade(False)
             case PropertyGroup.PURPLE:
-                if len(
-                        self.owned_properties[PropertyGroup.PURPLE]) != TOTAL_PURPLE_PROPERTIES:
+                if len(self.owned_properties[PropertyGroup.PURPLE]) != TOTAL_PURPLE_PROPERTIES:
                     for prop in self.owned_properties[PropertyGroup.PURPLE]:
                         prop.set_owner_owns_all_properties_in_group(False)
+                        prop.set_is_eligible_for_upgrade(False)
                         prop.set_is_eligible_for_downgrade(False)
             case PropertyGroup.ORANGE:
-                if len(
-                        self.owned_properties[PropertyGroup.ORANGE]) != TOTAL_ORANGE_PROPERTIES:
+                if len(self.owned_properties[PropertyGroup.ORANGE]) != TOTAL_ORANGE_PROPERTIES:
                     for prop in self.owned_properties[PropertyGroup.ORANGE]:
+                        prop.set_owner_owns_all_properties_in_group(False)
+                        prop.set_is_eligible_for_upgrade(False)
                         prop.set_is_eligible_for_downgrade(False)
             case PropertyGroup.RED:
-                if len(
-                        self.owned_properties[PropertyGroup.RED]) != TOTAL_RED_PROPERTIES:
+                if len(self.owned_properties[PropertyGroup.RED]) != TOTAL_RED_PROPERTIES:
                     for prop in self.owned_properties[PropertyGroup.RED]:
                         prop.set_owner_owns_all_properties_in_group(False)
+                        prop.set_is_eligible_for_upgrade(False)
                         prop.set_is_eligible_for_downgrade(False)
             case PropertyGroup.YELLOW:
-                if len(
-                        self.owned_properties[PropertyGroup.YELLOW]) != TOTAL_YELLOW_PROPERTIES:
+                if len(self.owned_properties[PropertyGroup.YELLOW]) != TOTAL_YELLOW_PROPERTIES:
                     for prop in self.owned_properties[PropertyGroup.YELLOW]:
                         prop.set_owner_owns_all_properties_in_group(False)
+                        prop.set_is_eligible_for_upgrade(False)
                         prop.set_is_eligible_for_downgrade(False)
             case PropertyGroup.GREEN:
-                if len(
-                        self.owned_properties[PropertyGroup.GREEN]) != TOTAL_GREEN_PROPERTIES:
+                if len(self.owned_properties[PropertyGroup.GREEN]) != TOTAL_GREEN_PROPERTIES:
                     for prop in self.owned_properties[PropertyGroup.GREEN]:
                         prop.set_owner_owns_all_properties_in_group(False)
+                        prop.set_is_eligible_for_upgrade(False)
                         prop.set_is_eligible_for_downgrade(False)
             case PropertyGroup.DEEP_BLUE:
-                if len(
-                        self.owned_properties[PropertyGroup.DEEP_BLUE]) != TOTAL_DEEP_BLUE_PROPERTIES:
+                if len(self.owned_properties[PropertyGroup.DEEP_BLUE]) != TOTAL_DEEP_BLUE_PROPERTIES:
                     for prop in self.owned_properties[PropertyGroup.DEEP_BLUE]:
                         prop.set_owner_owns_all_properties_in_group(False)
+                        prop.set_is_eligible_for_upgrade(False)
                         prop.set_is_eligible_for_downgrade(False)
             case PropertyGroup.STATION:
                 property.set_num_of_stations_owned_by_owner(
                     property.get_num_of_stations_owned_by_owner() - 1)
-                if len(
-                        self.owned_properties[PropertyGroup.STATION]) != TOTAL_STATIONS:
+                if len(self.owned_properties[PropertyGroup.STATION]) != TOTAL_STATIONS:
                     for prop in self.owned_properties[PropertyGroup.STATION]:
                         prop.set_owner_owns_all_stations(False)
             case PropertyGroup.UTILITY:
                 property.set_num_of_utilities_owned_by_owner(
                     property.get_num_of_utilities_owned_by_owner() - 1)
-                if len(
-                        self.owned_properties[PropertyGroup.UTILITY]) != TOTAL_UTILITIES:
+                if len(self.owned_properties[PropertyGroup.UTILITY]) != TOTAL_UTILITIES:
                     for prop in self.owned_properties[PropertyGroup.UTILITY]:
                         prop.set_owner_owns_all_utilities(False)
             case _:
@@ -310,7 +310,7 @@ class Player(PropertyHolder):
     # Updates current_position to a specified position
     def move_player_to_position(
             self, position: int, go: "Go", bank: "Bank") -> None:
-        if self.current_position > position:
+        if self.current_position > position and not self.get_is_in_jail():
             self.passed_go_payout(go, bank)
         self.current_position = position
 

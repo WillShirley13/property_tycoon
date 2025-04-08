@@ -203,7 +203,7 @@ class MainGameDisplay:
         self.game_card_popup: GameCardPopup = GameCardPopup(
             screen_width // 2 - 175,  # X position
             screen_height // 2 + 60,  # Y position
-            450,  # Width
+            500,  # Width
             350,  # Height
             self.screen,
         )
@@ -408,7 +408,7 @@ class MainGameDisplay:
                 self.next_players_turn()
             elif result == "used_card":
                 self.jail.player_used_get_out_of_jail_card(
-                    self.current_player[0])
+                    self.current_player[0], self.go, self.bank)
 
     # Process events based on player's new position on the board
     def handle_players_new_position(self) -> None:
@@ -465,8 +465,9 @@ class MainGameDisplay:
                                 self.current_player[0].get_name()} landed on {
                                 space_on_board.get_name()} and is being charged rent of £{
                                 space_on_board.get_rent_cost()}.")
-                        if not space_on_board.is_mortgaged(
+                        if not space_on_board.get_is_mortgaged(
                         ) and not space_on_board.get_owner().get_is_in_jail():
+                            print("Showing rent paid popup")
                             self.rent_paid_popup.show(
                                 self.current_player[0], space_on_board, self.bank)
                     except Exception as e:
@@ -482,9 +483,17 @@ class MainGameDisplay:
                     self.free_parking.get_fines_collected())
             # Player landed on Jail. Visit Jail.
             case Jail():
-                print(
+                # if player landed on jail space, put them in jail
+                if self.current_player[0].get_current_position() == 30:
+                    self.jail.put_in_jail(self.current_player[0])
+                    self.current_player[0].move_player_to_position(10, self.go, self.bank)
+                    self.next_players_turn()
+                    return
+                else:
+                    # if player landed on visiting jail space, visit jail
+                    print(
                     f"{self.current_player[0].get_name()} is just visiting Jail.")
-                self.jail_visit_popup.show(self.current_player[0])
+                    self.jail_visit_popup.show(self.current_player[0])
             # Player landed on Go.
             case Go():
                 print(

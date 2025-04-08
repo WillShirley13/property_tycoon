@@ -7,6 +7,7 @@ from backend.enums.property_group import PropertyGroup
 from backend.ownables.property import Property
 from backend.property_owners.bank import Bank
 from backend.property_owners.player import Player
+from frontend.helpers.space_data import PROPERTY_COLORS
 
 
 class UpgradePropertyPopup:
@@ -136,7 +137,6 @@ class UpgradePropertyPopup:
                     continue
 
                 property_name: str = property.get_name()
-                property_group_name: str = property.get_property_group().value
 
                 # If we'd overflow the bottom, start a new column
                 if start_y + (property_count
@@ -152,15 +152,39 @@ class UpgradePropertyPopup:
                 self.property_buttons.append(
                     (property_rect, property))
 
-                # Draw the property button with property name and
-                # group
+                # Set button color based on property group
+                property_group = property.get_property_group().value
+                button_color = self.BUTTON_COLOR  # default color
+                
+                match property_group:
+                    case "brown":
+                        button_color = PROPERTY_COLORS["BROWN"]
+                    case "blue":
+                        button_color = PROPERTY_COLORS["BLUE"]
+                    case "purple":
+                        button_color = PROPERTY_COLORS["PURPLE"]
+                    case "orange":
+                        button_color = PROPERTY_COLORS["ORANGE"]
+                    case "red":
+                        button_color = PROPERTY_COLORS["RED"]
+                    case "yellow":
+                        button_color = PROPERTY_COLORS["YELLOW"]
+                    case "green":
+                        button_color = PROPERTY_COLORS["GREEN"]
+                    case "deep_blue":
+                        button_color = PROPERTY_COLORS["DEEP_BLUE"]
+                    case "utility":
+                        button_color = PROPERTY_COLORS["UTILITY"]
+                    case "station":
+                        button_color = PROPERTY_COLORS["STATION"]
+
+                # Draw the property button with property name and group
                 self.draw_button(
                     self.popup_surface,
                     property_rect,
-                    f"{property_name} (Property group: {
-                        property_group_name.capitalize()})",
+                    f"{property_name} ({property_group.capitalize()})",
                     False,
-                    self.BUTTON_COLOR,
+                    button_color,
                 )
                 property_count += 1
 
@@ -238,7 +262,32 @@ class UpgradePropertyPopup:
             self.popup_surface.blit(detail_surface, detail_rect)
             y_position += 30  # Increment y position for next line
 
-        # draw upgrade button
+        # Get the property color for the upgrade button
+        upgrade_button_color = self.BUTTON_COLOR  # default color
+        
+        match property_group:
+            case "brown":
+                upgrade_button_color = PROPERTY_COLORS["BROWN"]
+            case "blue":
+                upgrade_button_color = PROPERTY_COLORS["BLUE"]
+            case "purple":
+                upgrade_button_color = PROPERTY_COLORS["PURPLE"]
+            case "orange":
+                upgrade_button_color = PROPERTY_COLORS["ORANGE"]
+            case "red":
+                upgrade_button_color = PROPERTY_COLORS["RED"]
+            case "yellow":
+                upgrade_button_color = PROPERTY_COLORS["YELLOW"]
+            case "green":
+                upgrade_button_color = PROPERTY_COLORS["GREEN"]
+            case "deep_blue":
+                upgrade_button_color = PROPERTY_COLORS["DEEP_BLUE"]
+            case "utility":
+                upgrade_button_color = PROPERTY_COLORS["UTILITY"]
+            case "station":
+                upgrade_button_color = PROPERTY_COLORS["STATION"]
+                
+        # draw upgrade button with property color
         self.upgrade_button_rect = pygame.Rect(
             self.width // 4 - 55, self.height // 2 - 55, 110, 50)
         self.draw_button(
@@ -246,7 +295,7 @@ class UpgradePropertyPopup:
             self.upgrade_button_rect,
             f"Upgrade",
             False,
-            self.BUTTON_COLOR,
+            upgrade_button_color,
         )
 
         # draw cancel button
@@ -358,7 +407,7 @@ class UpgradePropertyPopup:
 
     # Main method to display the full upgrade popup flow.
     def show(self, player: Player,
-             bank: Bank) -> Tuple[Optional[Property], bool]:
+            bank: Bank) -> Tuple[Optional[Property], bool]:
         self.current_player = player
         self.bank = bank
         clock: pygame.time.Clock = pygame.time.Clock()
@@ -377,6 +426,8 @@ class UpgradePropertyPopup:
                 # show property details with upgrade button
                 self.draw_upgrade_popup()
             else:
+                # Clear property buttons list before redrawing
+                self.property_buttons = []
                 # Show property selection view
                 self.draw_select_property_popup(player)
 

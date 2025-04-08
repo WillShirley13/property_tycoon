@@ -42,6 +42,6 @@ class Jail:
         except BaseException:
             raise errors.InsufficientFundsError
 
-    def player_used_get_out_of_jail_card(self, player: "Player") -> None:
-        self.release_from_jail(player)
+    def player_used_get_out_of_jail_card(self, player: "Player", go: Go, bank: Bank) -> None:
+        self.release_from_jail(player, go, bank)
         player.set_get_out_of_jail_card(player.get_get_out_of_jail_cards() - 1)

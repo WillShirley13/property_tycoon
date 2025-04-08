@@ -50,6 +50,7 @@ class Admin:
 
         # Assign all properties to bank
         self.assign_all_properties_to_bank()
+        
 
     def start_timer(self):
         self.timer_thread = threading.Thread(target=self.countdown)
