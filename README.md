@@ -4,13 +4,11 @@ GIT/GITHUB CHEAT SHEET: https://training.github.com/downloads/github-git-cheat-s
 Property Tycoon
 
 # Overview
-...
+The first iteration of the popular board game 'Property Tycoon' in digital form.
 
 # Prerequisites to run game
 Required installations
--Python (version tbd)
--Pygame (version tbd)
+-Python (version: 3.12.9)
+-Pygame (version: 2.6.1)
 ...
 
-# How to run the game
-...
