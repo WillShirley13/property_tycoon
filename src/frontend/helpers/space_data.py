@@ -4,7 +4,7 @@ SPACE_NAMES = [
     "The Old Creek",  # 1
     "Pot Luck",  # 2
     "Gangsters Paradise",  # 3
-    "Free Parking",  # 4
+    "Income Tax",  # 4
     "Brighton Station",  # 5
     "The Angels Delight",  # 6
     "Opportunity Knocks",  # 7
@@ -38,7 +38,7 @@ SPACE_NAMES = [
     "Portslade Station",  # 35
     "Opportunity Knocks",  # 36
     "James Webb Way",  # 37
-    "Free Parking",  # 38
+    "Super Tax",  # 38
     "Turing Heights",  # 39
 ]
 
