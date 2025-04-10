@@ -1,3 +1,4 @@
+import os
 import sys
 from typing import List, Optional, Tuple
 
@@ -5,6 +6,11 @@ import pygame
 
 from frontend.helpers.board_text_utils import wrap_text
 
+# Define base paths
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+ASSETS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "art_assets")
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
 
 class StartScreenDisplay:
     def __init__(self, screen_width: int, screen_height: int,
@@ -17,7 +23,7 @@ class StartScreenDisplay:
 
         # Colors
         self.BACKGROUND_COLOR = pygame.image.load(
-            "src/frontend/art_assets/background.png")
+            os.path.join(ASSETS_DIR, "background.png"))
         self.TITLE_COLOR: Tuple[int, int, int] = (
             255, 255, 255)  # White for title
         self.TEXT_COLOR: Tuple[int, int, int] = (

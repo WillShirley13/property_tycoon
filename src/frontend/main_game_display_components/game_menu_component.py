@@ -1,4 +1,6 @@
 import time
+import os
+import sys
 from typing import Dict, List, Optional, Tuple
 
 import pygame
@@ -7,6 +9,9 @@ from frontend.helpers.board_text_utils import draw_text
 from frontend.main_game_display_components.popups.end_of_game_popup import \
     EndOfGamePopup
 
+# Define base paths
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+ASSETS_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "art_assets")
 
 class GameMenuDisplay:
     def __init__(
@@ -120,7 +125,7 @@ class GameMenuDisplay:
         # Rules display state and image
         self.showing_rules: bool = False
         self.rules_image = pygame.image.load(
-            "src/frontend/art_assets/game_rules.png").convert_alpha()
+            os.path.join(ASSETS_DIR, "game_rules.png")).convert_alpha()
         self.rules_image = pygame.transform.scale(
             self.rules_image,
             (self.screen.get_width() * 0.7,

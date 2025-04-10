@@ -1,3 +1,5 @@
+import os
+import sys
 from typing import Dict, List, Tuple
 
 import pygame
@@ -13,6 +15,10 @@ from frontend.helpers.space_data import (BOARD_CONFIG, PROPERTY_COLORS,
                                          SPACE_COLORS, SPACE_NAMES,
                                          SPACE_PROPERTY_GROUPS)
 
+# Define base paths
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+ASSETS_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "art_assets")
+SPECIAL_CARDS_DIR = os.path.join(ASSETS_DIR, "special_cards")
 
 class Board:
     # Set up the game board with appropriate dimensions and spacing
@@ -60,8 +66,11 @@ class Board:
         self.spaces: List[pygame.Rect] = self._create_spaces()
         self.space_centers: Dict[int, Tuple[int, int]] = self.get_space_centers()
         
-        self.opportunity_image = pygame.image.load("src/frontend/art_assets/special_cards/opportunity_knocks.png").convert_alpha()       
-        self.pot_luck_image = pygame.image.load("src/frontend/art_assets/special_cards/pot_luck.png").convert_alpha()
+        # Load special card images
+        self.opportunity_image = pygame.image.load(
+            os.path.join(SPECIAL_CARDS_DIR, "opportunity_knocks.png")).convert_alpha()
+        self.pot_luck_image = pygame.image.load(
+            os.path.join(SPECIAL_CARDS_DIR, "pot_luck.png")).convert_alpha()
 
         new_size = (int(self.corner_size * 1), int(self.corner_size * 1))
         self.opportunity_image = pygame.transform.scale(self.opportunity_image, new_size)

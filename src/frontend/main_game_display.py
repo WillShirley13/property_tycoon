@@ -46,6 +46,12 @@ from frontend.main_game_display_components.popups.upgrade_popup import \
 from frontend.main_game_display_components.popups.player_properties_popup import \
     PlayerPropertiesPopup
 
+# Define base paths
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+ASSETS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "art_assets")
+GAME_PIECES_DIR = os.path.join(ASSETS_DIR, "game_pieces")
+PROPERTY_CARDS_DIR = os.path.join(ASSETS_DIR, "property_cards")
+
 class MainGameDisplay:
     # Set up the main game display with all necessary components and
     # game state
@@ -68,7 +74,7 @@ class MainGameDisplay:
 
         # Load and scale the background image
         self.background = pygame.image.load(
-            "src/frontend/art_assets/background.png").convert()
+            os.path.join(ASSETS_DIR, "background.png")).convert()
         self.background = pygame.transform.scale(
             self.background, (screen_width, screen_height))
 
@@ -288,7 +294,7 @@ class MainGameDisplay:
 
             # Load and scale the token image
             token_png = pygame.image.load(
-                f"src/frontend/art_assets/game_pieces/{token_png_path}").convert_alpha()
+                os.path.join(GAME_PIECES_DIR, token_png_path)).convert_alpha()
             token_png = pygame.transform.scale(token_png, (40, 40))
 
             # Add player and token to the players_objects list
@@ -419,7 +425,7 @@ class MainGameDisplay:
                 # Draw the property image (only if the player landed on an
                 # ownable property)
                 self.property_card = pygame.image.load(
-                    f"src/frontend/art_assets/property_cards/{space_on_board.png_name}").convert_alpha()
+                    os.path.join(PROPERTY_CARDS_DIR, space_on_board.png_name)).convert_alpha()
                 self.property_card = pygame.transform.scale(
                     self.property_card,
                     (self.screen.get_width() / 5,

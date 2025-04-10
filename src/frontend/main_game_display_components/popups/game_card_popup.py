@@ -1,6 +1,7 @@
 import pygame
 from typing import Optional, Tuple, Any
 import time
+import os
 
 from backend.property_owners.player import Player
 from backend.non_ownables.game_card import GameCard
@@ -10,6 +11,8 @@ from frontend.main_game_display_components.popups.sell_asset_popup import (
 from backend import errors
 from backend.non_ownables.go import Go
 
+# Define base paths
+ASSETS_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "art_assets")
 
 class GameCardPopup:
     # Initialize the popup for when a player lands on a game card space
@@ -24,7 +27,7 @@ class GameCardPopup:
         self.result: Optional[str] = None  # Store the player's decision
 
         # Define color scheme for the popup
-        self.POPUP_BG_COLOR = pygame.image.load("src/frontend/art_assets/card_face.png").convert_alpha() # change Light gray background
+        self.POPUP_BG_COLOR = pygame.image.load(os.path.join(ASSETS_DIR, "card_face.png")).convert_alpha() # change Light gray background
         new_size = (self.width, self.height)
         self.POPUP_BG_COLOR = pygame.transform.scale(self.POPUP_BG_COLOR, new_size)
         

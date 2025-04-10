@@ -1,8 +1,14 @@
 import random
+import os
+import sys
 from typing import List, Optional, Tuple
 
 import pygame
 
+# Define base paths
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+ASSETS_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "art_assets")
+DICE_DIR = os.path.join(ASSETS_DIR, "dice_numbers")
 
 class Dice:
     def __init__(
@@ -129,38 +135,14 @@ class DiceManager:
             40,  # button height
         )
 
-        # Pre-load the six dice-face images
+        # load the six dice-face images (1–6).
         self.dice_faces = {
-            1: pygame.transform.scale(
-                pygame.image.load(
-                    "src/frontend/art_assets/dice_numbers/1.png"),
-                (dice_size, dice_size),
-            ),
-            2: pygame.transform.scale(
-                pygame.image.load(
-                    "src/frontend/art_assets/dice_numbers/2.png"),
-                (dice_size, dice_size),
-            ),
-            3: pygame.transform.scale(
-                pygame.image.load(
-                    "src/frontend/art_assets/dice_numbers/3.png"),
-                (dice_size, dice_size),
-            ),
-            4: pygame.transform.scale(
-                pygame.image.load(
-                    "src/frontend/art_assets/dice_numbers/4.png"),
-                (dice_size, dice_size),
-            ),
-            5: pygame.transform.scale(
-                pygame.image.load(
-                    "src/frontend/art_assets/dice_numbers/5.png"),
-                (dice_size, dice_size),
-            ),
-            6: pygame.transform.scale(
-                pygame.image.load(
-                    "src/frontend/art_assets/dice_numbers/6.png"),
-                (dice_size, dice_size),
-            ),
+            1: pygame.transform.scale(pygame.image.load(os.path.join(DICE_DIR, "1.png")), (dice_size, dice_size)),
+            2: pygame.transform.scale(pygame.image.load(os.path.join(DICE_DIR, "2.png")), (dice_size, dice_size)),
+            3: pygame.transform.scale(pygame.image.load(os.path.join(DICE_DIR, "3.png")), (dice_size, dice_size)),
+            4: pygame.transform.scale(pygame.image.load(os.path.join(DICE_DIR, "4.png")), (dice_size, dice_size)),
+            5: pygame.transform.scale(pygame.image.load(os.path.join(DICE_DIR, "5.png")), (dice_size, dice_size)),
+            6: pygame.transform.scale(pygame.image.load(os.path.join(DICE_DIR, "6.png")), (dice_size, dice_size)),
         }
 
         # Store the most recent dice values so we can re-draw them
@@ -190,8 +172,8 @@ class DiceManager:
             return
 
         # Retrieve the images for the stored face values
-        dice_img1 = self.dice_faces.get(self.last_value1)
-        dice_img2 = self.dice_faces.get(self.last_value2)
+        dice_img1 = self.dice_faces[self.last_value1]
+        dice_img2 = self.dice_faces[self.last_value2]
 
         dice1_x = self.screen_width // 2 - self.dice_size - self.dice_spacing
         dice1_y = self.screen_height // 2 - 40
@@ -207,4 +189,4 @@ class DiceManager:
     # Return the current values of both dice
     def get_dice_values(self) -> Tuple[int, int]:
         # Return the current values of both dice as a tuple
-        return (self.dice1.value, self.dice2.value)
+        return (self.last_value1, self.last_value2)
