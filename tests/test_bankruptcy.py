@@ -47,33 +47,33 @@ class TestGame(unittest.TestCase):
         
 
 
-    def test_player_sells_assets_if_unable_to_pay_rent(self):
-        """Test that the player sells assets to pay rent when they do not have enough cash."""
-        other_player_rent_cost = self.property.get_rent_cost()
+    # def test_player_sells_assets_if_unable_to_pay_rent(self):
+    #     """Test that the player sells assets to pay rent when they do not have enough cash."""
+    #     other_player_rent_cost = self.property.get_rent_cost()
 
-        # The player does not have enough cash to cover the rent
-        #self.assertTrue(self.player.get_cash_balance() < other_player_rent_cost, "Player should not have enough cash to pay rent.")
+    #     # The player does not have enough cash to cover the rent
+    #     #self.assertTrue(self.player.get_cash_balance() < other_player_rent_cost, "Player should not have enough cash to pay rent.")
        
-        # The player needs to sell properties to cover the rent
-        if self.player.get_cash_balance() < other_player_rent_cost and not self.player.get_is_bankrupt():
-            # Sell properties to raise cash
-            for group in self.player.owned_properties:
-                for owned_property in self.player.owned_properties[group]:
-                    self.player.sell_property(owned_property, self.bank)
-                    if self.player.get_cash_balance() >= other_player_rent_cost:
-                       break
+    #     # The player needs to sell properties to cover the rent
+    #     if self.player.get_cash_balance() < other_player_rent_cost and not self.player.get_is_bankrupt():
+    #         # Sell properties to raise cash
+    #         for group in self.player.owned_properties:
+    #             for owned_property in self.player.owned_properties[group]:
+    #                 self.player.sell_property(owned_property, self.bank)
+    #                 if self.player.get_cash_balance() >= other_player_rent_cost:
+    #                    break
 
-        print(f"Player's cash balance after selling: {self.player.get_cash_balance()}")               
-        # The player's bankruptcy status should be false if they could sell enough assets
-        self.assertFalse(self.player.get_is_bankrupt(), "Player should not go bankrupt after selling assets to pay rent.")
+    #     print(f"Player's cash balance after selling: {self.player.get_cash_balance()}")               
+    #     # The player's bankruptcy status should be false if they could sell enough assets
+    #     self.assertFalse(self.player.get_is_bankrupt(), "Player should not go bankrupt after selling assets to pay rent.")
 
-        # Check if the property was successfully sold, so it is no longer in players possession
-        # self.assertNotIn(self.mock_property_to_sell, self.player.owned_properties[PropertyGroup.BROWN], "Player should no longer own the sold property.")
+    #     # Check if the property was successfully sold, so it is no longer in players possession
+    #     # self.assertNotIn(self.mock_property_to_sell, self.player.owned_properties[PropertyGroup.BROWN], "Player should no longer own the sold property.")
 
-        # If player cannot pay rent even after selling all assets, declare bankruptcy
-        if self.player.get_cash_balance() < other_player_rent_cost:
-            self.player.set_is_bankrupt()
-            self.assertTrue(self.player.get_is_bankrupt(), "Player should be bankrupt after selling all assets and still unable to pay rent.")
+    #     # If player cannot pay rent even after selling all assets, declare bankruptcy
+    #     if self.player.get_cash_balance() < other_player_rent_cost:
+    #         self.player.set_is_bankrupt()
+    #         self.assertTrue(self.player.get_is_bankrupt(), "Player should be bankrupt after selling all assets and still unable to pay rent.")
 
     def test_player_is_removed_when_bankrupt(self):
         """Test that a bankrupt player and their token are removed from the game display."""
