@@ -487,8 +487,6 @@ class MainGameDisplay:
                 if self.current_player[0].get_current_position() == 30:
                     self.jail.put_in_jail(self.current_player[0])
                     self.current_player[0].move_player_to_position(10, self.go, self.bank)
-                    self.next_players_turn()
-                    return
                 else:
                     # if player landed on visiting jail space, visit jail
                     print(

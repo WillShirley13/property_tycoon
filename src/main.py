@@ -20,6 +20,7 @@ from frontend.time_limit_choice_display import TimeLimitChoiceDisplay
 
 
 def main() -> None:
+    print("Pygame version:", pygame.__version__)
     pygame.init()
 
     # Get the screen info to set up a dynamic display
